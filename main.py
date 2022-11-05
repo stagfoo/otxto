@@ -10,17 +10,6 @@ def evaluate_js(window):
         window.addEventListener('pywebviewready', function() {
             console.log('@pywebview is ready', pywebview.api)
         })
-
-        function getImage() { 
-            pywebview.api.getImage().then((response) => {
-                response.result;
-            }) 
-        }
-        function saveFile() { 
-            pywebview.api.saveFile("exampleFilename", "whater").then((response) => {
-                return response.result;
-            }) 
-        }
         """
     )
 def load_api(window):
@@ -42,15 +31,19 @@ class Api:
         return response
 
 
-    def getImage(self):
-        file_types = ('Image Files (*.bmp;*.jpg;*.gif)', 'All files (*.*)')
-        result = window.create_file_dialog(webview.OPEN_DIALOG, allow_multiple=True, file_types=file_types)
+    def getFile(self):
+        file_types = ('Txt Files (*.txt)', 'All files (*.*)')
+        result = window.create_file_dialog(webview.OPEN_DIALOG, allow_multiple=False, file_types=file_types)
+        print(result[0])
+        file = open(result[0], 'r')
         response = {
-            'result': result
+            'path': result[0],
+            'fileContent': file.read()
         }
+        file.close()
         return response
 
 if __name__ == '__main__':
     api = Api()
-    window = webview.create_window('API example', 'www/index.html', js_api=api)
-    webview.start(load_api, window)
+    window = webview.create_window('otxto', 'http://localhost:8080/', js_api=api)
+    webview.start(load_api, window, debug=True)
