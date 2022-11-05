@@ -1,41 +1,39 @@
-# fiskabur 🐡
-fiskabúr - pronouced (fish-ka-bush) is a basic template for running javascript app in a desktop wrapper
-the code is tiny and easy to read and *seems* less resource intensive then electron
+<p align="center"><img width="250px" src="assets/icon.png" />
+</p>
+<p align="center">a todo.txt complient kanban & todo</p>
+<hr>
 
-
-## Run Example
+## Setup Wrapper
 
 ```bash
-$ python3 main.py
+pip install -r requirements.txt 
+python3 main.py
 ```
 
-# Why make this?
-- too many eletron apps kill computers, so im exploring alternatives
-- somethings a dead simple wrapper is all you need
-- it's KISS
-- nicer dependencies and simple system with python
-
-# Building
-Mac
+## Setup Web interface
 ```
-$ python3 build-mac.py py2app
+cd chumbucket;
+yarn;
+yarn start;
 ```
 
-## TODO
-- Close button doesnt work (mac os)
-- include chumbucket install somehow
-- migrate to deathmark
+## Libraries
+- chumbucket ui
+- todo.txt format
 
-# Docs
-https://pywebview.flowrl.com/
+## why would you do such a thing?
+- use todo.txt
+- show kanban for todo.txt
+- Single reponsibility
+- file based storage
 
-# Icons
+# Design
+https://www.figma.com/file/kewtfv2VTfukgcw07LmO01/APP---otxto?node-id=0%3A1
 
-Size generator + Mac icns
+
+## Bundling app
+
 ```
-$ generate-iconset assets/icon.png
+pyinstaller main.py 
 ```
-
-https://pngtoicon.com/
-https://pypi.org/project/generate-iconset/
-
+builds to dist, copy in www and boom it works
