@@ -1,8 +1,4 @@
 {
-    "files.exclude": {
-      "node_modules": true,
-      "npm": true,
-    },
     "gitmoji.onlyUseAdditionalEmojis": true,
     "gitmoji.additionalEmojis": [
         {
@@ -26,7 +22,7 @@
             "description": "Anything documentation related.",
         },
                 {
-            "emoji": "🎨　artwork ░",
+            "emoji": "💽　assets ░",
             "code": ":style:",
             "description": "Anything style related.",
         },
@@ -41,9 +37,9 @@
             "description": "Change that breaks previous versions.",
         },
         {
-            "emoji": "🚀　release ░",
+            "emoji": "🚚　release ░",
             "code": ":release:",
             "description": "Release a new version.",
         },
     ]
-  }
+}

@@ -1,2 +1,12 @@
+node_modules
+.now
+dist/*.js
+!dist/service-worker.js
+dist/*.js.map
+chumbucket/*
+!chumbucket/readme.md
+*/node_modules
 build
 dist
+*/dist
+*/build
