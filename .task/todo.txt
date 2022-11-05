@@ -1,0 +1,5 @@
+(A) apply design to app
+(A) find kanban solution
+(B) load test file
+create normalizer to txt to state
+save on state change
