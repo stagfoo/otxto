@@ -1,0 +1,16 @@
+{
+  "name": "chumbucket",
+  "version": 2,
+  "alias": "chumbucket.stagfoo.com",
+  "github": {
+    "enabled": true,
+    "autoAlias": true
+  },
+  "routes": [
+    { "src": "/", "dest": "/index.html" },
+    { "src": "/example-fetch", "dest": "/index.html" }
+  ],
+  "builds": [
+    { "src": "package.json", "use": "@now/static-build", "config": {"distDir": "dist"} }
+  ]
+}

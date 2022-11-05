@@ -1,0 +1,17 @@
+{
+    "version": "0.1",
+    "language": "en-GB",
+    "words": [
+        "stagfoo",
+        "nanomorph",
+        "morphdom",
+        "nanohtml",
+        "nanohtml",
+        "obake",
+        "joro",
+        "workbox",
+        "Fira",
+        "Staatliches"
+    ],
+    "ignorePaths": ["**/node_modules/**"]
+}

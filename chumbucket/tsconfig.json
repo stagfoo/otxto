@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+      "baseUrl": "./src",
+      "target": "es6",
+      "paths": {
+            "*": ["*"]
+          },
+      "lib": [ "dom", "esnext" ],
+      "allowSyntheticDefaultImports": true,
+      "module": "esnext",
+      "declaration": false,
+      "experimentalDecorators": true,
+      "moduleResolution": "node",
+      "skipLibCheck": true,
+      "strict": true
+    },
+    "exclude": [
+      "node_modules"
+    ]
+}

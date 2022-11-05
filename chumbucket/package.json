@@ -1,0 +1,44 @@
+{
+  "name": "chum-bucket",
+  "version": "1.0.1",
+  "description": "an example glitch app with typescript and webpack",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "webpack-dev-server --content-base dist --hot --inline --mode=development",
+    "build": "webpack -p",
+    "lint": "eslint \"src/**/*.{tsx,ts}\"",
+    "lint:fix": "eslint \"src/**/*.{tsx,ts}\" --fix",
+    "spellcheck": "git diff --name-only | cspell --file-list stdin"
+  },
+  "author": "stagfoo",
+  "license": "ISC",
+  "pre-commit": [
+    "lint:fix",
+    "spellcheck"
+  ],
+  "dependencies": {
+    "joro": "^1.0.4",
+    "morphdom": "^2.6.1",
+    "nanohtml": "^1.9.0",
+    "nanomorph": "^5.4.3",
+    "nid": "^2.0.0",
+    "obake.js": "^1.2.1",
+    "page": "^1.11.4"
+  },
+  "devDependencies": {
+    "@types/feather-icons": "^4.7.0",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "awesome-typescript-loader": "^5.2.1",
+    "cspell": "^5.18.5",
+    "eslint": "^8.9.0",
+    "eslint-config-xo": "^0.40.0",
+    "pre-commit": "^1.2.2",
+    "source-map-loader": "^0.2.4",
+    "typescript": "^3.9.10",
+    "webpack": "^4.43.0",
+    "webpack-cli": "3.1.0",
+    "webpack-dev-server": "^3.11.0",
+    "workbox-webpack-plugin": "5.0.0"
+  }
+}
