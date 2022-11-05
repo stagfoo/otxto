@@ -1,21 +1,21 @@
 import * as ACTIONS from './actions';
 import html from 'nanohtml';
 import {ROUTES, Route, State, NAVBAR, Todo} from './store';
-import { notificationStyle } from 'styles';
+import { getRandomColorClass, notificationStyle } from 'styles';
 
 export function ui(state: State): HTMLElement {
 	return html`
     <div id="app">
+    ${notification(state)}
       <div class="page">${routing(state)}</div>
-      ${notification(state)}
     </div>
   `;
 }
 
 export function TopSection(state: State): HTMLElement {
   return html`
-  <div class="container row center">
-  <div class="item"><button>${FeatherIcon('plus')}</button></div>
+  <div class="container row center top-section">
+  <div class="item"><button onclick=${ACTIONS.showAddModel}>${FeatherIcon('plus')}</button></div>
   <div class="item xs-6">${TodoFilter(state)}</div>
   <div class="item xs-4">${Navbar(state)}</div>
   </div>
@@ -27,6 +27,7 @@ export function routing(state: State): HTMLElement {
 		case 'HOME':
 			return html`
         ${TopSection(state)}
+        ${AddNewModel(state, ACTIONS.handleNewTodoTextInput)}
         <div class="container column">
           ${state.fileTodos.filter(t => !t.complete).map(t => {
             return TodoItem(t)
@@ -41,15 +42,16 @@ export function routing(state: State): HTMLElement {
       `;
 		case 'KANBAN':
 			return html`
-      ${TopSection(state)}
+      ${TopSection(state)}      
+      ${AddNewModel(state, ACTIONS.handleNewTodoTextInput)}
       <div class="container row">
-          ${KanbanColumn('remaining', state.fileTodos.filter(t => !t.complete))}
+          ${KanbanColumn('remaining', state.fileTodos.filter(t => !t.complete), false)}
           ${state.kanbanColumns.map(listTag => {
-            return KanbanColumn(listTag, state.fileTodos.filter(t => t.tags.includes(listTag)))
+            return KanbanColumn(listTag, state.fileTodos.filter(t => t.tags.includes(listTag) && !t.complete), true)
           })}
           ${KanbanColumnCreate(ACTIONS.addKanbanColumn)}
 
-          ${KanbanColumn('done', state.fileTodos.filter(t => t.complete))}
+          ${KanbanColumn('done', state.fileTodos.filter(t => t.complete), false)}
       </div>
      
 
@@ -69,11 +71,12 @@ export function KanbanColumnCreate(onKeyUp: (event: KeyboardEvent) => void){
     `
 }
 
-export function KanbanColumn(title: string, list: Todo[]) {
+export function KanbanColumn(title: string, list: Todo[], canRemove: boolean) {
+  const removeButton = canRemove ? html`<button onclick=${() => ACTIONS.removeKanbanCol(title)}>x</button>` : undefined;
   return html`
     <div class="item kanban-column">
     <div class="container column">
-      <div class="item title">${title}</div>
+      <div class="item title">${title} ${removeButton}</div>
       ${list.map(t => {
         return TodoItem(t)
       })}
@@ -83,7 +86,7 @@ export function KanbanColumn(title: string, list: Todo[]) {
 }
 
 export function TodoProity(t: string){
-  return html`<span class="priority">${t}</span>`
+  return t && html`<span class="priority ${getRandomColorClass()}">${t}</span>`
 }
 
 export function TodoFilter(state: State){
@@ -92,14 +95,14 @@ export function TodoFilter(state: State){
 
 export function TodoTagList(tags: string[]){
   return html`<ul class="tags container row">${(tags).map(name => {
-    return html`<li class="item tag">${name}</li>`
+    return html`<li class="item tag ${getRandomColorClass()}">${name}</li>`
   })}</ul>`
 }
 
 export function TodoItem(todo: Todo): HTMLElement {
   const isCompleteClass = todo.complete ? 'completed' : ''
   return html`
-  <div class="item todo ${isCompleteClass}">
+  <div data-id=${todo.id} class="item todo ${isCompleteClass}">
   <div class="box">
   <div class="container space-between">
     <div class="item text">${todo.text}</div>
@@ -116,7 +119,7 @@ export function Navbar(state: State): HTMLElement {
     <div class="nav">
       <ul class="container">
           <li class="item">
-          <a class="box item" href="javascript:void(0)" onclick=${ACTIONS.handleButtonClick} >${FeatherIcon("folder")}</a>
+          <a class="box item" href="javascript:void(0)" onclick=${ACTIONS.openFileFromDisk} >${FeatherIcon("folder")}</a>
         </li>
         ${(Object.keys(ROUTES) as Route[]).map(name => {
 		const isActive = state.currentPage === name;
@@ -151,4 +154,14 @@ function notification(state: State): HTMLElement {
       ${state.notification.text}
     </div>
   `;
+}
+function AddNewModel(state: State, onKeyUp: (event: KeyboardEvent) => void): HTMLElement | undefined {
+  if(!state.modelOpen) return;
+  return html`
+  <div class="container row center">
+      <div class="item xs-6">
+      <textarea placeholder="add text" onkeyup=${onKeyUp}></textarea>
+      </div>
+      </div>
+  `
 }

@@ -29,8 +29,19 @@ export const DS = {
     green: '#15DA2A',
   },
 };
+type DesignSystem = { fontFamily?: { default: string; alt: string; }; fontSizes: any; gutters: any; colors: any; };
 
 export const STYLES = new Joro(window);
+
+function bgColorClass(DS: DesignSystem) {
+  return `${Object.keys(DS.colors).map((c => {
+    return `
+      .bg-${c} {
+        background-color: ${DS.colors[c]};
+      }
+    `
+  })).join('')}`
+}
 
 function buttonStyle(DS: DesignSystem) {
   return `
@@ -101,7 +112,6 @@ function tagList(DS:DesignSystem){
   .tag {
     color: ${DS.colors.black};
     padding: ${DS.gutters.sm}px;
-    background:${DS.colors.lime};
     font-size: ${DS.fontSizes.sm}px;
     border-radius: ${DS.gutters.xs}px;
   }
@@ -126,9 +136,15 @@ function kanbanColumn(DS:DesignSystem) {
       text-align: center;
       font-size: ${DS.fontSizes.sm}px;
       line-height: 30px;
+      margin-bottom: ${DS.gutters.sm}px;
     }
+    .kanban-column,
     .kanban-column .todo {
       width: 300px;
+      min-width: 300px;
+    }
+    .kanban-column .container {
+      padding: 0;
     }
     .add-column {
       width: 300px;
@@ -138,7 +154,6 @@ function kanbanColumn(DS:DesignSystem) {
   `
 }
 
-type DesignSystem = { fontFamily?: { default: string; alt: string; }; fontSizes: any; gutters: any; colors: any; };
 export function globalStyles(DS: DesignSystem) {
   return `
     html,body {
@@ -152,12 +167,7 @@ export function globalStyles(DS: DesignSystem) {
     button {
       ${buttonStyle(DS)}
     }
-    textarea {
-      width: 100%;
-      min-height: 300px;
-      background: ${DS.colors.blue};
-      font-size: ${DS.fontSizes.xl}px;
-    }
+
     ul,li {
       list-style: none;
       padding: 0;
@@ -174,8 +184,11 @@ export function globalStyles(DS: DesignSystem) {
       box-sizing: border-box;
       color: ${DS.colors.white};
     }
+    textarea {
+      padding: ${DS.gutters.md}px;
+    }
     ${gridSystem()}
-
+    ${bgColorClass(DS)}
     .nav {
       background: ${DS.colors.black};
       padding: ${DS.gutters.sm/3}px ${DS.gutters.md}px;
@@ -200,6 +213,9 @@ export function globalStyles(DS: DesignSystem) {
       height: 100%;
       padding: 8px;
       color: ${DS.colors.white};
+    }
+    .top-section {
+      padding-bottom: 0;
     }
     @keyframes notification {
       from {bottom: -120vh;}
@@ -242,6 +258,11 @@ export function globalStyles(DS: DesignSystem) {
     ${priority(DS)}
     ${kanbanColumn(DS)}
   `;
+}
+
+export function getRandomColorClass(){
+  const list = Object.keys(DS.colors).filter(k => k !== 'white' && k !== 'black' ).map(k => `bg-${k}`);
+  return list[Math.floor((Math.random()*list.length))];
 }
 
 export function notificationStyle() {

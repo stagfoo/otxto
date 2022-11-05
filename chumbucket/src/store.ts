@@ -5,9 +5,10 @@ type Notification = {
   text: string,
   show: boolean
 }
-export type Prority = "(A)" | "(B)" | "(C)" | "(D)" | "(E)" | "(F)" | "(G)" | "(H)" | "(I)" | "(J)"
+export type Prority = "(A)" | "(B)" | "(C)" | "(D)" | "(E)" | "(F)" | "(G)" | "(H)" | "(I)" | "(J)" | string
 
 export type Todo = {
+	id: string,
 	complete: boolean,
 	prority: Prority,
 	completedAt: string;
@@ -21,12 +22,12 @@ export type Todo = {
 
 export type Route = 'HOME' | 'KANBAN'
 export type State = {
-  bucket: string,
   currentPage: Route,
   fileTodos: Todo[],
   tagFilters: string[],
   kanbanColumns: string[],
   notification: Notification,
+  modelOpen: boolean;
   _update:(_reducerName: string, _data: unknown) => Promise<State>
 }
 
@@ -41,6 +42,7 @@ function fakeTodo(text: string, tags: boolean, complete:boolean): Todo{
 		'@map'
 	] : []
 	return {
+	id: nid(12),
 	complete,
 	prority:  "(A)",
 	completedAt: new Date().toDateString(),
@@ -55,16 +57,11 @@ function fakeTodo(text: string, tags: boolean, complete:boolean): Todo{
 }
 
 export const defaultState: Omit<State, '_update'> = {
-	bucket: '',
 	currentPage: 'HOME',
-	fileTodos: [
-		fakeTodo('testing', true, false),
-		fakeTodo('make stickers', true, false),
-		fakeTodo('make map logi', false, true),
-		
-	],
+	fileTodos: [],
 	tagFilters: [],
-	kanbanColumns: ['@map'],
+	kanbanColumns: [],
+	modelOpen: false,
 	notification: {
 		text: '',
 		show: false,
@@ -84,13 +81,22 @@ export const reducers = {
 	updateCurrentPage: reducer((state: State, value: Route) => {
 		state.currentPage = value;
 	}),
-	updateBucket: reducer((state: State, value: string) => {
-		state.bucket = value;
-	}),
 	updateNotification: reducer((state: State, value:{text: string, show: boolean}) => {
 		state.notification = value;
 	}),
 	addKanbanColumn: reducer((state: State, value:string) => {
 		state.kanbanColumns = [...state.kanbanColumns, value]
+	}),
+	addNewTodo: reducer((state: State, value:Todo) => {
+		state.fileTodos = [value, ...state.fileTodos, ]
+	}),
+	setFileTodos: reducer((state: State, value:Todo[]) => {
+		state.fileTodos = value
+	}),
+	setOpenModel: reducer((state: State, value: boolean) => {
+		state.modelOpen = value
+	}),
+	setKanbanColumns: reducer((state: State, value: string[]) => {
+		state.kanbanColumns = value
 	}),
 };

@@ -1,4 +1,5 @@
 import {reducers, defaultState, State} from './store';
+import {fileSave} from './actions';
 import {startRouters} from './url';
 import {createStore} from 'obake.js';
 import {ui} from './ui';
@@ -14,6 +15,7 @@ export const state:State = createStore(
 	{
 	renderer, 
 	log: console.log
+	fileSave
 	},
 	reducers,
 );
