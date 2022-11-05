@@ -1,5 +1,11 @@
-(A) apply design to app
-(A) find kanban solution
-(B) load test file
-create normalizer to txt to state
-save on state change
+x (A) 2022-11-05 2022-11-04 apply design to app +otxto @design @todo
+x (B) load test file @js @python @todo
+x create normalizer to txt to state @ts @todo
+save on state change put it as a obake trigger @js @python @todo
+x color tags @ts @design
+set tag color in the normalizer for consistent coloring @ts
+set column tag same color as the tag when creating a column with that tag @ts
+set createdAt date automatically @ts
+set completed date automatically @ts
+add keyboard shortcut to set complete @ts
+QR code sharing between phone and PC @ts @todo 
