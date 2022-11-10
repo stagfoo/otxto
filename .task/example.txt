@@ -1,0 +1,4 @@
+x set tag color in the normalizer for consistent coloring     @ts
+set column tag same color as the tag when creating a column with that tag     @ts
+set createdAt date automatically     @ts
+set completed date automatically     @ts
