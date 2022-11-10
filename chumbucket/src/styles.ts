@@ -1,50 +1,48 @@
 import Joro from 'joro';
 
 export const DS = {
-  fontFamily: {
-    default: 'Fira Mono, san-serif',
-    alt: '\'Staatliches\', san-serif',
-  },
-  fontSizes: {
-    sm: 12,
-    md: 16,
-    lg: 24,
-    xl: 32,
+	fontFamily: {
+		default: 'Fira Mono, san-serif',
+		alt: '\'Staatliches\', san-serif',
+	},
+	fontSizes: {
+		sm: 12,
+		md: 16,
+		lg: 24,
+		xl: 32,
 
-  },
-  gutters: {
-    xs: 4,
-    sm: 8,
-    md: 16,
-    lg: 24,
-    xl: 32,
-  },
-  colors: {
-    black: '#000000',
-    white: '#ffffff',
-    purple: '#7E4FED',
-    lime: '#C8FF04',
-    pink: '#FF6EBD',
-    blue: '#04E1FF',
-    green: '#15DA2A',
-  },
+	},
+	gutters: {
+		xs: 4,
+		sm: 8,
+		md: 16,
+		lg: 24,
+		xl: 32,
+	},
+	colors: {
+		black: '#000000',
+		white: '#ffffff',
+		purple: '#7E4FED',
+		lime: '#C8FF04',
+		pink: '#FF6EBD',
+		blue: '#04E1FF',
+		green: '#15DA2A',
+	},
 };
 type DesignSystem = { fontFamily?: { default: string; alt: string; }; fontSizes: any; gutters: any; colors: any; };
 
 export const STYLES = new Joro(window);
 
 function bgColorClass(DS: DesignSystem) {
-  return `${Object.keys(DS.colors).map((c => {
-    return `
+	return `${Object.keys(DS.colors).map((c => `
       .bg-${c} {
         background-color: ${DS.colors[c]};
       }
-    `
-  })).join('')}`
+    `)).join('')}`;
 }
 
 function buttonStyle(DS: DesignSystem) {
-  return `
+	return `
   background-color: ${DS.colors.black};
   color:  ${DS.colors.white};
   font-size: ${DS.fontSizes.lg}px;
@@ -55,8 +53,8 @@ function buttonStyle(DS: DesignSystem) {
   `;
 }
 
-function gridSystem(){
-  return `
+function gridSystem() {
+	return `
   .container {
     display: flex; 
     row-gap: ${DS.gutters.sm}px;
@@ -87,23 +85,25 @@ function gridSystem(){
   .item.kanban-column {
     align-self: flex-start;
   }
-  `
+  `;
 }
-function priority(DS:DesignSystem){
-  return `.priority {
+
+function priority(DS:DesignSystem) {
+	return `.priority {
     font-weight: 800;
     font-family: 'Red Hat Mono', monospace;
-    border-radius: ${DS.gutters.sm/2}px;
+    border-radius: ${DS.gutters.sm / 2}px;
     right: ${DS.gutters.md}px;
     bottom: ${DS.gutters.md}px;
-    padding:  ${DS.gutters.sm+4}px  ${DS.gutters.sm}px ;
+    padding:  ${DS.gutters.md}px;
     background: ${DS.colors.green};
     color: ${DS.colors.white};
     font-size: ${DS.fontSizes.md}px;
-  }`
+  }`;
 }
-function tagList(DS:DesignSystem){
-  return `.tags {
+
+function tagList(DS:DesignSystem) {
+	return `.tags {
     row-gap: ${DS.gutters.sm}px;
     column-gap: ${DS.gutters.sm}px;
     margin: ${DS.gutters.sm}px 0px;
@@ -115,15 +115,41 @@ function tagList(DS:DesignSystem){
     font-size: ${DS.fontSizes.sm}px;
     border-radius: ${DS.gutters.xs}px;
   }
-  `
+  `;
+}
+
+function alphaColors(DS: DesignSystem) {
+	const abcde = ['a', 'b', 'c', 'd', 'e'];
+	const fghij = ['f', 'g', 'h', 'i', 'j'];
+	const klmno = ['k', 'l', 'm', 'n', 'o'];
+	const pqrs = ['p', 'g', 'r', 's'];
+	const tvwxyz = ['v', 'w', 'y', 'x', 'z', 't'];
+	return `
+    ${abcde.map(l => `.${l}`).join(',')} {
+      background: ${DS.colors.purple}
+    }
+    ${fghij.map(l => `.${l}`).join(',')} {
+      background: ${DS.colors.lime}
+    }
+    ${klmno.map(l => `.${l}`).join(',')} {
+      background: ${DS.colors.lime}
+    }
+    ${klmno.map(l => `.${l}`).join(',')} {
+      background: ${DS.colors.pink}
+    }
+    ${pqrs.map(l => `.${l}`).join(',')} {
+      background: ${DS.colors.blue}
+    }
+    ${tvwxyz.map(l => `.${l}`).join(',')} {
+      background: ${DS.colors.green}
+    }
+  `;
 }
 
 function kanbanColumn(DS:DesignSystem) {
-  return `
-    .kanban-column {
-
-    }
+	return `
     .kanban-column .title {
+      position: relative;
       border: 1px solid ${DS.colors.white};
       min-height: 30px;
       display:block;
@@ -138,6 +164,13 @@ function kanbanColumn(DS:DesignSystem) {
       line-height: 30px;
       margin-bottom: ${DS.gutters.sm}px;
     }
+    .kanban-column .title .close {
+      border: 0px;
+      padding: 0px;
+      position: absolute;
+      right: 0px;
+      cursor: pointer;
+    }
     .kanban-column,
     .kanban-column .todo {
       width: 300px;
@@ -151,11 +184,11 @@ function kanbanColumn(DS:DesignSystem) {
       display:block;
       font-size: ${DS.fontSizes.sm}px;
     }
-  `
+  `;
 }
 
 export function globalStyles(DS: DesignSystem) {
-  return `
+	return `
     html,body {
       background-image: url('/grid.png');
       margin: 0;
@@ -191,7 +224,7 @@ export function globalStyles(DS: DesignSystem) {
     ${bgColorClass(DS)}
     .nav {
       background: ${DS.colors.black};
-      padding: ${DS.gutters.sm/3}px ${DS.gutters.md}px;
+      padding: ${DS.gutters.sm / 3}px ${DS.gutters.md}px;
       border: 1px solid ${DS.colors.white};
       border-radius: 30px;
     }
@@ -203,7 +236,7 @@ export function globalStyles(DS: DesignSystem) {
     .nav li {
       display:inline-block;
       padding: 0px;
-      margin-top: ${DS.gutters.sm -1 }px;
+      margin-top: ${DS.gutters.sm - 1}px;
     }
     .nav li.active a {
       color:  ${DS.colors.green};
@@ -257,12 +290,13 @@ export function globalStyles(DS: DesignSystem) {
     ${tagList(DS)}
     ${priority(DS)}
     ${kanbanColumn(DS)}
+    ${alphaColors(DS)}
   `;
 }
 
-export function getRandomColorClass(){
-  const list = Object.keys(DS.colors).filter(k => k !== 'white' && k !== 'black' ).map(k => `bg-${k}`);
-  return list[Math.floor((Math.random()*list.length))];
+export function getRandomColorClass() {
+	const list = Object.keys(DS.colors).filter(k => k !== 'white' && k !== 'black').map(k => `bg-${k}`);
+	return list[Math.floor((Math.random() * list.length))];
 }
 
 export function notificationStyle() {

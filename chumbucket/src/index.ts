@@ -1,10 +1,11 @@
 import {reducers, defaultState, State} from './store';
-import {fileSave} from './actions';
+import * as ACTIONS from './actions';
 import {startRouters} from './url';
 import {createStore} from 'obake.js';
 import {ui} from './ui';
-import { STYLES, globalStyles, DS} from './styles';
+import {STYLES, globalStyles, DS} from './styles';
 import morph from 'nanomorph';
+import * as keyboard from 'keyboard-handler';
 
 // Default render
 const ROOT_NODE = document.body.querySelector('#app');
@@ -13,9 +14,8 @@ const ROOT_NODE = document.body.querySelector('#app');
 export const state:State = createStore(
 	defaultState,
 	{
-	renderer, 
-	log: console.log
-	fileSave
+		renderer,
+		fileSave: ACTIONS.fileSave,
 	},
 	reducers,
 );
@@ -26,9 +26,16 @@ function renderer(newState: State) {
 	morph(ROOT_NODE, ui(newState), {
 		onBeforeElUpdated: (fromEl: HTMLElement, toEl: HTMLElement) => !fromEl.isEqualNode(toEl),
 	});
-	window.feather.replace()
+	window.feather.replace();
 }
 
 // Start Router listener
 startRouters();
-STYLES.add('styles', globalStyles(DS), window.document.createElement('style'), true)
+STYLES.add('styles', globalStyles(DS), window.document.createElement('style'), true);
+
+keyboard.keyPressed((e:any) => {
+	console.log(e.key);
+	if (e.key === 'x') {
+		ACTIONS.deleteItem();
+	}
+});
