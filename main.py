@@ -17,12 +17,15 @@ def load_api(window):
     load_css(window)
     
 class Api:
+    openFile = ''
     # function available pywebview.api.X
+    
 
     def saveFile(self, filename, fileContent):
-        result = window.create_file_dialog(webview.SAVE_DIALOG, directory='~/', save_filename=filename)
-        path = "".join(result)
-        file = open(path, 'w')
+        print('--------')
+        print(filename)
+        print('--------')
+        file = open('.task/example.txt', 'w')
         file.write(fileContent)
         file.close()
         response = {
