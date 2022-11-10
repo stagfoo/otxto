@@ -17,7 +17,9 @@
     "spellcheck"
   ],
   "dependencies": {
+    "combokeys": "^3.0.1",
     "joro": "^1.0.4",
+    "keyboard-handler": "^2.0.0",
     "morphdom": "^2.6.1",
     "nanohtml": "^1.9.0",
     "nanomorph": "^5.4.3",
