@@ -10,7 +10,7 @@ def tree(src):
 
 ENTRY_POINT = ['main.py']
 
-DATA_FILES = tree('www')
+DATA_FILES = tree('chumbucket/dist')
 OPTIONS = {
     'argv_emulation': False,
     'strip': True,

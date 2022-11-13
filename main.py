@@ -48,5 +48,5 @@ class Api:
 
 if __name__ == '__main__':
     api = Api()
-    window = webview.create_window('otxto', 'http://localhost:8080/', js_api=api)
+    window = webview.create_window('otxto', 'chumbucket/dist/index.html', js_api=api)
     webview.start(load_api, window, debug=True)
