@@ -1,6 +1,5 @@
 import page from 'page';
 import {state} from './index';
-import {hideNotifications, showNotifications} from './actions';
 
 // Handlers
 const HOME_PAGE = () => {
@@ -9,7 +8,6 @@ const HOME_PAGE = () => {
 
 const KANBAN = () => {
 	state._update('updateCurrentPage', 'KANBAN');
-	
 };
 
 // Routes

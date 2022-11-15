@@ -19,9 +19,11 @@ export const DS = {
 		lg: 24,
 		xl: 32,
 	},
+	borderRadius: 4,
 	colors: {
 		black: '#000000',
 		white: '#ffffff',
+		gray: '#424242',
 		purple: '#7E4FED',
 		lime: '#C8FF04',
 		pink: '#FF6EBD',
@@ -29,7 +31,9 @@ export const DS = {
 		green: '#15DA2A',
 	},
 };
-type DesignSystem = { fontFamily?: { default: string; alt: string; }; fontSizes: any; gutters: any; colors: any; };
+type DesignSystem = {
+  borderRadius: number; fontFamily?: { default: string; alt: string; }; fontSizes: any; gutters: any; colors: any;
+};
 
 export const STYLES = new Joro(window);
 
@@ -49,7 +53,7 @@ function buttonStyle(DS: DesignSystem) {
   padding: ${DS.gutters.sm}px;
   border: 1px solid ${DS.colors.white};
   line-height: 1px;
-  border-radius: ${DS.gutters.xl}px;
+  border-radius: ${DS.borderRadius}px;
   `;
 }
 
@@ -92,7 +96,7 @@ function priority(DS:DesignSystem) {
 	return `.priority {
     font-weight: 800;
     font-family: 'Red Hat Mono', monospace;
-    border-radius: ${DS.gutters.sm / 2}px;
+    border-radius: ${DS.borderRadius}px;
     right: ${DS.gutters.md}px;
     bottom: ${DS.gutters.md}px;
     padding:  ${DS.gutters.md}px;
@@ -113,7 +117,7 @@ function tagList(DS:DesignSystem) {
     color: ${DS.colors.black};
     padding: ${DS.gutters.sm}px;
     font-size: ${DS.fontSizes.sm}px;
-    border-radius: ${DS.gutters.xs}px;
+    border-radius: ${DS.borderRadius}px;
   }
   `;
 }
@@ -134,9 +138,6 @@ function alphaColors(DS: DesignSystem) {
     ${klmno.map(l => `.${l}`).join(',')} {
       background: ${DS.colors.lime}
     }
-    ${klmno.map(l => `.${l}`).join(',')} {
-      background: ${DS.colors.pink}
-    }
     ${pqrs.map(l => `.${l}`).join(',')} {
       background: ${DS.colors.blue}
     }
@@ -151,9 +152,9 @@ function kanbanColumn(DS:DesignSystem) {
     .kanban-column .title {
       position: relative;
       border: 1px solid ${DS.colors.white};
-      min-height: 30px;
+      min-height: 45px;
+      line-height: 45px;
       display:block;
-      background: ${DS.colors.black};
       border-radius: ${DS.gutters.sm}px;
       width: 100%;
       padding: 0px ${DS.gutters.md}px;
@@ -161,15 +162,25 @@ function kanbanColumn(DS:DesignSystem) {
       color: ${DS.colors.white};
       text-align: center;
       font-size: ${DS.fontSizes.sm}px;
-      line-height: 30px;
       margin-bottom: ${DS.gutters.sm}px;
     }
+    .kanban-column .tag-title {
+      color: ${DS.colors.black};
+      border: 0px;
+    }
     .kanban-column .title .close {
+      display:none;
       border: 0px;
       padding: 0px;
       position: absolute;
       right: 0px;
+      top: ${DS.gutters.sm}px;
+      background: transparent;
+      color: ${DS.colors.black};
       cursor: pointer;
+    }
+    .kanban-column .title:hover .close {
+      display:block;
     }
     .kanban-column,
     .kanban-column .todo {
@@ -209,9 +220,9 @@ export function globalStyles(DS: DesignSystem) {
     textarea,
     input {
       border: 1px solid ${DS.colors.white};
-      min-height: 30px;
+      min-height: 45px;
       background: ${DS.colors.black};
-      border-radius: ${DS.gutters.sm}px;
+      border-radius: ${DS.borderRadius}px;
       width: 100%;
       padding: 0px ${DS.gutters.md}px;
       box-sizing: border-box;
@@ -260,7 +271,7 @@ export function globalStyles(DS: DesignSystem) {
     }
     .box {
       background: ${DS.colors.white};
-      border-radius: ${DS.gutters.sm}px;
+      border-radius: ${DS.borderRadius}px;
       color: ${DS.colors.black};
       padding: ${DS.gutters.sm}px;
       position: relative;
@@ -283,9 +294,16 @@ export function globalStyles(DS: DesignSystem) {
 
     }
     .todo.completed {
-      opacity: 0.1;
-      text-decoration: line-through;
+      opacity: 1;
+      filter:grayscale(100%);
+    }
+    .todo.completed .box {
       background: ${DS.colors.black};
+      color: ${DS.colors.gray};
+      border: 1px solid;
+    }
+    .timestamp {
+      font-size: ${DS.fontSizes.sm}px;
     }
     ${tagList(DS)}
     ${priority(DS)}

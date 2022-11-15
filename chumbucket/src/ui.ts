@@ -1,6 +1,6 @@
 import * as ACTIONS from './actions';
 import html from 'nanohtml';
-import {ROUTES, Route, State, NAVBAR, Todo} from './store';
+import {ROUTES, Route, State, Todo} from './store';
 import {getRandomColorClass, notificationStyle} from 'styles';
 
 export function ui(state: State): HTMLElement {
@@ -12,12 +12,11 @@ export function ui(state: State): HTMLElement {
   `;
 }
 
-export function TopSection(state: State): HTMLElement {
+export function topSection(state: State): HTMLElement {
 	return html`
   <div class="container row center top-section">
-  <div class="item"><button onclick=${ACTIONS.showAddModel}>${FeatherIcon('plus')}</button></div>
-  <div class="item xs-6">${TodoFilter(state)}</div>
-  <div class="item xs-4">${Navbar(state)}</div>
+  <div class="item xs-6">${addNewModel(true, ACTIONS.handleNewTodoTextInput)}</div>
+  <div class="item xs-4">${navbar(state)}</div>
   </div>
   `;
 }
@@ -26,25 +25,23 @@ export function routing(state: State): HTMLElement {
 	switch (state.currentPage) {
 		case 'HOME':
 			return html`
-        ${TopSection(state)}
-        ${AddNewModel(state, ACTIONS.handleNewTodoTextInput)}
+        ${topSection(state)}
         <div class="container column">
-          ${state.fileTodos.filter(t => !t.complete).map(t => TodoItem(t))}
+          ${state.fileTodos.filter(t => !t.complete).map(t => todoItem(t))}
         </div>
         <div class="container column">
-          ${state.fileTodos.filter(t => t.complete).map(t => TodoItem(t))}
+          ${state.fileTodos.filter(t => t.complete).map(t => todoItem(t))}
         </div>
 
       `;
 		case 'KANBAN':
 			return html`
-      ${TopSection(state)}      
-      ${AddNewModel(state, ACTIONS.handleNewTodoTextInput)}
+      ${topSection(state)}      
       <div class="container row">
-          ${KanbanColumn('remaining', ACTIONS.normalizedRemoveCompletedItems(ACTIONS.normalizedRemoveKanbanItems(state.fileTodos)), false)}
-          ${state.kanbanColumns.map(listTag => KanbanColumn(listTag, ACTIONS.normalizedRemoveCompletedItems(ACTIONS.normalizedContainsTagItems(state.fileTodos, listTag)), true))}
-          ${KanbanColumnCreate(ACTIONS.addKanbanColumn)}
-          ${KanbanColumn('done', state.fileTodos.filter(t => t.complete), false)}
+          ${kanbanColumn('remaining', ACTIONS.normalizedRemoveCompletedItems(ACTIONS.normalizedRemoveKanbanItems(state.fileTodos)), false)}
+          ${state.kanbanColumns.map(listTag => kanbanColumn(listTag, ACTIONS.normalizedRemoveCompletedItems(ACTIONS.normalizedContainsTagItems(state.fileTodos, listTag)), true))}
+          ${kanbanColumnCreate(ACTIONS.addKanbanColumn)}
+          ${kanbanColumn('done', state.fileTodos.filter(t => t.complete), false)}
       </div>
      
 
@@ -54,7 +51,7 @@ export function routing(state: State): HTMLElement {
 	}
 }
 
-export function KanbanColumnCreate(onKeyUp: (event: KeyboardEvent) => void) {
+export function kanbanColumnCreate(onKeyUp: (_event: KeyboardEvent) => void) {
 	return html`
     <div class="item kanban-column">
     <div class="container column">
@@ -64,56 +61,64 @@ export function KanbanColumnCreate(onKeyUp: (event: KeyboardEvent) => void) {
     `;
 }
 
-export function KanbanColumn(title: string, list: Todo[], canRemove: boolean) {
-	const removeButton = canRemove ? html`<button class="close" onclick=${() => ACTIONS.removeKanbanCol(title)}>${FeatherIcon('close')}</button>` : undefined;
+export function kanbanColumn(title: string, list: Todo[], canRemove: boolean) {
+	const removeButton = canRemove ? html`<button class="close" onclick=${() => ACTIONS.removeKanbanCol(title)}>${featherIcon('close')}</button>` : undefined;
 	return html`
     <div class="item kanban-column">
     <div class="container column">
-      <div class="item title">${title} ${removeButton}</div>
-      ${list.map(t => TodoItem(t))}
+      <div class="item title ${removeButton ? title[1] + ' tag-title' : ''}">${title} ${removeButton}</div>
+      ${list.map(t => todoItem(t))}
       </div>
   </div>
   `;
 }
 
-export function TodoProity(t: string) {
+export function todoPriority(t: string) {
 	return t && html`<span class="priority ${getRandomColorClass()}">${t}</span>`;
 }
 
-export function TodoFilter(state: State) {
+export function todoFilter(state: State) {
 	return html`<input class="tag-filter" placeholder="border filter...">${state.tagFilters.join(',')}</input>`;
 }
 
-export function TodoTagList(tags: string[]) {
-	return html`<ul class="tags container row">${(tags).map(name => html`<li class="item tag ${name[1]}">${name}</li>`)}</ul>`;
+export function todoTagList(firstElm: any, tags: string[]) {
+	return html`<ul class="tags container row">${firstElm} ${(tags).map(name => html`<li class="item tag ${name[1]}">${name}</li>`)}</ul>`;
 }
 
-export function TodoItem(todo: Todo): HTMLElement {
+export function todoItem(todo: Todo): HTMLElement {
 	const isCompleteClass = todo.complete ? 'completed' : '';
 	return html`
   <div id=${todo.id} class="item todo ${isCompleteClass}" onmouseenter="${ACTIONS.focusedItem}">
   <div class="box">
   <div class="container space-between">
     <div class="item text">${todo.text}</div>
-    <div class="item prority">${TodoProity(todo.prority)}</div>
+    <div class="item">${todoPriority(todo.priority)}</div>
     </div>
   </div>
-  ${todo.tags.length > 0 ? TodoTagList(todo.tags) : null}
+  ${todo.tags.length > 0 ? todoTagList(timestamp(todo.createdAt), todo.tags) : null}
   </div>
   `;
 }
 
-export function Navbar(state: State): HTMLElement {
+export function timestamp(text: string): HTMLElement | string {
+	if (text.length === 0) {
+		return '';
+	}
+
+	return html`<li class="timestamp">${text ? '⏱️ ' + text : ''}</li>`;
+}
+
+export function navbar(state: State): HTMLElement {
 	return html`
     <div class="nav">
       <ul class="container">
           <li class="item">
-          <a class="box item" href="javascript:void(0)" onclick=${ACTIONS.openFileFromDisk} >${FeatherIcon('folder')}</a>
+          <a class="box item" href="javascript:void(0)" onclick=${ACTIONS.openFileFromDisk} >${featherIcon('folder')}</a>
         </li>
         ${(Object.keys(ROUTES) as Route[]).map(name => {
 		const isActive = state.currentPage === name;
 		return html` <li class="${isActive ? 'active' : ''}">
-            <a class="box" href="${ROUTES[name]}">${FeatherIcon(name)}</a>
+            <a class="box" href="${ROUTES[name]}">${featherIcon(name)}</a>
           </li>`;
 	})}
       </ul>
@@ -121,7 +126,7 @@ export function Navbar(state: State): HTMLElement {
   `;
 }
 
-export function FeatherIcon(name: string) {
+export function featherIcon(name: string) {
 	switch (name) {
 		case 'grid':
 		case 'KANBAN':
@@ -147,16 +152,12 @@ function notification(state: State): HTMLElement {
   `;
 }
 
-function AddNewModel(state: State, onKeyUp: (event: KeyboardEvent) => void): HTMLElement | undefined {
-	if (!state.modelOpen) {
+function addNewModel(modelOpen: boolean, onKeyUp: (_event: KeyboardEvent) => void): HTMLElement | undefined {
+	if (!modelOpen) {
 		return;
 	}
 
 	return html`
-  <div class="container row center">
-      <div class="item xs-6">
-      <textarea placeholder="add text" onkeyup=${onKeyUp}></textarea>
-      </div>
-      </div>
+      <input placeholder="add new todo text" onkeyup=${onKeyUp}></input>
   `;
 }

@@ -1,11 +1,12 @@
 import {State, Todo} from 'store';
 import {state} from './index';
 import nid from 'nid';
+import dayjs from 'dayjs';
 
 type PywebviewAPI = {
 	api: {
 		getFile: () => any,
-		saveFile: (name: string, fileContent: string) => any
+		saveFile: (_name: string, _fileContent: string) => any
 	}
 }
 
@@ -34,22 +35,18 @@ export function addKanbanColumn(event: KeyboardEvent) {
 }
 
 export function createTodoTextLine(complete: boolean, text: string, priority?: string, completedAt?: string, createdAt?: string, project?: string, tags?: string[]) {
-	return `${complete ? 'x' : ''} ${priority ? '(' + priority + ')' : ''} ${completedAt} ${createdAt} ${text} ${project ? project : ''} ${tags?.join(' ')}`;
+	return `${complete ? 'x ' : ''}${priority ? '(' + priority + ') ' : ''}${completedAt + ' '}${createdAt + ' '}${text + ' '}${project ? project + ' ' : ''}${tags?.join(' ')}`.replaceAll('  ', ' ');
 }
-
-// OpenFile
-// saveFIle
 
 export async function openFileFromDisk() {
 	const win = window as any;
 	const {pywebview} = win;
 	const result = await (pywebview as PywebviewAPI).api.getFile();
-	console.log(result);
 	state._update('setFilePath', result.path);
 	state._update('setFileTodos', normalizerTodoTxtToState(result.fileContent));
 }
 
-export function isPrority(txt: string) {
+export function isPriority(txt: string) {
 	if (txt.length === 0) {
 		return false;
 	}
@@ -57,11 +54,7 @@ export function isPrority(txt: string) {
 	return txt[0] === '(' && txt[2] === ')';
 }
 
-export function isDateShape(txt: string) {
-	if (txt.length === 0) {
-		return false;
-	}
-
+export function isDateLike(txt: string) {
 	const currentCentury = '20';
 	const parts = txt.split('-');
 	return txt[0] === currentCentury[0] && txt[1] === currentCentury[1] && parts.length === 3;
@@ -75,22 +68,21 @@ export function isProject(txt: string) {
 	return txt[0] === '+';
 }
 
-// TODO set tag color here
 export function normalizerTodoTxtToState(fileContent: string): Todo[] {
 	const lineList = fileContent.split('\n').filter(l => l !== '');
 	return lineList.map(l => {
 		const parts = l.split(' ');
 		const complete = parts[0] === 'x';
-		const prority = parts.filter(p => isPrority(p))[0];
-
-		console.log(parts[0]);
+		const priority = parts.filter(p => isPriority(p))[0];
+		const completedAt = complete ? parts.filter(p => isDateLike(p))[0] : '';
+		const createdAt = completedAt ? parts.filter(p => isDateLike(p))[1] : parts.filter(p => isDateLike(p))[0];
 		return {
 			id: nid(12),
 			complete,
-			prority: prority ? prority[1] : '',
-			completedAt: isDateShape(parts[2]) ? new Date(parts[2]).toDateString() : '',
-			createdAt: isDateShape(parts[3]) ? new Date(parts[3]).toDateString() : '',
-			text: parts.filter((p, i) => !(parts[0] === 'x' && i === 0) && !isDateShape(p) && !isPrority(p) && !isTag(p) && !isProject(p)).join(' '),
+			priority: priority ? priority[1] : '',
+			completedAt: completedAt ? completedAt : '',
+			createdAt: createdAt ? createdAt : '',
+			text: parts.filter((p, i) => !(parts[0] === 'x' && i === 0) && !isDateLike(p) && !isPriority(p) && !isTag(p) && !isProject(p)).join(' '),
 			project: parts.filter((p: string) => isProject(p))[0],
 			tags: parts.filter((p: string) => isTag(p)),
 			spec: [],
@@ -105,9 +97,9 @@ export function handleNewTodoTextInput(event: KeyboardEvent) {
 	const newTodo = {
 		id: nid(12),
 		complete: false,
-		prority: undefined,
+		priority: undefined,
 		completedAt: '',
-		createdAt: new Date().toDateString(),
+		createdAt: dayjs().format('YYYY-MM-DD'),
 		text,
 		project: undefined,
 		tags: [],
@@ -130,12 +122,12 @@ export function removeKanbanCol(tag: string) {
 export async function fileSave(state: State) {
 	const win = window as any;
 	const {pywebview} = win;
-	const normalizedFile = state.fileTodos.map(item => createTodoTextLine(item.complete, item.text, item.prority, item.completedAt, item.createdAt, item.project, item.tags)).join('\n');
+	const normalizedFile = state.fileTodos.map(item => createTodoTextLine(item.complete, item.text, item.priority, item.completedAt, item.createdAt, item.project, item.tags)).join('\n');
 	if (state.selectedFile.length > 0) {
 		try {
 			await (pywebview as PywebviewAPI).api.saveFile(state.selectedFile, normalizedFile);
 		} catch (err) {
-			console.log(err);
+			console.error(err);
 		}
 	}
 }
@@ -143,8 +135,7 @@ export async function fileSave(state: State) {
 export function focusedItem(e: MouseEvent) {
 	const item = e.target as any;
 	if (item.className.includes('item todo')) {
-		console.log(item.id);
-		state._update('setSeletedItem', item.id);
+		state._update('setSelectedItem', item.id);
 	}
 }
 

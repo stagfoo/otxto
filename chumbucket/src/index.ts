@@ -15,6 +15,7 @@ export const state:State = createStore(
 	defaultState,
 	{
 		renderer,
+		logger: console.log,
 		fileSave: ACTIONS.fileSave,
 	},
 	reducers,
@@ -34,8 +35,11 @@ startRouters();
 STYLES.add('styles', globalStyles(DS), window.document.createElement('style'), true);
 
 keyboard.keyPressed((e:any) => {
-	console.log(e.key);
-	if (e.key === 'x') {
-		ACTIONS.deleteItem();
+	const currentElement = document?.activeElement?.tagName;
+	const textElements = ['INPUT', 'TEXTAREA'];
+	if (!textElements.includes(`${currentElement}`)) {
+		if (e.key === 'x') {
+			ACTIONS.deleteItem();
+		}
 	}
 });
