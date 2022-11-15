@@ -2,16 +2,20 @@
     "version": "0.1",
     "language": "en-GB",
     "words": [
-        "stagfoo",
-        "nanomorph",
+        "Fira",
+        "joro",
+        "kanban",
         "morphdom",
         "nanohtml",
-        "nanohtml",
+        "nanomorph",
         "obake",
-        "joro",
-        "workbox",
-        "Fira",
-        "Staatliches"
+        "pywebview",
+        "Staatliches",
+        "stagfoo",
+        "Todos",
+        "workbox"
     ],
-    "ignorePaths": ["**/node_modules/**"]
+    "ignorePaths": [
+        "**/node_modules/**"
+    ]
 }
