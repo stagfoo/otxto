@@ -1,20 +1,4 @@
 import webview
-
-def load_css(window):
-    window.load_css(r"""
-    """)
-
-def evaluate_js(window):
-    window.evaluate_js(
-        r"""
-        window.addEventListener('pywebviewready', function() {
-            console.log('@pywebview is ready', pywebview.api)
-        })
-        """
-    )
-def load_api(window):
-    evaluate_js(window)
-    load_css(window)
     
 class Api:
     openFile = ''
@@ -48,5 +32,5 @@ class Api:
 
 if __name__ == '__main__':
     api = Api()
-    window = webview.create_window('otxto', 'chumbucket/dist/index.html', js_api=api)
+    window = webview.create_window('otxto', 'http://localhost:8080/', js_api=api)
     webview.start(load_api, window, debug=True)
