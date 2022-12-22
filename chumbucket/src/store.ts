@@ -1,4 +1,4 @@
-import {reducer} from 'obake.js';
+import * as obakejs from 'obake.js';
 
 type Notification = {
   text: string,
@@ -22,8 +22,10 @@ export type Todo = {
 export type Route = 'HOME' | 'KANBAN'
 export type State = {
   selectedItem: string;
+  dropColumn: string;
   currentPage: Route,
   fileTodos: Todo[],
+	mousePosition: MousePosition,
   tagFilters: string[],
   selectedFile: string,
   kanbanColumns: string[],
@@ -39,6 +41,8 @@ export const defaultState: Omit<State, '_update'> = {
 	kanbanColumns: [],
 	modelOpen: false,
 	selectedItem: '',
+	dropColumn: '',
+	mousePosition: {x: 0, y: 0},
 	selectedFile: '',
 	notification: {
 		text: '',
@@ -55,32 +59,43 @@ export const NAVBAR = {
 	KANBAN: 'kanban',
 };
 
+type MousePosition = {
+	x: number,
+	y: number
+}
+
 export const reducers = {
-	updateCurrentPage: reducer((state: State, value: Route) => {
+	updateCurrentPage: obakejs.reducer((state: State, value: Route) => {
 		state.currentPage = value;
 	}),
-	updateNotification: reducer((state: State, value:{text: string, show: boolean}) => {
+	updateNotification: obakejs.reducer((state: State, value:{text: string, show: boolean}) => {
 		state.notification = value;
 	}),
-	addKanbanColumn: reducer((state: State, value:string) => {
+	addKanbanColumn: obakejs.reducer((state: State, value:string) => {
 		state.kanbanColumns = [...state.kanbanColumns, value];
 	}),
-	addNewTodo: reducer((state: State, value:Todo) => {
+	addNewTodo: obakejs.reducer((state: State, value:Todo) => {
 		state.fileTodos = [value, ...state.fileTodos];
 	}),
-	setFileTodos: reducer((state: State, value:Todo[]) => {
+	setFileTodos: obakejs.reducer((state: State, value:Todo[]) => {
 		state.fileTodos = value;
 	}),
-	setOpenModel: reducer((state: State, value: boolean) => {
+	setOpenModel: obakejs.reducer((state: State, value: boolean) => {
 		state.modelOpen = value;
 	}),
-	setKanbanColumns: reducer((state: State, value: string[]) => {
+	setKanbanColumns: obakejs.reducer((state: State, value: string[]) => {
 		state.kanbanColumns = value;
 	}),
-	setSelectedItem: reducer((state: State, value: string) => {
+	setSelectedItem: obakejs.reducer((state: State, value: string) => {
 		state.selectedItem = value;
 	}),
-	setFilePath: reducer((state: State, value: string) => {
+	setFilePath: obakejs.reducer((state: State, value: string) => {
 		state.selectedFile = value;
+	}),
+	setDropColumn: obakejs.reducer((state: State, value: string) => {
+		state.dropColumn = value;
+	}),
+	setMousePosition: obakejs.reducer((state: State, value: MousePosition) => {
+		state.mousePosition = value;
 	}),
 };

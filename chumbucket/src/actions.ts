@@ -2,6 +2,9 @@ import {State, Todo} from 'store';
 import {state} from './index';
 import nid from 'nid';
 import dayjs from 'dayjs';
+import _ from 'lodash';
+
+let globalMouseListener: any = null;
 
 type PywebviewAPI = {
 	api: {
@@ -139,10 +142,25 @@ export function focusedItem(e: MouseEvent) {
 	}
 }
 
-export function deleteItem() {
+// TODO rename to complete
+export function deleteItem(id: string) {
 	const cleanList = state.fileTodos.map(item => {
-		if (item.id === state.selectedItem) {
+		if (item.id === id) {
 			item.complete = !item.complete;
+			return item;
+		}
+
+		return item;
+	});
+	state._update('setFileTodos', cleanList);
+}
+
+export function addTagToItem(id: string, newTag: string) {
+	const cleanList = state.fileTodos.map(item => {
+		console.log(id, newTag);
+		if (item.id === id) {
+			const nextTags = item.tags.filter(t => !state.kanbanColumns.includes(t));
+			item.tags = _.uniq([...nextTags, newTag]);
 			return item;
 		}
 
@@ -161,4 +179,44 @@ export function normalizedRemoveCompletedItems(list: Todo[]) {
 
 export function normalizedContainsTagItems(list: Todo[], tag: string) {
 	return list.filter(t => t.tags.includes(tag));
+}
+
+export function onMouseDownDragSelf(e: MouseEvent) {
+	e.preventDefault();
+	const item = e.target as any;
+	const column = state.dropColumn;
+	const coreColumns = ['remaining', 'done'];
+	switch (e.type) {
+		case 'dragend':
+			e.preventDefault();
+			if (e.target && !coreColumns.includes(column)) {
+				addTagToItem(`${item.id}`, state.dropColumn);
+				state._update('setDropColumn', '');
+			}
+
+			if (e.target && column === 'done') {
+				deleteItem(`${item.id}`);
+				state._update('setDropColumn', '');
+			}
+
+			if (e.target && column === 'remaining') {
+				addTagToItem(`${item.id}`, '');
+				state._update('setDropColumn', '');
+			}
+
+			break;
+		case 'drop':
+		case 'dragover':
+			e.preventDefault();
+			break;
+		case 'dragged':
+		default:
+			e.preventDefault();
+			break;
+	}
+}
+
+export function onMouseEnterKanban(e: MouseEvent, key: string) {
+	e.preventDefault();
+	state._update('setDropColumn', key);
 }

@@ -127,7 +127,7 @@ function alphaColors(DS: DesignSystem) {
 	const fghij = ['f', 'g', 'h', 'i', 'j'];
 	const klmno = ['k', 'l', 'm', 'n', 'o'];
 	const pqrs = ['p', 'g', 'r', 's'];
-	const tvwxyz = ['v', 'w', 'y', 'x', 'z', 't'];
+	const tvwxyz = ['u', 'v', 'w', 'y', 'x', 'z', 't'];
 	return `
     ${abcde.map(l => `.${l}`).join(',')} {
       background: ${DS.colors.purple}
@@ -155,7 +155,7 @@ function kanbanColumn(DS:DesignSystem) {
       min-height: 45px;
       line-height: 45px;
       display:block;
-      border-radius: ${DS.gutters.sm}px;
+      border-radius: ${DS.borderRadius}px;
       width: 100%;
       padding: 0px ${DS.gutters.md}px;
       box-sizing: border-box;
@@ -186,6 +186,10 @@ function kanbanColumn(DS:DesignSystem) {
     .kanban-column .todo {
       width: 300px;
       min-width: 300px;
+      
+    }
+    .kanban-column {
+      min-height: 80vh;
     }
     .kanban-column .container {
       padding: 0;

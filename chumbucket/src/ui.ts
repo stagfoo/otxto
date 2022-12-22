@@ -64,7 +64,7 @@ export function kanbanColumnCreate(onKeyUp: (_event: KeyboardEvent) => void) {
 export function kanbanColumn(title: string, list: Todo[], canRemove: boolean) {
 	const removeButton = canRemove ? html`<button class="close" onclick=${() => ACTIONS.removeKanbanCol(title)}>${featherIcon('close')}</button>` : undefined;
 	return html`
-    <div class="item kanban-column">
+    <div class="item kanban-column" ondragenter="${(e: MouseEvent) => ACTIONS.onMouseEnterKanban(e, title)}">
     <div class="container column">
       <div class="item title ${removeButton ? title[1] + ' tag-title' : ''}">${title} ${removeButton}</div>
       ${list.map(t => todoItem(t))}
@@ -88,7 +88,7 @@ export function todoTagList(firstElm: any, tags: string[]) {
 export function todoItem(todo: Todo): HTMLElement {
 	const isCompleteClass = todo.complete ? 'completed' : '';
 	return html`
-  <div id=${todo.id} class="item todo ${isCompleteClass}" onmouseenter="${ACTIONS.focusedItem}">
+  <div data-nanomorph-component-id="${todo.id}" id=${todo.id} draggable="true" ondrag="${ACTIONS.onMouseDownDragSelf}" ondragend="${ACTIONS.onMouseDownDragSelf}" ondrop="${ACTIONS.onMouseDownDragSelf}" ondragover="${ACTIONS.onMouseDownDragSelf}" class="item todo ${isCompleteClass}" onmouseenter="${ACTIONS.focusedItem}">
   <div class="box">
   <div class="container space-between">
     <div class="item text">${todo.text}</div>
