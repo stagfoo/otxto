@@ -1,5 +1,4 @@
 import webview
-    
 class Api:
     openFile = ''
     # function available pywebview.api.X
@@ -9,7 +8,7 @@ class Api:
         print('--------')
         print(filename)
         print('--------')
-        file = open('.task/example.txt', 'w')
+        file = open(filename, 'w')
         file.write(fileContent)
         file.close()
         response = {
@@ -32,5 +31,7 @@ class Api:
 
 if __name__ == '__main__':
     api = Api()
-    window = webview.create_window('otxto', 'http://localhost:8080/', js_api=api)
-    webview.start(load_api, window, debug=True)
+    window = webview.create_window('otxto', './chumbucket/dist/index.html', js_api=api)
+    #js_api=api doesnt work with http_server=True so you have to expose the function manually
+    window.expose(api.saveFile, api.getFile)
+    webview.start(http_server=True, debug=True)

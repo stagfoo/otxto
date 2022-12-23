@@ -22,7 +22,7 @@ yarn start;
 - todo.txt format
 
 ## why would you do such a thing?
-- use todo.txt
+- use todo.txt or human readable language
 - show kanban for todo.txt
 - Single reponsibility
 - file based storage
@@ -36,4 +36,14 @@ https://www.figma.com/file/kewtfv2VTfukgcw07LmO01/APP---otxto?node-id=0%3A1
 ```
 pyinstaller main.py 
 ```
+
+```
+ python3 build-mac.py py2app
+```
+
 builds to dist, copy in www and boom it works
+
+# Human Readable File Formats
+
+https://toml.io/en/
+https://pypi.org/project/tinydb/

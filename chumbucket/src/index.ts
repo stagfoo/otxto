@@ -1,28 +1,31 @@
-import * as STORE_MODULE from './store';
+import { State, defaultState, reducers } from './store';
 import * as ACTIONS from './actions';
-import * as URL_MODULE from './url';
-import * as obakejs from 'obake.js';
-import * as UI_MODULE from './ui';
+import { startRouters } from './url';
+import { createStore } from 'obake.js';
+import { ui } from './ui';
 import * as STYLE_MODULE from './styles';
 import morph from 'nanomorph';
 import * as keyboard from 'keyboard-handler';
+import _ from 'lodash';
 
 // Default render
 const ROOT_NODE = document.body.querySelector('#app');
-
+const _fileSave = _.debounce(ACTIONS.fileSave, 500);
 // Create Store
-export const state:STORE_MODULE.State = obakejs.createStore(
-	STORE_MODULE.defaultState,
+export const state: State = createStore(
+	defaultState,
 	{
 		renderer,
+		log: console.log,
+		filesave: _fileSave,
 	},
-	STORE_MODULE.reducers,
+	reducers,
 );
 
 // Render Loop function
 // spec - https://dom.spec.whatwg.org/#concept-node-equals
-function renderer(newState: STORE_MODULE.State) {
-	morph(ROOT_NODE, UI_MODULE.ui(newState), {
+function renderer(newState: State) {
+	morph(ROOT_NODE, ui(newState), {
 		onBeforeElUpdated(fromEl: HTMLElement, toEl: HTMLElement) {
 			return !fromEl.isEqualNode(toEl);
 		},
@@ -31,10 +34,10 @@ function renderer(newState: STORE_MODULE.State) {
 }
 
 // Start Router listener
-URL_MODULE.startRouters();
+startRouters();
 STYLE_MODULE.STYLES.add('styles', STYLE_MODULE.globalStyles(STYLE_MODULE.DS), window.document.createElement('style'), true);
 
-keyboard.keyPressed((e:any) => {
+keyboard.keyPressed((e: any) => {
 	const currentElement = document?.activeElement?.tagName;
 	const textElements = ['INPUT', 'TEXTAREA'];
 	if (!textElements.includes(`${currentElement}`)) {

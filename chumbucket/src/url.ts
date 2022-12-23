@@ -16,6 +16,7 @@ page('/kanban', KANBAN);
 
 export function startRouters(): void {
 	page.start();
+	HOME_PAGE();
 }
 
 // Network Call
