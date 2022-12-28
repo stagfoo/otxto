@@ -68,10 +68,10 @@ python3 main.py
 
 <p align="center">
 <img src=".readme/design1.png" /><br />
-<i>list viewe</i>
+<i>list view</i>
   <br />
   <img src=".readme/design2.png" /><br />
-<i>kanban viewe</i>
+<i>kanban view</i>
 </p>
 
 
