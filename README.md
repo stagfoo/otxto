@@ -14,6 +14,7 @@
 
 <p align="center">
 <img src=".readme/2022-12-28 18.12.51.gif" />
+<small></small>
 <img src=".readme/2022-12-28 18.14.08.gif" />
 <img src=".readme/2022-12-28 18.18.53.gif" />
 <img src=".readme/2022-12-28 18.19.19.gif" />
