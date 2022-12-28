@@ -4,8 +4,10 @@
   "description": "an example glitch app with typescript and webpack",
   "main": "src/index.ts",
   "scripts": {
-    "start": "webpack-dev-server --content-base dist --hot --inline --mode=development",
-    "build": "webpack -p",
+    "dev": "vite",
+    "start": "npm run dev",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
     "lint": "eslint \"src/**/*.{tsx,ts}\"",
     "lint:fix": "eslint \"src/**/*.{tsx,ts}\" --fix",
     "spellcheck": "git diff --name-only | cspell --file-list stdin"
@@ -30,6 +32,7 @@
   },
   "devDependencies": {
     "@types/feather-icons": "^4.7.0",
+    "@types/lodash": "^4.14.191",
     "@typescript-eslint/eslint-plugin": "^5.12.0",
     "@typescript-eslint/parser": "^5.12.0",
     "awesome-typescript-loader": "^5.2.1",
@@ -39,6 +42,8 @@
     "pre-commit": "^1.2.2",
     "source-map-loader": "^0.2.4",
     "typescript": "^3.9.10",
+    "vite": "^4.0.3",
+    "vite-plugin-singlefile": "^0.13.2",
     "webpack": "^4.43.0",
     "webpack-cli": "3.1.0",
     "webpack-dev-server": "^3.11.0",
