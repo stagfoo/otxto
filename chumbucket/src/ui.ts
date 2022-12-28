@@ -1,7 +1,7 @@
 import * as ACTIONS from './actions';
 import html from 'nanohtml';
 import {ROUTES, Route, State, Todo} from './store';
-import {getRandomColorClass, notificationStyle} from 'styles';
+import {getRandomColorClass, notificationStyle} from './styles';
 
 export function ui(state: State): HTMLElement {
 	return html`

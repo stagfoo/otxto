@@ -1,8 +1,8 @@
-import { State, defaultState, reducers } from './store';
+import {State, defaultState, reducers} from './store';
 import * as ACTIONS from './actions';
-import { startRouters } from './url';
-import { createStore } from 'obake.js';
-import { ui } from './ui';
+import {startRouters} from './url';
+import {createStore} from 'obake.js';
+import {ui} from './ui';
 import * as STYLE_MODULE from './styles';
 import morph from 'nanomorph';
 import * as keyboard from 'keyboard-handler';

@@ -1,10 +1,8 @@
-import {State, Todo} from 'store';
+import {State, Todo} from './store';
 import {state} from './index';
 import nid from 'nid';
 import dayjs from 'dayjs';
 import _ from 'lodash';
-
-let globalMouseListener: any = null;
 
 type PywebviewAPI = {
 	api: {

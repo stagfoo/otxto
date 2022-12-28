@@ -2,8 +2,8 @@ import Joro from 'joro';
 
 export const DS = {
 	fontFamily: {
-		default: 'Fira Mono, san-serif',
-		alt: '\'Staatliches\', san-serif',
+		default: 'monospace',
+		alt: 'arial',
 	},
 	fontSizes: {
 		sm: 12,
@@ -211,6 +211,7 @@ export function globalStyles(DS: DesignSystem) {
       background-color: ${DS.colors.black};
       color:  ${DS.colors.white};
       opacity: 1;
+      font-family: monospace
     }
     button {
       ${buttonStyle(DS)}
@@ -251,7 +252,6 @@ export function globalStyles(DS: DesignSystem) {
     .nav li {
       display:inline-block;
       padding: 0px;
-      margin-top: ${DS.gutters.sm - 1}px;
     }
     .nav li.active a {
       color:  ${DS.colors.green};
@@ -261,6 +261,7 @@ export function globalStyles(DS: DesignSystem) {
       height: 100%;
       padding: 8px;
       color: ${DS.colors.white};
+      display:inline-block;
     }
     .top-section {
       padding-bottom: 0;
