@@ -43,7 +43,7 @@ pyinstaller main.py
 
 builds to dist, copy in www and boom it works
 
-# Human Readable File Formats
+<!-- # Human Readable File Formats
 
-https://toml.io/en/
-https://pypi.org/project/tinydb/
+- https://toml.io/en/
+- https://pypi.org/project/tinydb/ -->
