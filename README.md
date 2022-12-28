@@ -14,13 +14,16 @@
 
 <p align="center">
 <img src=".readme/2022-12-28 18.12.51.gif" />
-<small style="marginb-ttom: 8px">saves to txt files after each change</small>
+<i>saves to txt files after each change</i>
+ <br /> <br />
 <img src=".readme/2022-12-28 18.14.08.gif" />
-<small style="marginb-ttom: 8px">delete using the keyboard shortcut x</small>
+<i>delete using the keyboard shortcut x</i>
+ <br /> <br />
 <img src=".readme/2022-12-28 18.18.53.gif" />
-<small style="marginb-ttom: 8px">show columns based on tags</small>
+<i>show columns based on tags</i>
+ <br /> <br />
 <img src=".readme/2022-12-28 18.19.19.gif" />
-<small style="marginb-ttom: 8px">add tags based on the column</small>
+<i>add tags based on the column</i>
 </p>
 
 ## Building the from source
@@ -62,7 +65,15 @@ python3 main.py
 
 
 # Design
-https://www.figma.com/file/kewtfv2VTfukgcw07LmO01/APP---otxto?node-id=0%3A1
+
+<p align="center">
+<img src=".readme/design1.png" /><br />
+<i>list viewe</i>
+  <br />
+  <img src=".readme/design2.png" /><br />
+<i>kanban viewe</i>
+</p>
+
 
 <!-- # alternate Human Readable File Formats might use
 - https://toml.io/en/
