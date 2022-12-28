@@ -1,14 +1,13 @@
-x (A) Sat Nov 05 2022 Fri Nov 04 2022 apply design to app +otxto @design @todo
-x (B) load test file     @js @python @todo
-x create normalizer to txt to state     @ts @todo
+x (A) apply design to app +otxto @design @todo
+x (B) load test file @js @python @todo
+x create normalizer to txt to state @ts @todo
 x (A) save on state change put it as a obake trigger @js @python @todo
 x color tags @ts @design
-x set tag color in the normalizer for consistent coloring     @ts
-x set column tag same color as the tag when creating a column with that tag     @ts
-x set createdAt date automatically     @ts
-set completed date automatically     @ts
-x (B) add keyboard shortcut to set complete     @ts
-(C) edit tags with keyboard shortcut @wontdo
-QR code sharing between phone and PC      @ts @todo
-(A) convert "add new todo" with same normalizer to create tags
+x set tag color in the normalizer for consistent coloring @ts
+x set column tag same color as the tag when creating a column with that tag @ts
+x set createdAt date automatically @ts
+x add keyboard shortcut to set complete @ts
+x set completed date automatically @ts
+(c) QR code sharing between phone and PC @ts @todo
+(A) convert "add new todo" with same normalizer to create tags 
 (B) project display
