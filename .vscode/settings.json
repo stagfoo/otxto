@@ -2,44 +2,47 @@
     "gitmoji.onlyUseCustomEmoji": true,
     "gitmoji.addCustomEmoji": [
         {
-        "emoji": "🪴　feature ░",
+        "emoji": "🪴 feature ░",
         "code": ":new:",
         "description": "New feature",
         },
         {
-            "emoji": "🪲　bugfix ░",
+            "emoji": "🪲 bugfix ░",
             "code": ":bug:",
             "description": "Fix a bug — need I say more?",
         },
         {
-            "emoji": "🍱　refactor ░",
+            "emoji": "🍱 refactor ░",
             "code": ":improve:",
             "description": "Improve piece of code like refactoring.",
         },
         {
-            "emoji": "🧼　chore ░",
+            "emoji": "🧼 chore ░",
             "code": ":soup:",
             "description": "Anything documentation related.",
         },
                 {
-            "emoji": "💽　assets ░",
+            "emoji": "💽 assets ░",
             "code": ":style:",
             "description": "Anything style related.",
         },
         {
-            "emoji": "📚　docs ░",
+            "emoji": "📚 docs ░",
             "code": ":docs:",
             "description": "Anything style related.",
         },
         {
-            "emoji": "💣　breaking ░",
+            "emoji": "💣 breaking ░",
             "code": ":danger:",
             "description": "Change that breaks previous versions.",
         },
         {
-            "emoji": "🚚　release ░",
+            "emoji": "🚚 release ░",
             "code": ":release:",
             "description": "Release a new version.",
         },
+    ],
+    "cSpell.words": [
+        "Kanban"
     ]
 }

@@ -3,12 +3,51 @@
 <p align="center">a todo.txt compliant kanban & list</p>
 <hr>
 
-## why would you do such a thing?
-- I wanted to manage my tasks close to my code.
+## Why build this?
+there are lots of apps to manage your tasks and normally they are disconnected for your source so they are easy to lose or easy to 
+
 - I wanted to use a human readable format like [todo.txt](https://github.com/todotxt/todo.txt)
+- I wanted the data to be program agnostic
 - show kanban using [todo.txt](https://github.com/todotxt/todo.txt)
 - [single responsibility principle](https://en.wikipedia.org/wiki/Single-responsibility_principle)
-- file based storage so I can use tresorit or git
+- file based storage so I can use syncthing or git
+
+# Get Started
+
+run in development
+
+```bash
+flutter run -d linux
+# flutter run -d macos
+# flutter run -d windows
+```
+Press `r` in the terminal to reload in application
+
+## generate icons
+
+```bash
+flutter pub run flutter_launcher_icons
+
+```
+
+# Why did you make this boilerplate?
+
+I made this for myself to help make applications that are: 
+- 🎯 [SRP](https://en.wikipedia.org/wiki/Single-responsibility_principle) focused 
+- 🚸 Cross platform
+- 🛖 Offline first
+- 🪣 Offline data sharing with TOML
+
+More information in my blog post: [Bringing back dumb programs](https://blog.stagfoo.com/post/dumb-programs/)
+
+# Whats inside
+
+- 🖼️ UI = MaterialApp
+- 🍹 Styles = MaterialApp
+- 🍖 Store = Getx
+- 🦴 Router = Getx
+- 🪣 Storage = TOML
+
 
 # Screenshots
 
@@ -18,49 +57,3 @@
 <img src=".readme/2022-12-28 18.18.53.gif" />
 <img src=".readme/2022-12-28 18.19.19.gif" />
 </p>
-
-## Building the from source
-building for Linux and windows
-```
-cd chumbucket;
-yarn build;
-cd ..;
-pyinstaller main.py;
-```
-building for mac os
-```
-cd chumbucket;
-yarn build;
-cd ..;
-python3 build-mac.py py2app
-```
-
-## Setup Web interface ([chumbucket](https://github.com/stagfoo/chumbucket))
-run the development environment, you can replace the url referenced in `webview.create_window` to test inside the wrapper.
-```
-cd chumbucket;
-yarn;
-yarn dev;
-```
-
-## Setup Desktop wrapper ([fiskabur 🐡](https://github.com/stagfoo/fiskabur))
-this will run server whatever is in `webview.create_window` in `main.py`. Native function like opening/saving files can be edited here.
-
-```bash
-pip install -r requirements.txt 
-python3 main.py
-```
-
-## Libraries
-- 🖼️ UI = [chumbucket] (https://github.com/stagfoo/chumbucket)
-- 🍱 Desktop Wrapper [fiskabur 🐡](https://github.com/stagfoo/fiskabur)
-- 🗄️ File format [todo.txt format](https://github.com/todotxt/todo.txt)
-
-
-# Design
-https://www.figma.com/file/kewtfv2VTfukgcw07LmO01/APP---otxto?node-id=0%3A1
-
-<!-- # alternate Human Readable File Formats might use
-
-- https://toml.io/en/
-- https://pypi.org/project/tinydb/ -->
