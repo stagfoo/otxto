@@ -14,8 +14,8 @@ void main() async {
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       enableLog: true,
-      themeMode: ThemeMode.light,
-      theme: ThemeData.light(),
+      themeMode: ThemeMode.dark,
+      theme: ThemeData.dark(),
       getPages: [
         GetPage(
             name: '/',

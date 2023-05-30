@@ -6,9 +6,12 @@ import 'package:toml/toml.dart';
 
 import 'store.dart';
 
-Future<void> handleButtonClick(GlobalState state) async {
-  state.addMeatToBucket('🍖');
-  saveToml(localDBFile, state);
+Future<void> handleSubmitNewTodo(GlobalState state, String text) async {
+  var newTodo = Todo(
+    text: text,
+  );
+  state.addNewTodo(newTodo);
+  // saveToml(localDBFile, state);
 }
 
 
@@ -17,18 +20,16 @@ Future<void> navigateToPage(GlobalState state, String page, int navbarIndex, Bui
     case 'other':
       Get.toNamed('/other-page');
       // Download shark json
-      state.setBucket(['🦈', '🦈', '🦈', '🦈']);
       break;
     default:
       Get.toNamed('/');
-      state.setBucket([]);
   }
   state.saveNavbarIndex(navbarIndex);
 }
 
 
 saveToml(String name, GlobalState state) async {
-  Map<String, dynamic> tomlTemplate = {'bucket': state.bucket};
+  Map<String, dynamic> tomlTemplate = {'todos': state.todos};
   var tomlDB = TomlDocument.fromMap(tomlTemplate).toString();
   var file = File(localDBFile);
   file.writeAsString(tomlDB);

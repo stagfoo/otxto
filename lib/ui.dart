@@ -12,11 +12,13 @@ import 'example.dart';
 
 class HomePage extends StatelessWidget {
   final GlobalState state;
-  const HomePage({Key? key, required this.state}) : super(key: key);
+  HomePage({Key? key, required this.state}) : super(key: key);
+  final addNewTodoController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
-      
+      backgroundColor: Colors.black,
       body: Consumer<GlobalState>(builder: (context, state, widget) {
         return 
           Column(
@@ -26,9 +28,16 @@ class HomePage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Expanded(child: TextFormField(
+                controller: addNewTodoController,
+                maxLines: 1,
+                onFieldSubmitted: (text) {
+                  print(text);
+                  handleSubmitNewTodo(state, text);
+                  addNewTodoController.clear();
+                },
               decoration: const InputDecoration(
-                hintText: 'Filter',
-                prefixIcon: Icon(Icons.grid_3x3),
+                hintText: 'Add new todo',
+                prefixIcon: Icon(Icons.add),
               ),
             )),
             SizedBox(
@@ -77,7 +86,6 @@ class OtherPage extends StatelessWidget {
       }),
       floatingActionButton: FloatingActionButton(
           onPressed: () {
-            handleButtonClick(state);
           },
           child: const Icon(Icons.add)),
       body: Stack(
@@ -147,7 +155,7 @@ class KanbanView extends StatelessWidget {
       debugPrint('Move $fromGroupId:$fromIndex to $toGroupId:$toIndex');
     },
   );
-
+  
       final group1 = AppFlowyGroupData(id: "To Do", name: "To Do", items: [
       TextItem("Card 1"),
       TextItem("Card 2"),
@@ -175,15 +183,15 @@ class KanbanView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     controller.addGroup(group1);
-    controller.addGroup(group2);
-    controller.addGroup(group3);
+    // controller.addGroup(group2);
+    // controller.addGroup(group3);
     return Consumer<GlobalState>(builder: (context, state, widget) {
       final config = AppFlowyBoardConfig(
         cardPadding: const EdgeInsets.all(8),
         headerPadding: const EdgeInsets.all(16),
         groupItemPadding: EdgeInsets.all(0),
         // groupPadding: const EdgeInsets.symmetric(horizontal: 4),
-        groupBackgroundColor: HexColor.fromHex('#F7F8FC'),
+        groupBackgroundColor: HexColor.fromHex('#000000'),
         stretchGroupHeight: false,
       );
       return AppFlowyBoard(
@@ -192,9 +200,11 @@ class KanbanView extends StatelessWidget {
           return AppFlowyGroupCard(
             key: ValueKey(groupItem.id),
             child: Container(
+              decoration: BoxDecoration(
+                color: HexColor.fromHex('#ffffff'),
+              ),
               padding: const EdgeInsets.all(8),
-             
-              alignment: Alignment.topLeft, child: Text("Example text")),
+              alignment: Alignment.topLeft, child: Text("Example text", style: TextStyle(color: Colors.black),)),
           );
         },
         boardScrollController: boardController,
