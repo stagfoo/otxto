@@ -9,6 +9,7 @@ import 'store.dart';
 Future<void> handleSubmitNewTodo(GlobalState state, String text) async {
   var newTodo = Todo(
     text: text,
+    tags: ['all']
   );
   state.addNewTodo(newTodo);
   // saveToml(localDBFile, state);

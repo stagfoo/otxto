@@ -1,5 +1,5 @@
-name: chumbucket
-description: A kit to build quick demo applications and test ideas (chumming the water so to speak)
+name: oxtxto
+description: a todo.txt compliant kanban & list
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.

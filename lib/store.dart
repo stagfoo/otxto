@@ -2,8 +2,6 @@ import 'package:appflowy_board/appflowy_board.dart';
 import 'package:flutter/material.dart';
 import 'package:short_uuids/short_uuids.dart';
 
-import 'example.dart';
-
 const localDBFile = 'database.toml';
 const shortId = ShortUuid();
 
@@ -15,7 +13,7 @@ var high = "(C)";
 var none = "";
 enum Priority { low, medium, high, none }
 
-class Todo {
+class Todo extends AppFlowyGroupItem {
   String id = shortId.generate();
   bool isComplete = false;
   Priority priority = Priority.none;
@@ -26,8 +24,14 @@ class Todo {
   List<String> tags = [];
   List<String> spec = [];
   Todo({
-    required this.text
+    required this.text,
+    required this.tags
   });
+  @override
+  String toString() {
+    //TODO set up todo.txt serialization
+    return text;
+  }
 }
 
 class KanbanGroup {
@@ -36,10 +40,16 @@ class KanbanGroup {
   
 }
 
+
 class GlobalState extends ChangeNotifier {
   int currentNavbarIndex = 0;
-  List<Todo> todos = [];
-  List<KanbanGroup> columns = [];
+  List<Todo> todos = [
+  ];
+  List<KanbanGroup> columns = [
+    KanbanGroup(id: 'all'),
+    KanbanGroup(id: 'todo'),
+    KanbanGroup(id: 'completed'),
+  ];
   late Todo selectedItem;
   late String todoFilePath;
 
@@ -49,6 +59,10 @@ class GlobalState extends ChangeNotifier {
   }
   void setTodos(List<Todo> value) {
     todos = value;
+    notifyListeners();
+  }
+  void updateTags(int index, List<String> tags) {
+    todos[index].tags = tags;
     notifyListeners();
   }
 
