@@ -159,8 +159,8 @@ class KanbanView extends StatelessWidget {
         },
         onMoveGroupItemToGroup: (fromGroupId, fromIndex, toGroupId, toIndex) {
           debugPrint('Move $fromGroupId:$fromIndex to $toGroupId:$toIndex');
-          // TODO this is broken
-          state.updateTags(fromIndex, [toGroupId]);
+          // TODO this is broken because of the index is from each column and its applied to the whole list
+          state.updateTags(fromGroupId, fromIndex, toGroupId);
         },
       );
       for (var column in state.columns) {
@@ -168,10 +168,13 @@ class KanbanView extends StatelessWidget {
             id: column.id,
             name: column.id,
             items: []));
+        for (var item in column.childern) {
+          controller.addGroupItem(item.tags.first, item);
+        }
       }
-      for (var item in state.todos) {
-        controller.addGroupItem(item.tags.first, item);
-      }
+      controller.addListener(() => {
+        print('chnaged')
+      });
       // controller.addGroup(group1);
       // controller.addGroup(group3);
       return AppFlowyBoard(

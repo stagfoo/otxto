@@ -5,12 +5,12 @@ import 'package:short_uuids/short_uuids.dart';
 const localDBFile = 'database.toml';
 const shortId = ShortUuid();
 
-
 // '(A)' | '(B)' | '(C)' | '(D)' | '(E)' | '(F)' | '(G)' | '(H)' | '(I)' | '(J)' | string
 var low = "(A)";
 var medium = "(B)";
 var high = "(C)";
 var none = "";
+
 enum Priority { low, medium, high, none }
 
 class Todo extends AppFlowyGroupItem {
@@ -23,10 +23,7 @@ class Todo extends AppFlowyGroupItem {
   String project = '';
   List<String> tags = [];
   List<String> spec = [];
-  Todo({
-    required this.text,
-    required this.tags
-  });
+  Todo({required this.text, required this.tags});
   @override
   String toString() {
     //TODO set up todo.txt serialization
@@ -36,34 +33,43 @@ class Todo extends AppFlowyGroupItem {
 
 class KanbanGroup {
   String id;
-  KanbanGroup({required this.id});
-  
+  List<Todo> childern = [];
+  KanbanGroup({required this.id, required this.childern});
 }
-
 
 class GlobalState extends ChangeNotifier {
   int currentNavbarIndex = 0;
-  List<Todo> todos = [
-  ];
+  List<Todo> todos = [];
   List<KanbanGroup> columns = [
-    KanbanGroup(id: 'all'),
-    KanbanGroup(id: 'todo'),
-    KanbanGroup(id: 'completed'),
+    KanbanGroup(id: 'all', childern: []),
+    KanbanGroup(id: 'todo', childern: []),
   ];
   late Todo selectedItem;
   late String todoFilePath;
 
-  void addNewTodo(Todo todo) {
-    todos.add(todo);
-    notifyListeners();
+  void addNewTodo(String tag, Todo todo) {
+    int index = columns.indexWhere((element) => element.id == tag);
+    if(index > -1){
+      columns[index].childern.add(todo);
+      notifyListeners();
+    }
   }
+
   void setTodos(List<Todo> value) {
     todos = value;
     notifyListeners();
   }
-  void updateTags(int index, List<String> tags) {
-    todos[index].tags = tags;
-    notifyListeners();
+
+  void updateTags(String fromTag, int fromIndex, String toTag) {
+    int fromTagIndex = columns.indexWhere((element) => element.id == fromTag);
+    int toTagIndex = columns.indexWhere((element) => element.id == toTag);
+    if(fromTagIndex > -1 && fromIndex > -1){
+      var movedTodo = columns[fromTagIndex].childern[fromIndex];
+      columns[fromTagIndex].childern.removeAt(fromIndex);
+      columns[toTagIndex].childern.add(movedTodo);
+      debugPrint('Move $fromTag:$fromIndex to $toTag:$toTagIndex');
+      notifyListeners();
+    }
   }
 
   void saveNavbarIndex(int value) {

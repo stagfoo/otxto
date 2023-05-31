@@ -11,7 +11,7 @@ Future<void> handleSubmitNewTodo(GlobalState state, String text) async {
     text: text,
     tags: ['all']
   );
-  state.addNewTodo(newTodo);
+  state.addNewTodo('all', newTodo);
   // saveToml(localDBFile, state);
 }
 
