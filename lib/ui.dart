@@ -58,7 +58,7 @@ class HomePage extends StatelessWidget {
                 ),
                 width: 180)
           ]),
-          KanbanView(state: state)
+          KanbanViewState()
         ]);
       }),
     );
@@ -136,13 +136,20 @@ class TodoView extends StatelessWidget {
   }
 }
 
-class KanbanView extends StatelessWidget {
-  KanbanView({Key? key, required state}) : super(key: key);
+class KanbanViewState extends StatefulWidget {
+  const KanbanViewState({Key? key}) : super(key: key);
 
+  @override
+  State<KanbanViewState> createState() => KanbanView();
+}
+
+class KanbanView extends State<KanbanViewState> {
+  KanbanView({Key? key}) : super();
   @override
   Widget build(BuildContext context) {
     return Consumer<GlobalState>(builder: (context, state, widget) {
       final config = AppFlowyBoardConfig(
+          
           cardPadding: const EdgeInsets.all(8),
           headerPadding: const EdgeInsets.all(16),
           groupItemPadding: EdgeInsets.all(0),
@@ -151,32 +158,20 @@ class KanbanView extends StatelessWidget {
           stretchGroupHeight: false,
           cornerRadius: 4);
       final AppFlowyBoardController controller = AppFlowyBoardController(
-        onMoveGroup: (fromGroupId, fromIndex, toGroupId, toIndex) {
-          debugPrint('Move item from $fromIndex to $toIndex');
+        onMoveGroupItem: (columnName, fromIndex, toIndex) {
+          handleOnMoveGroupItem(state, columnName, fromIndex, toIndex);
         },
-        onMoveGroupItem: (groupId, fromIndex, toIndex) {
-          debugPrint('Move $groupId:$fromIndex to $groupId:$toIndex');
-        },
-        onMoveGroupItemToGroup: (fromGroupId, fromIndex, toGroupId, toIndex) {
-          debugPrint('Move $fromGroupId:$fromIndex to $toGroupId:$toIndex');
-          // TODO this is broken because of the index is from each column and its applied to the whole list
-          state.updateTags(fromGroupId, fromIndex, toGroupId);
+        onMoveGroupItemToGroup: (fromColumnName, fromIndex, toColumnName, toIndex) {
+          handleOnMoveGroupItemToGroup(state, fromColumnName, fromIndex, toColumnName, toIndex);
         },
       );
       for (var column in state.columns) {
-        controller.addGroup(AppFlowyGroupData(
-            id: column.id,
-            name: column.id,
-            items: []));
-        for (var item in column.childern) {
+        controller.addGroup(
+            AppFlowyGroupData(id: column.id, name: column.id, items: []));
+        for (var item in state.todos) {
           controller.addGroupItem(item.tags.first, item);
         }
       }
-      controller.addListener(() => {
-        print('chnaged')
-      });
-      // controller.addGroup(group1);
-      // controller.addGroup(group3);
       return AppFlowyBoard(
           controller: controller,
           scrollController: ScrollController(),
@@ -184,37 +179,18 @@ class KanbanView extends StatelessWidget {
           cardBuilder: (context, group, groupItem) {
             final todoItem = groupItem as Todo;
             return AppFlowyGroupCard(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.transparent,
               ),
               key: ValueKey(todoItem.id),
               child: TodoCard(todoItem: todoItem),
             );
           },
-          footerBuilder: (context, columnData) {
-            return AppFlowyGroupFooter(
-              icon: const Icon(Icons.add, size: 20),
-              title: const Text('New'),
-              height: 50,
-              margin: const EdgeInsets.all(0),
-              onAddButtonClick: () {
-                debugPrint('onAddButtonClick');
-              },
-            );
-          },
           headerBuilder: (context, columnData) {
             return AppFlowyGroupHeader(
-              title: Expanded(
-                  child: TextField(
-                controller: TextEditingController()
-                  ..text = columnData.headerData.groupName,
-                onSubmitted: (val) {
-                  debugPrint('onSubmitted');
-                  // controller
-                  //     .getGroupController(columnData.headerData.groupId)!
-                  //     .updateGroupName(val);
-                },
-              )),
+              onMoreButtonClick: (){},
+              
+              title: Text(columnData.headerData.groupName),
               height: 80,
               margin: const EdgeInsets.all(0),
             );
@@ -232,25 +208,32 @@ class TodoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<GlobalState>(builder: (context, state, widget) {
-      return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      return Listener(
+        onPointerDown: (e) {
+          state.setStartedDragTarget(todoItem.id);
+        },
+        onPointerUp: (e) {
+          state.setEndedDragTarget(todoItem.id);
+        },
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Container(
-            margin: EdgeInsetsDirectional.only(bottom: 8),
+            margin: const EdgeInsetsDirectional.only(bottom: 8),
             decoration: BoxDecoration(
               color: HexColor.fromHex('#ffffff'),
             ),
             padding: const EdgeInsets.all(8),
             alignment: Alignment.topLeft,
             child: Text(
-              todoItem.tags.first,
+              todoItem.text,
               style: const TextStyle(color: Colors.black),
             )),
         Container(
-            margin: EdgeInsetsDirectional.only(bottom: 8),
+            margin: const EdgeInsetsDirectional.only(bottom: 8),
             child: Stack(children: [
               Text(todoItem.createdAt,
                   style: const TextStyle(color: Colors.white))
             ]))
-      ]);
+      ]));
     });
   }
 }
