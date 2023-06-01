@@ -7,8 +7,9 @@ import 'package:toml/toml.dart';
 import 'store.dart';
 
 Future<void> handleSubmitNewTodo(GlobalState state, String text) async {
-  var newTodo = Todo(text: text, tags: ['all']);
+  var newTodo = Todo(text: text, tags: ['all'], priority: allPriority[0]);
   state.addNewTodo(newTodo);
+  print(createTodoTextLine(newTodo.isComplete, newTodo.text, newTodo.priority, newTodo.completedAt, newTodo.createdAt, newTodo.project, newTodo.tags));
   // saveToml(localDBFile, state);
 }
 
@@ -62,4 +63,15 @@ loadToml(String name) async {
   var document = await TomlDocument.load(name);
   var documents = TomlDocument.parse(document.toString()).toMap();
   return documents;
+}
+
+createTodoTextLine(bool complete, String text, String? priority, String? completedAt, String createdAt, String? project, List<String>? tags) {
+	var isComplete = complete ? 'x ' : '';
+  var hasPriority = priority != null && priority.isNotEmpty ? '(' + priority + ') ' : '';
+  var hasCompletedAt = completedAt != null ? completedAt + ' ' : '';
+  var hasCreatedAt = createdAt.isNotEmpty ? createdAt + ' ' : '';
+  var hasText = text.isNotEmpty ? text + ' ' : '';
+  var hasProject = project != null && project.isNotEmpty ? '+' + project + ' ' : '';
+  var hasTags = tags != null ? tags.join(' ') : '';
+  return isComplete + hasPriority + hasCompletedAt + hasCreatedAt + hasText + hasProject + hasTags;
 }

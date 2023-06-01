@@ -43,6 +43,7 @@ dependencies:
   flutter_launcher_icons: ^0.11.0
   draggable_widget: ^2.0.0
   appflowy_board: ^0.1.0
+  kanban_board: ^0.0.1
 flutter_icons:
   image_path_ios: 'assets/Icon-1024.png'
   image_path_android: 'assets/Icon-1024.png'

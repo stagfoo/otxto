@@ -11,12 +11,12 @@ var low = "(A)";
 var medium = "(B)";
 var high = "(C)";
 var none = "";
-enum Priority { low, medium, high, none }
+const allPriority = ['', '(A)' , '(B)' , '(C)' , '(D)' , '(E)' , '(F)' , '(G)' , '(H)' , '(I)' , '(J)'];
 
 class Todo extends AppFlowyGroupItem {
   String id = shortId.generate();
   bool isComplete = false;
-  Priority priority = Priority.none;
+  String priority = allPriority[0];
   String completedAt = '';
   String createdAt = DateTime.now().toString();
   String text;
@@ -25,7 +25,8 @@ class Todo extends AppFlowyGroupItem {
   List<String> spec = [];
   Todo({
     required this.text,
-    required this.tags
+    required this.tags,
+    required this.priority,
   });
   @override
   String toString() {
@@ -46,11 +47,13 @@ class GlobalState extends ChangeNotifier {
   List<Todo> todos = [
     Todo(
       text: 'has tag all',
-      tags: ['all']
+      tags: ['all'],
+      priority: allPriority[0]
     ),
     Todo(
       text: 'has tag todo',
-      tags: ['todo']
+      tags: ['todo'],
+      priority: allPriority[0]
     ),
   ];
   List<KanbanGroup> columns = [
