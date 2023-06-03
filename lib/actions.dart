@@ -48,8 +48,9 @@ Future<void> handleOnMoveGroupItemToGroup(
         element.completedAt,
         element.createdAt,
         element.project,
-        [...[toColumnName, ...element.tags]]));
-        element.tags = [toColumnName, ...element.tags];
+        [...{toColumnName, ...element.tags}]));
+        element.tags = element.tags.where((tag) => tag != fromColumnName || tag != '@unsorted').toList();
+        element.tags = [...{toColumnName, ...element.tags}];
       }
     }
     state.setTodos(newTodos);
