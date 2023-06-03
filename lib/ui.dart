@@ -2,6 +2,7 @@
 import 'package:appflowy_board/appflowy_board.dart';
 import 'package:flutter/material.dart';
 import 'package:mix/mix.dart';
+import 'package:oxtxto/dragbox.dart';
 import 'package:provider/provider.dart';
 
 //Local
@@ -15,58 +16,108 @@ class HomePage extends StatelessWidget {
   final GlobalState state;
   HomePage({Key? key, required this.state}) : super(key: key);
   final addNewTodoController = TextEditingController();
-
+  List<Widget> list = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: Consumer<GlobalState>(builder: (context, state, widget) {
-        return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-            Expanded(
-                child: TextFormField(
-              controller: addNewTodoController,
-              maxLines: 1,
-              onFieldSubmitted: (text) {
-                handleSubmitNewTodo(state, text);
-                addNewTodoController.clear();
-              },
-              decoration: const InputDecoration(
-                hintText: 'Add new todo',
-                prefixIcon: Icon(Icons.add),
-              ),
-            )),
-            SizedBox(
-                child: ButtonBar(
-                  alignment: MainAxisAlignment.spaceEvenly,
-                  buttonPadding: const EdgeInsets.all(8),
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.folder_outlined),
-                      onPressed: () {
-                        handleOnClickNavbar(state, 'open', 0, context);
-                      },
+        backgroundColor: Colors.black,
+        body: Consumer<GlobalState>(builder: (context, state, widget) {
+          return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                  Expanded(
+                      child: TextFormField(
+                    controller: addNewTodoController,
+                    maxLines: 1,
+                    onFieldSubmitted: (text) {
+                      handleSubmitNewTodo(state, text);
+                      addNewTodoController.clear();
+                    },
+                    decoration: const InputDecoration(
+                      hintText: 'Add new todo',
+                      prefixIcon: Icon(Icons.add),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.list),
-                      onPressed: () {
-                        handleOnClickNavbar(state, 'list', 1, context);
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.view_kanban_outlined),
-                      onPressed: () {
-                        handleOnClickNavbar(state, 'kanban', 2, context);
-                      },
-                    ),
-                  ],
+                  )),
+                  SizedBox(
+                      child: ButtonBar(
+                        alignment: MainAxisAlignment.spaceEvenly,
+                        buttonPadding: const EdgeInsets.all(8),
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.folder_outlined),
+                            onPressed: () {
+                              handleOnClickNavbar(state, 'open', 0, context);
+                            },
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.list),
+                            onPressed: () {
+                              handleOnClickNavbar(state, 'list', 1, context);
+                            },
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.view_kanban_outlined),
+                            onPressed: () {
+                              handleOnClickNavbar(state, 'kanban', 2, context);
+                            },
+                          ),
+                        ],
+                      ),
+                      width: 180)
+                ]),
+                DragTarget<String>(
+                  builder: (context, candidateItems, rejectedItems) {
+                    return Container(
+                        height: 300,
+                        width: 300,
+                        color: Colors.blue,
+                        child: ListView(
+                            children: [DragBox(
+                            x: 0,
+                            y: 0,
+                            state: state,
+                            child: TodoCard(todoItem: state.todos[0]))]));
+                  },
+                  onAccept: (item) {
+                    list.add(DragBox(
+                        x: 0,
+                        y: 0,
+                        state: state,
+                        child: DragBox(
+                            x: 0,
+                            y: 0,
+                            state: state,
+                            child: TodoCard(todoItem: state.todos[0]))));
+                    print(item);
+                  },
                 ),
-                width: 180)
-          ]),
-          KanbanViewState()
-        ]);
-      }),
-    );
+                DragTarget<String>(
+                  builder: (context, candidateItems, rejectedItems) {
+                    return Container(
+                        height: 300,
+                        width: 300,
+                        color: Colors.red,
+                        child: ListView(
+                            children: list.map((e) {
+                          return e;
+                        }).toList()));
+                  },
+                  onAccept: (item) {
+                    list.add(DragBox(
+                        x: 0,
+                        y: 0,
+                        state: state,
+                        child: DragBox(
+                            x: 0,
+                            y: 0,
+                            state: state,
+                            child: TodoCard(todoItem: state.todos[0]))));
+                    print(item);
+                  },
+                )
+              ]);
+        }));
   }
 }
 
@@ -139,10 +190,10 @@ class KanbanView extends State<KanbanViewState> {
         controller.addGroup(
             AppFlowyGroupData(id: column.id, name: column.id, items: []));
         for (var item in state.todos) {
-          if(item.isComplete){
+          if (item.isComplete) {
             controller.addGroupItem('@completed', item);
           } else {
-            if(item.tags.isNotEmpty){
+            if (item.tags.isNotEmpty) {
               for (var tag in item.tags) {
                 controller.addGroupItem(tag, item);
               }

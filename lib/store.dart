@@ -36,7 +36,9 @@ class KanbanGroup {
 
 class GlobalState extends ChangeNotifier {
   int currentNavbarIndex = 0;
-  List<Todo> todos = [];
+  List<Todo> todos = [
+    Todo(text: 'Testing', tags: ['@unsorted'], priority: '')
+  ];
   List<KanbanGroup> columns = [
     KanbanGroup(id: '@unsorted'),
     KanbanGroup(id: '@completed'),
