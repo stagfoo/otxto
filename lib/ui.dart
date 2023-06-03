@@ -28,7 +28,6 @@ class HomePage extends StatelessWidget {
               controller: addNewTodoController,
               maxLines: 1,
               onFieldSubmitted: (text) {
-                print(text);
                 handleSubmitNewTodo(state, text);
                 addNewTodoController.clear();
               },
@@ -44,15 +43,21 @@ class HomePage extends StatelessWidget {
                   children: [
                     IconButton(
                       icon: const Icon(Icons.folder_outlined),
-                      onPressed: () {},
+                      onPressed: () {
+                        handleOnClickNavbar(state, 'open', 0, context);
+                      },
                     ),
                     IconButton(
                       icon: const Icon(Icons.list),
-                      onPressed: () {},
+                      onPressed: () {
+                        handleOnClickNavbar(state, 'list', 1, context);
+                      },
                     ),
                     IconButton(
                       icon: const Icon(Icons.view_kanban_outlined),
-                      onPressed: () {},
+                      onPressed: () {
+                        handleOnClickNavbar(state, 'kanban', 2, context);
+                      },
                     ),
                   ],
                 ),
@@ -76,10 +81,6 @@ class OtherPage extends StatelessWidget {
         automaticallyImplyLeading: false,
         title: const Text("Other Page"),
       ),
-      bottomNavigationBar:
-          Consumer<GlobalState>(builder: (context, state, widget) {
-        return BottomBar(state: state);
-      }),
       floatingActionButton:
           FloatingActionButton(onPressed: () {}, child: const Icon(Icons.add)),
       body: Stack(
@@ -90,38 +91,6 @@ class OtherPage extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-class BottomBar extends StatelessWidget {
-  const BottomBar({Key? key, required state}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<GlobalState>(builder: (context, state, widget) {
-      return BottomNavigationBar(
-        selectedFontSize: 14,
-        currentIndex: state.currentNavbarIndex,
-        onTap: (value) {
-          navigateToPage(
-              state, ['home', 'kanban', 'open'][value], value, context);
-        },
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.grid_3x3),
-            label: 'Kanban',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.folder),
-            label: 'Open',
-          ),
-        ],
-      );
-    });
   }
 }
 
@@ -149,7 +118,6 @@ class KanbanView extends State<KanbanViewState> {
   Widget build(BuildContext context) {
     return Consumer<GlobalState>(builder: (context, state, widget) {
       final config = AppFlowyBoardConfig(
-          
           cardPadding: const EdgeInsets.all(8),
           headerPadding: const EdgeInsets.all(16),
           groupItemPadding: EdgeInsets.all(0),
@@ -161,15 +129,27 @@ class KanbanView extends State<KanbanViewState> {
         onMoveGroupItem: (columnName, fromIndex, toIndex) {
           handleOnMoveGroupItem(state, columnName, fromIndex, toIndex);
         },
-        onMoveGroupItemToGroup: (fromColumnName, fromIndex, toColumnName, toIndex) {
-          handleOnMoveGroupItemToGroup(state, fromColumnName, fromIndex, toColumnName, toIndex);
+        onMoveGroupItemToGroup:
+            (fromColumnName, fromIndex, toColumnName, toIndex) {
+          handleOnMoveGroupItemToGroup(
+              state, fromColumnName, fromIndex, toColumnName, toIndex);
         },
       );
       for (var column in state.columns) {
         controller.addGroup(
             AppFlowyGroupData(id: column.id, name: column.id, items: []));
         for (var item in state.todos) {
-          controller.addGroupItem(item.tags.first, item);
+          if(item.isComplete){
+            controller.addGroupItem('@completed', item);
+          } else {
+            if(item.tags.isNotEmpty){
+              for (var tag in item.tags) {
+                controller.addGroupItem(tag, item);
+              }
+            } else {
+              controller.addGroupItem('@all', item);
+            }
+          }
         }
       }
       return AppFlowyBoard(
@@ -188,8 +168,7 @@ class KanbanView extends State<KanbanViewState> {
           },
           headerBuilder: (context, columnData) {
             return AppFlowyGroupHeader(
-              onMoreButtonClick: (){},
-              
+              onMoreButtonClick: () {},
               title: Text(columnData.headerData.groupName),
               height: 80,
               margin: const EdgeInsets.all(0),
@@ -209,31 +188,32 @@ class TodoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<GlobalState>(builder: (context, state, widget) {
       return Listener(
-        onPointerDown: (e) {
-          state.setStartedDragTarget(todoItem.id);
-        },
-        onPointerUp: (e) {
-          state.setEndedDragTarget(todoItem.id);
-        },
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Container(
-            margin: const EdgeInsetsDirectional.only(bottom: 8),
-            decoration: BoxDecoration(
-              color: HexColor.fromHex('#ffffff'),
-            ),
-            padding: const EdgeInsets.all(8),
-            alignment: Alignment.topLeft,
-            child: Text(
-              todoItem.text,
-              style: const TextStyle(color: Colors.black),
-            )),
-        Container(
-            margin: const EdgeInsetsDirectional.only(bottom: 8),
-            child: Stack(children: [
-              Text(todoItem.createdAt,
-                  style: const TextStyle(color: Colors.white))
-            ]))
-      ]));
+          onPointerDown: (e) {
+            state.setStartedDragTarget(todoItem.id);
+          },
+          onPointerUp: (e) {
+            state.setEndedDragTarget(todoItem.id);
+          },
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Container(
+                margin: const EdgeInsetsDirectional.only(bottom: 8),
+                decoration: BoxDecoration(
+                  color: HexColor.fromHex('#ffffff'),
+                ),
+                padding: const EdgeInsets.all(8),
+                alignment: Alignment.topLeft,
+                child: Text(
+                  todoItem.text,
+                  style: const TextStyle(color: Colors.black),
+                )),
+            Container(
+                margin: const EdgeInsetsDirectional.only(bottom: 8),
+                child: Stack(children: [
+                  Text(todoItem.createdAt,
+                      style: const TextStyle(color: Colors.white))
+                ]))
+          ]));
     });
   }
 }

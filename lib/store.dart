@@ -2,21 +2,15 @@ import 'package:appflowy_board/appflowy_board.dart';
 import 'package:flutter/material.dart';
 import 'package:short_uuids/short_uuids.dart';
 
+import 'actions.dart';
+
 const localDBFile = 'database.toml';
 const shortId = ShortUuid();
-
-
-// '(A)' | '(B)' | '(C)' | '(D)' | '(E)' | '(F)' | '(G)' | '(H)' | '(I)' | '(J)' | string
-var low = "(A)";
-var medium = "(B)";
-var high = "(C)";
-var none = "";
-const allPriority = ['', '(A)' , '(B)' , '(C)' , '(D)' , '(E)' , '(F)' , '(G)' , '(H)' , '(I)' , '(J)'];
 
 class Todo extends AppFlowyGroupItem {
   String id = shortId.generate();
   bool isComplete = false;
-  String priority = allPriority[0];
+  String priority = '';
   String completedAt = '';
   String createdAt = DateTime.now().toString();
   String text;
@@ -38,28 +32,15 @@ class Todo extends AppFlowyGroupItem {
 class KanbanGroup {
   String id;
   KanbanGroup({required this.id});
-  
 }
-
 
 class GlobalState extends ChangeNotifier {
   int currentNavbarIndex = 0;
-  List<Todo> todos = [
-    Todo(
-      text: 'has tag all',
-      tags: ['all'],
-      priority: allPriority[0]
-    ),
-    Todo(
-      text: 'has tag todo',
-      tags: ['todo'],
-      priority: allPriority[0]
-    ),
-  ];
+  List<Todo> todos = [];
   List<KanbanGroup> columns = [
-    KanbanGroup(id: 'all'),
-    KanbanGroup(id: 'todo'),
-    KanbanGroup(id: 'completed'),
+    KanbanGroup(id: '@all'),
+    KanbanGroup(id: '@todo'),
+    KanbanGroup(id: '@completed'),
   ];
   late Todo selectedItem;
   late String todoFilePath;
@@ -69,6 +50,7 @@ class GlobalState extends ChangeNotifier {
   void setStartedDragTarget(String value) {
     startedDragTarget = value;
   }
+
   void setEndedDragTarget(String value) {
     endedDragTarget = value;
   }
@@ -77,10 +59,12 @@ class GlobalState extends ChangeNotifier {
     todos.add(todo);
     notifyListeners();
   }
+
   void setTodos(List<Todo> value) {
     todos = value;
     notifyListeners();
   }
+
   void updateTags(int index, List<String> tags) {
     todos[index].tags = tags;
     notifyListeners();
