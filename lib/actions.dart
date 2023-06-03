@@ -48,8 +48,8 @@ Future<void> handleOnMoveGroupItemToGroup(
         element.completedAt,
         element.createdAt,
         element.project,
-        [toColumnName]));
-        element.tags = [toColumnName];
+        [...[toColumnName, ...element.tags]]));
+        element.tags = [toColumnName, ...element.tags];
       }
     }
     state.setTodos(newTodos);

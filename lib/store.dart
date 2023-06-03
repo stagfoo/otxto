@@ -38,8 +38,7 @@ class GlobalState extends ChangeNotifier {
   int currentNavbarIndex = 0;
   List<Todo> todos = [];
   List<KanbanGroup> columns = [
-    KanbanGroup(id: '@all'),
-    KanbanGroup(id: '@todo'),
+    KanbanGroup(id: '@unsorted'),
     KanbanGroup(id: '@completed'),
   ];
   late Todo selectedItem;
