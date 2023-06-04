@@ -3,12 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'store.dart';
 
+
+
 class DragBox extends StatefulWidget {
+  String id;
+
   DragBox(
       {Key? key,
       required this.x,
       required this.y,
       required this.state,
+      required this.id,
       required this.child})
       : super(key: key);
   double x;
@@ -29,7 +34,7 @@ class _DragBoxState extends State<DragBox> {
     return Stack(
       children: <Widget>[
   Draggable<String>(
-            data: 'My data!',
+            data: widget.id,
             onDragUpdate: (details) {
               setState(() {
                 widget.y = widget.y + details.delta.dy;

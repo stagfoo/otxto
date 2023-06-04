@@ -1,5 +1,6 @@
 import 'package:appflowy_board/appflowy_board.dart';
 import 'package:flutter/material.dart';
+import 'package:oxtxto/ui.dart';
 import 'package:short_uuids/short_uuids.dart';
 
 import 'actions.dart';
@@ -41,23 +42,18 @@ class GlobalState extends ChangeNotifier {
   ];
   List<KanbanGroup> columns = [
     KanbanGroup(id: '@unsorted'),
+    KanbanGroup(id: '@dart'),
     KanbanGroup(id: '@completed'),
   ];
   late Todo selectedItem;
   late String todoFilePath;
-  String startedDragTarget = '';
-  String endedDragTarget = '';
-
-  void setStartedDragTarget(String value) {
-    startedDragTarget = value;
-  }
-
-  void setEndedDragTarget(String value) {
-    endedDragTarget = value;
-  }
 
   void addNewTodo(Todo todo) {
     todos.add(todo);
+    notifyListeners();
+  }
+  void addNewColumn(String id) {
+    columns.add(KanbanGroup(id: id));
     notifyListeners();
   }
 

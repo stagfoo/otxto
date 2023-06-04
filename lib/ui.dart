@@ -16,7 +16,6 @@ class HomePage extends StatelessWidget {
   final GlobalState state;
   HomePage({Key? key, required this.state}) : super(key: key);
   final addNewTodoController = TextEditingController();
-  List<Widget> list = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,56 +65,7 @@ class HomePage extends StatelessWidget {
                       ),
                       width: 180)
                 ]),
-                DragTarget<String>(
-                  builder: (context, candidateItems, rejectedItems) {
-                    return Container(
-                        height: 300,
-                        width: 300,
-                        color: Colors.blue,
-                        child: ListView(
-                            children: [DragBox(
-                            x: 0,
-                            y: 0,
-                            state: state,
-                            child: TodoCard(todoItem: state.todos[0]))]));
-                  },
-                  onAccept: (item) {
-                    list.add(DragBox(
-                        x: 0,
-                        y: 0,
-                        state: state,
-                        child: DragBox(
-                            x: 0,
-                            y: 0,
-                            state: state,
-                            child: TodoCard(todoItem: state.todos[0]))));
-                    print(item);
-                  },
-                ),
-                DragTarget<String>(
-                  builder: (context, candidateItems, rejectedItems) {
-                    return Container(
-                        height: 300,
-                        width: 300,
-                        color: Colors.red,
-                        child: ListView(
-                            children: list.map((e) {
-                          return e;
-                        }).toList()));
-                  },
-                  onAccept: (item) {
-                    list.add(DragBox(
-                        x: 0,
-                        y: 0,
-                        state: state,
-                        child: DragBox(
-                            x: 0,
-                            y: 0,
-                            state: state,
-                            child: TodoCard(todoItem: state.todos[0]))));
-                    print(item);
-                  },
-                )
+                KanbanView(state: state)
               ]);
         }));
   }
@@ -156,77 +106,78 @@ class TodoView extends StatelessWidget {
   }
 }
 
-class KanbanViewState extends StatefulWidget {
-  const KanbanViewState({Key? key}) : super(key: key);
+// kanban stateless widget
+class KanbanView extends StatelessWidget {
+  const KanbanView({Key? key, required state}) : super(key: key);
 
-  @override
-  State<KanbanViewState> createState() => KanbanView();
-}
-
-class KanbanView extends State<KanbanViewState> {
-  KanbanView({Key? key}) : super();
   @override
   Widget build(BuildContext context) {
     return Consumer<GlobalState>(builder: (context, state, widget) {
-      final config = AppFlowyBoardConfig(
-          cardPadding: const EdgeInsets.all(8),
-          headerPadding: const EdgeInsets.all(16),
-          groupItemPadding: EdgeInsets.all(0),
-          // groupPadding: const EdgeInsets.symmetric(horizontal: 4),
-          groupBackgroundColor: HexColor.fromHex('#000000'),
-          stretchGroupHeight: false,
-          cornerRadius: 4);
-      final AppFlowyBoardController controller = AppFlowyBoardController(
-        onMoveGroupItem: (columnName, fromIndex, toIndex) {
-          handleOnMoveGroupItem(state, columnName, fromIndex, toIndex);
-        },
-        onMoveGroupItemToGroup:
-            (fromColumnName, fromIndex, toColumnName, toIndex) {
-          handleOnMoveGroupItemToGroup(
-              state, fromColumnName, fromIndex, toColumnName, toIndex);
-        },
+      return Row(
+        children: [
+          ...state.columns.map((column) {
+            return TodoColumn(
+                columnId: column.id, columnName: column.id, state: state);
+          }),
+          AddNewColumn(state: state)
+        ],
       );
-      for (var column in state.columns) {
-        controller.addGroup(
-            AppFlowyGroupData(id: column.id, name: column.id, items: []));
-        for (var item in state.todos) {
-          if (item.isComplete) {
-            controller.addGroupItem('@completed', item);
-          } else {
-            if (item.tags.isNotEmpty) {
-              for (var tag in item.tags) {
-                controller.addGroupItem(tag, item);
-              }
-            } else {
-              controller.addGroupItem('@all', item);
-            }
-          }
-        }
-      }
-      return AppFlowyBoard(
-          controller: controller,
-          scrollController: ScrollController(),
-          boardScrollController: AppFlowyBoardScrollController(),
-          cardBuilder: (context, group, groupItem) {
-            final todoItem = groupItem as Todo;
-            return AppFlowyGroupCard(
-              decoration: const BoxDecoration(
-                color: Colors.transparent,
-              ),
-              key: ValueKey(todoItem.id),
-              child: TodoCard(todoItem: todoItem),
-            );
+    });
+  }
+}
+
+class TodoColumn extends StatelessWidget {
+  final String columnName;
+  final String columnId;
+  final GlobalState state;
+  const TodoColumn(
+      {Key? key,
+      required this.columnName,
+      required this.columnId,
+      required this.state})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<GlobalState>(builder: (context, state, widget) {
+      return Column(children: [
+        Container(
+            margin: const EdgeInsetsDirectional.only(bottom: 8),
+            decoration: BoxDecoration(
+              color: HexColor.fromHex('#ffffff'),
+            ),
+            padding: const EdgeInsets.all(8),
+            alignment: Alignment.topLeft,
+            child: Text(
+              columnName,
+              style: const TextStyle(color: Colors.black),
+            )),
+        DragTarget<String>(
+          builder: (context, candidateItems, rejectedItems) {
+            var list = state.todos.where((t) {
+              return t.tags.contains(columnId);
+            }).map((to) {
+              return DragBox(
+                  x: 0,
+                  y: 0,
+                  id: to.id + '_' + columnId,
+                  state: state,
+                  child: TodoCard(todoItem: to));
+            }).toList();
+            return Container(
+                height: 300,
+                width: 300,
+                color: Colors.blue,
+                child: ListView(children: list));
           },
-          headerBuilder: (context, columnData) {
-            return AppFlowyGroupHeader(
-              onMoreButtonClick: () {},
-              title: Text(columnData.headerData.groupName),
-              height: 80,
-              margin: const EdgeInsets.all(0),
-            );
+          onAccept: (String dragInfo) {
+            var info = dragInfo.split('_');
+            var id = info[0];
+            var fromColumn = info[1];
+            handleOnMoveGroupItemToGroup(state, fromColumn, id, columnId);
           },
-          groupConstraints: const BoxConstraints.tightFor(width: 300),
-          config: config);
+        )
+      ]);
     });
   }
 }
@@ -238,33 +189,53 @@ class TodoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<GlobalState>(builder: (context, state, widget) {
-      return Listener(
-          onPointerDown: (e) {
-            state.setStartedDragTarget(todoItem.id);
-          },
-          onPointerUp: (e) {
-            state.setEndedDragTarget(todoItem.id);
-          },
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Container(
-                margin: const EdgeInsetsDirectional.only(bottom: 8),
-                decoration: BoxDecoration(
-                  color: HexColor.fromHex('#ffffff'),
-                ),
-                padding: const EdgeInsets.all(8),
-                alignment: Alignment.topLeft,
-                child: Text(
-                  todoItem.text,
-                  style: const TextStyle(color: Colors.black),
-                )),
-            Container(
-                margin: const EdgeInsetsDirectional.only(bottom: 8),
-                child: Stack(children: [
-                  Text(todoItem.createdAt,
-                      style: const TextStyle(color: Colors.white))
-                ]))
-          ]));
+      return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Container(
+            width: 300,
+            margin: const EdgeInsetsDirectional.only(bottom: 8),
+            decoration: BoxDecoration(
+              color: HexColor.fromHex('#ffffff'),
+            ),
+            padding: const EdgeInsets.all(8),
+            alignment: Alignment.topLeft,
+            child: Text(
+              todoItem.text,
+              style: const TextStyle(color: Colors.black),
+            )),
+        Container(
+            margin: const EdgeInsetsDirectional.only(bottom: 8),
+            child: Stack(children: [
+              Text(todoItem.createdAt,
+                  style: const TextStyle(color: Colors.white))
+            ]))
+      ]);
+    });
+  }
+}
+
+class AddNewColumn extends StatelessWidget {
+  final GlobalState state;
+  final textController = TextEditingController();
+  AddNewColumn({Key? key, required this.state}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<GlobalState>(builder: (context, state, widget) {
+      return Expanded(
+          child: TextFormField(
+        controller: textController,
+        maxLines: 1,
+        onFieldSubmitted: (text) {
+          var name = text[0] == '@' ? text : '@' + text;
+          state.addNewColumn(text);
+          handleSubmitNewTodo(state, text);
+          textController.clear();
+        },
+        decoration: const InputDecoration(
+          hintText: 'Add new column',
+          prefixIcon: Icon(Icons.view_kanban_outlined),
+        ),
+      ));
     });
   }
 }

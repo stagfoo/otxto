@@ -17,30 +17,13 @@ Future<void> handleSubmitNewTodo(GlobalState state, String text) async {
   // saveToml(localDBFile, state);
 }
 
-Future<void> handleOnMoveGroupItem(
-    GlobalState state, columnName, fromIndex, toIndex) async {
-  if (state.startedDragTarget == state.endedDragTarget) {
-    debugPrint('Please update');
-  }
-}
-
 Future<void> handleOnMoveGroupItemToGroup(
-    GlobalState state, fromColumnName, fromIndex, toColumnName, toIndex) async {
-  debugPrint(state.startedDragTarget);
-  debugPrint(state.endedDragTarget);
-
-  if (state.startedDragTarget.toString() == state.endedDragTarget.toString()) {
+    GlobalState state, fromColumnName, id, toColumnName) async {
     var newTodos = state.todos;
     for (var element in newTodos) {
-      if (element.id == state.startedDragTarget) {
-        if(fromColumnName == '@completed'){
-          element.isComplete = false;
-          element.completedAt = '';
-        }
-        if(toColumnName == '@completed'){
-          element.isComplete = true;
-          element.completedAt = formatTimestamp(DateTime.now());
-        }
+      if (element.id == id) {
+        element.tags = element.tags.where((tag) => tag != fromColumnName).toList();
+        element.tags = [...{toColumnName, ...element.tags}];
         print(createTodoTextLine(
         element.isComplete,
         element.text,
@@ -48,16 +31,12 @@ Future<void> handleOnMoveGroupItemToGroup(
         element.completedAt,
         element.createdAt,
         element.project,
-        [...{toColumnName, ...element.tags}]));
-        element.tags = element.tags.where((tag) => tag != fromColumnName || tag != '@unsorted').toList();
-        element.tags = [...{toColumnName, ...element.tags}];
+        element.tags));
       }
-    }
     state.setTodos(newTodos);
-    state.setStartedDragTarget('');
-    state.setEndedDragTarget('');
   }
 }
+
 
 Future<void> handleOnClickNavbar(GlobalState state, String page,
     int navbarIndex, BuildContext context) async {
