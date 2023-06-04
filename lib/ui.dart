@@ -113,7 +113,10 @@ class KanbanView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<GlobalState>(builder: (context, state, widget) {
-      return Row(
+      return Expanded(child: SizedBox(
+        child:ListView(
+          shrinkWrap: true,
+        scrollDirection: Axis.horizontal,
         children: [
           ...state.columns.map((column) {
             return TodoColumn(
@@ -121,7 +124,7 @@ class KanbanView extends StatelessWidget {
           }),
           AddNewColumn(state: state)
         ],
-      );
+      )));
     });
   }
 }
@@ -140,7 +143,12 @@ class TodoColumn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<GlobalState>(builder: (context, state, widget) {
-      return Column(children: [
+      return SizedBox(
+          width: 300,
+          height: 700,
+        child: ListView(
+        scrollDirection: Axis.vertical,
+        children: [
         Container(
             margin: const EdgeInsetsDirectional.only(bottom: 8),
             decoration: BoxDecoration(
@@ -177,7 +185,7 @@ class TodoColumn extends StatelessWidget {
             handleOnMoveGroupItemToGroup(state, fromColumn, id, columnId);
           },
         )
-      ]);
+      ]));
     });
   }
 }
@@ -221,8 +229,9 @@ class AddNewColumn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<GlobalState>(builder: (context, state, widget) {
-      return Expanded(
-          child: TextFormField(
+      return SizedBox(
+        width: 300,
+        child: TextFormField(
         controller: textController,
         maxLines: 1,
         onFieldSubmitted: (text) {
