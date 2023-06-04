@@ -13,7 +13,7 @@ class Todo extends AppFlowyGroupItem {
   bool isComplete = false;
   String priority = '';
   String completedAt = '';
-  String createdAt = DateTime.now().toString();
+  String createdAt = formatTimestamp(DateTime.now());
   String text;
   String project = '';
   List<String> tags = [];
@@ -38,19 +38,24 @@ class KanbanGroup {
 class GlobalState extends ChangeNotifier {
   int currentNavbarIndex = 0;
   List<Todo> todos = [
-    Todo(text: 'Testing', tags: ['@unsorted'], priority: '')
   ];
   List<KanbanGroup> columns = [
     KanbanGroup(id: '@unsorted'),
-    KanbanGroup(id: '@dart'),
+    KanbanGroup(id: '@doing'),
     KanbanGroup(id: '@completed'),
   ];
   late Todo selectedItem;
   late String todoFilePath;
 
+  void setTodoFilePath(String path) {
+    todoFilePath = path;
+    notifyListeners();
+  }
+
   void addNewTodo(Todo todo) {
     todos.add(todo);
     notifyListeners();
+    saveTodoText(this);
   }
   void addNewColumn(String id) {
     columns.add(KanbanGroup(id: id));
@@ -60,11 +65,13 @@ class GlobalState extends ChangeNotifier {
   void setTodos(List<Todo> value) {
     todos = value;
     notifyListeners();
+    saveTodoText(this);
   }
 
   void updateTags(int index, List<String> tags) {
     todos[index].tags = tags;
     notifyListeners();
+    saveTodoText(this);
   }
 
   void saveNavbarIndex(int value) {

@@ -10,7 +10,7 @@ import 'store.dart';
 import 'storage.dart';
 
 Future<void> handleSubmitNewTodo(GlobalState state, String text) async {
-  var newTodo = Todo(text: text, tags: ['@all'], priority: '');
+  var newTodo = Todo(text: text, tags: ['@unsorted'], priority: '');
   state.addNewTodo(newTodo);
   print(createTodoTextLine(newTodo.isComplete, newTodo.text, newTodo.priority,
       newTodo.completedAt, newTodo.createdAt, newTodo.project, newTodo.tags));
@@ -45,7 +45,10 @@ Future<void> handleOnClickNavbar(GlobalState state, String page,
       break;
     case 'open':
       try {
+        //TODO move to function
+        //TODO Clear state when importing new file
         var file = await pickFile();
+        state.setTodoFilePath(file.path);
         file.openRead().transform(utf8.decoder).listen((value) {
           var lines = value.split('\n');
           List<Todo> todoList = [];
@@ -69,6 +72,15 @@ saveToml(String name, GlobalState state) async {
   var tomlDB = TomlDocument.fromMap(tomlTemplate).toString();
   var file = File(localDBFile);
   file.writeAsString(tomlDB);
+}
+
+saveTodoText(GlobalState state) async {
+  var file = File(state.todoFilePath);
+  // get todos and convert to string and write to file
+  var todos = state.todos;
+  var todoText = todos.map((e) => createTodoTextLine(e.isComplete, e.text, e.priority, e.completedAt, e.createdAt, e.project, e.tags)).join('\n');
+  file.writeAsString('', flush: true);
+  file.writeAsString(todoText, flush: true);
 }
 
 loadToml(String name) async {
@@ -96,7 +108,6 @@ String createTodoTextLine(
   var hasProject =
       project != null && project.isNotEmpty ? project + ' ' : '';
   var hasTags = tags != null ? tags.join(' ') : '';
-  print(hasTags);
   return (isComplete +
       hasPriority +
       hasCompletedAt +
