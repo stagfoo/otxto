@@ -14,8 +14,6 @@ there are lots of apps to manage your tasks and normally they are disconnected f
 
 # Get Started
 
-run in development
-
 ```bash
 flutter run -d linux
 # flutter run -d macos
@@ -40,6 +38,7 @@ I made this for myself to help make applications that are:
 
 More information in my blog post: [Bringing back dumb programs](https://blog.stagfoo.com/post/dumb-programs/)
 
+
 # Whats inside
 
 - 🖼️ UI = MaterialApp
@@ -57,3 +56,4 @@ More information in my blog post: [Bringing back dumb programs](https://blog.sta
 <img src=".readme/2022-12-28 18.18.53.gif" />
 <img src=".readme/2022-12-28 18.19.19.gif" />
 </p>
+
