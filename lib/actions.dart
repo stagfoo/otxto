@@ -10,37 +10,20 @@ import 'store.dart';
 import 'storage.dart';
 
 Future<void> handleSubmitNewTodo(GlobalState state, String text) async {
-  var newTodo = Todo(text: text, tags: ['@all'], priority: '');
+  var newTodo = Todo(text: text, tags: ['@unsorted'], priority: '');
   state.addNewTodo(newTodo);
   print(createTodoTextLine(newTodo.isComplete, newTodo.text, newTodo.priority,
       newTodo.completedAt, newTodo.createdAt, newTodo.project, newTodo.tags));
   // saveToml(localDBFile, state);
 }
 
-Future<void> handleOnMoveGroupItem(
-    GlobalState state, columnName, fromIndex, toIndex) async {
-  if (state.startedDragTarget == state.endedDragTarget) {
-    debugPrint('Please update');
-  }
-}
-
 Future<void> handleOnMoveGroupItemToGroup(
-    GlobalState state, fromColumnName, fromIndex, toColumnName, toIndex) async {
-  debugPrint(state.startedDragTarget);
-  debugPrint(state.endedDragTarget);
-
-  if (state.startedDragTarget.toString() == state.endedDragTarget.toString()) {
+    GlobalState state, fromColumnName, id, toColumnName) async {
     var newTodos = state.todos;
     for (var element in newTodos) {
-      if (element.id == state.startedDragTarget) {
-        if(fromColumnName == '@completed'){
-          element.isComplete = false;
-          element.completedAt = '';
-        }
-        if(toColumnName == '@completed'){
-          element.isComplete = true;
-          element.completedAt = formatTimestamp(DateTime.now());
-        }
+      if (element.id == id) {
+        element.tags = element.tags.where((tag) => tag != fromColumnName).toList();
+        element.tags = [...{toColumnName, ...element.tags}];
         print(createTodoTextLine(
         element.isComplete,
         element.text,
@@ -48,16 +31,12 @@ Future<void> handleOnMoveGroupItemToGroup(
         element.completedAt,
         element.createdAt,
         element.project,
-        [...{toColumnName, ...element.tags}]));
-        element.tags = element.tags.where((tag) => tag != fromColumnName || tag != '@unsorted').toList();
-        element.tags = [...{toColumnName, ...element.tags}];
+        element.tags));
       }
-    }
     state.setTodos(newTodos);
-    state.setStartedDragTarget('');
-    state.setEndedDragTarget('');
   }
 }
+
 
 Future<void> handleOnClickNavbar(GlobalState state, String page,
     int navbarIndex, BuildContext context) async {
@@ -66,7 +45,10 @@ Future<void> handleOnClickNavbar(GlobalState state, String page,
       break;
     case 'open':
       try {
+        //TODO move to function
+        //TODO Clear state when importing new file
         var file = await pickFile();
+        state.setTodoFilePath(file.path);
         file.openRead().transform(utf8.decoder).listen((value) {
           var lines = value.split('\n');
           List<Todo> todoList = [];
@@ -90,6 +72,15 @@ saveToml(String name, GlobalState state) async {
   var tomlDB = TomlDocument.fromMap(tomlTemplate).toString();
   var file = File(localDBFile);
   file.writeAsString(tomlDB);
+}
+
+saveTodoText(GlobalState state) async {
+  var file = File(state.todoFilePath);
+  // get todos and convert to string and write to file
+  var todos = state.todos;
+  var todoText = todos.map((e) => createTodoTextLine(e.isComplete, e.text, e.priority, e.completedAt, e.createdAt, e.project, e.tags)).join('\n');
+  file.writeAsString('', flush: true);
+  file.writeAsString(todoText, flush: true);
 }
 
 loadToml(String name) async {
@@ -117,7 +108,6 @@ String createTodoTextLine(
   var hasProject =
       project != null && project.isNotEmpty ? project + ' ' : '';
   var hasTags = tags != null ? tags.join(' ') : '';
-  print(hasTags);
   return (isComplete +
       hasPriority +
       hasCompletedAt +

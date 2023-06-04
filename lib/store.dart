@@ -1,5 +1,6 @@
 import 'package:appflowy_board/appflowy_board.dart';
 import 'package:flutter/material.dart';
+import 'package:oxtxto/ui.dart';
 import 'package:short_uuids/short_uuids.dart';
 
 import 'actions.dart';
@@ -12,7 +13,7 @@ class Todo extends AppFlowyGroupItem {
   bool isComplete = false;
   String priority = '';
   String completedAt = '';
-  String createdAt = DateTime.now().toString();
+  String createdAt = formatTimestamp(DateTime.now());
   String text;
   String project = '';
   List<String> tags = [];
@@ -36,37 +37,41 @@ class KanbanGroup {
 
 class GlobalState extends ChangeNotifier {
   int currentNavbarIndex = 0;
-  List<Todo> todos = [];
+  List<Todo> todos = [
+  ];
   List<KanbanGroup> columns = [
     KanbanGroup(id: '@unsorted'),
+    KanbanGroup(id: '@doing'),
     KanbanGroup(id: '@completed'),
   ];
   late Todo selectedItem;
   late String todoFilePath;
-  String startedDragTarget = '';
-  String endedDragTarget = '';
 
-  void setStartedDragTarget(String value) {
-    startedDragTarget = value;
-  }
-
-  void setEndedDragTarget(String value) {
-    endedDragTarget = value;
+  void setTodoFilePath(String path) {
+    todoFilePath = path;
+    notifyListeners();
   }
 
   void addNewTodo(Todo todo) {
     todos.add(todo);
+    notifyListeners();
+    saveTodoText(this);
+  }
+  void addNewColumn(String id) {
+    columns.add(KanbanGroup(id: id));
     notifyListeners();
   }
 
   void setTodos(List<Todo> value) {
     todos = value;
     notifyListeners();
+    saveTodoText(this);
   }
 
   void updateTags(int index, List<String> tags) {
     todos[index].tags = tags;
     notifyListeners();
+    saveTodoText(this);
   }
 
   void saveNavbarIndex(int value) {
