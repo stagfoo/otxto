@@ -1,6 +1,9 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
+import 'dart:core';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:path/path.dart';
@@ -10,10 +13,15 @@ import 'store.dart';
 import 'storage.dart';
 
 Future<void> handleSubmitNewTodo(GlobalState state, String text) async {
-  var newTodo = Todo(text: text, tags: ['@unsorted'], priority: '');
+  var newTodo = importTodoTextLine(text);
+  if (newTodo.text.isEmpty) {
+    return;
+  }
+  if (newTodo.createdAt.isEmpty) {
+    newTodo.createdAt = formatTimestamp(DateTime.now());
+  }
+  //FIXME i shouldn't use @unsorted, it should be tags that wrong exists in columns
   state.addNewTodo(newTodo);
-  print(createTodoTextLine(newTodo.isComplete, newTodo.text, newTodo.priority,
-      newTodo.completedAt, newTodo.createdAt, newTodo.project, newTodo.tags));
   // saveToml(localDBFile, state);
 }
 
@@ -24,14 +32,6 @@ Future<void> handleOnMoveGroupItemToGroup(
       if (element.id == id) {
         element.tags = element.tags.where((tag) => tag != fromColumnName).toList();
         element.tags = [...{toColumnName, ...element.tags}];
-        print(createTodoTextLine(
-        element.isComplete,
-        element.text,
-        element.priority,
-        element.completedAt,
-        element.createdAt,
-        element.project,
-        element.tags));
       }
     state.setTodos(newTodos);
   }
