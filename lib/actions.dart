@@ -146,3 +146,7 @@ Todo importTodoTextLine(String line) {
 String formatTimestamp(DateTime timestamp) {
   return "${timestamp.year.toString()}-${timestamp.month.toString().padLeft(2,'0')}-${timestamp.day.toString().padLeft(2,'0')}";
 }
+
+Color randomStringToHexColor(String string) {
+  return Colors.green;
+}

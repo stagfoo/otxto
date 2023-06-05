@@ -161,14 +161,13 @@ class TodoColumn extends StatelessWidget {
                 var list = state.todos.where((t) {
                   return t.tags.contains(columnId);
                 }).map((to) {
-
+                  var card = TodoCard(todoItem: to);
                   // TODO remove Dragbox
-                  return DragBox(
-                      x: 0,
-                      y: 0,
-                      id: to.id + '_' + columnId,
-                      state: state,
-                      child: TodoCard(todoItem: to));
+                  return Draggable<String>(
+                    data: to.id + '_' + columnId,
+                    child: card,
+                    feedback: Material(child: card),
+                  );
                 }).toList();
                 return Container(
                     width: 300,
@@ -195,12 +194,13 @@ class TodoColumn extends StatelessWidget {
 
 class TodoCard extends StatelessWidget {
   final Todo todoItem;
-  const TodoCard({Key? key, required this.todoItem}) : super(key: key);
-
+  TodoCard({Key? key, required this.todoItem}) : super(key: key);
+  double width = 284;
   @override
   Widget build(BuildContext context) {
     return Consumer<GlobalState>(builder: (context, state, widget) {
       return Container(
+          width: width,
           decoration: BoxDecoration(
             color: Colors.black,
             borderRadius: BorderRadius.circular(4),
@@ -208,7 +208,7 @@ class TodoCard extends StatelessWidget {
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Container(
-                width: 300,
+                width: width,
                 margin: const EdgeInsetsDirectional.only(bottom: 8),
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -218,32 +218,36 @@ class TodoCard extends StatelessWidget {
                 alignment: Alignment.topLeft,
                 child: Text(
                   todoItem.text,
-                  style: const TextStyle(color: Colors.black),
+                  style: const TextStyle(color: Colors.black, fontSize: 12),
                 )),
             Container(
+                width: width,
                 color: Colors.transparent,
+                alignment: Alignment.topLeft,
                 margin: const EdgeInsetsDirectional.only(bottom: 8),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                    Container(
-                      margin: const EdgeInsetsDirectional.only(bottom: 8),
-                      child: Text(todoItem.createdAt,
-                      style: const TextStyle(color: Colors.white)
-                    ))]),
-                    SizedBox(
-                      width: 300,
-                          child: Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                        children: [
-                        ...todoItem.tags.map((tag) {
-                          return TagItem(text: tag);
-                        })
-                      ]))
-                ]))
+                      todoItem.createdAt.isNotEmpty
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                  Padding(
+                                      padding: const EdgeInsets.all(8),
+                                      child: Text(todoItem.createdAt,
+                                          style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12)))
+                                ])
+                          : Container(),
+                      SizedBox(
+                          width: 300,
+                          child: Wrap(spacing: 8, runSpacing: 8, children: [
+                            ...todoItem.tags.map((tag) {
+                              return TagItem(text: tag);
+                            })
+                          ]))
+                    ]))
           ]));
     });
   }
@@ -292,11 +296,12 @@ class TagItem extends StatelessWidget {
     return Consumer<GlobalState>(builder: (context, state, widget) {
       return Container(
           decoration: BoxDecoration(
-            color: Colors.green,
+            color: randomStringToHexColor(text),
             borderRadius: BorderRadius.circular(4),
           ),
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-          child: Text(text));
+          child: Text(text,
+              style: const TextStyle(color: Colors.white, fontSize: 12)));
     });
   }
 }
