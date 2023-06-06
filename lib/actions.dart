@@ -6,6 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:oxtxto/style.dart';
 import 'package:path/path.dart';
 import 'package:toml/toml.dart';
 
@@ -42,6 +43,7 @@ Future<void> handleOnClickNavbar(GlobalState state, String page,
     int navbarIndex, BuildContext context) async {
   switch (page) {
     case 'list':
+      Get.toNamed('/list');
       break;
     case 'open':
       try {
@@ -63,6 +65,7 @@ Future<void> handleOnClickNavbar(GlobalState state, String page,
       break;
     default:
       print('page: ' + page);
+      Get.toNamed('/');
   }
   state.saveNavbarIndex(navbarIndex);
 }
@@ -148,5 +151,5 @@ String formatTimestamp(DateTime timestamp) {
 }
 
 Color randomStringToHexColor(String string) {
-  return Colors.green;
+  return HexColor.fromHex(getRandomColorClass(string));
 }

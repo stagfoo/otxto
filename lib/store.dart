@@ -1,4 +1,3 @@
-import 'package:appflowy_board/appflowy_board.dart';
 import 'package:flutter/material.dart';
 import 'package:oxtxto/ui.dart';
 import 'package:short_uuids/short_uuids.dart';
@@ -8,7 +7,7 @@ import 'actions.dart';
 const localDBFile = 'database.toml';
 const shortId = ShortUuid();
 
-class Todo extends AppFlowyGroupItem {
+class Todo {
   String id = shortId.generate();
   bool isComplete = false;
   String priority = '';

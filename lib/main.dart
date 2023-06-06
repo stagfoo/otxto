@@ -5,10 +5,12 @@ import 'dart:io';
 
 
 //Local
+import 'keyboard.dart';
 import 'ui.dart';
 import 'store.dart';
 
 void main() async {
+
   runApp(ChangeNotifierProvider(
     child: GetMaterialApp(
       debugShowCheckedModeBanner: false,
@@ -23,14 +25,14 @@ void main() async {
                 Consumer<GlobalState>(builder: (context, state, widget) {
                   return HomePage(state: state);
                 }),
-            transition: Transition.fadeIn),
+            transition: Transition.noTransition),
         GetPage(
-            name: '/other-page',
+            name: '/list',
             page: () =>
                 Consumer<GlobalState>(builder: (context, state, widget) {
-                  return OtherPage(state: state);
+                  return ListPage(state: state);
                 }),
-            transition: Transition.fadeIn),
+            transition: Transition.noTransition),
       ],
     ),
     create: (context) => GlobalState(),
