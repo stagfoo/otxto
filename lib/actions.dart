@@ -28,16 +28,18 @@ Future<void> handleSubmitNewTodo(GlobalState state, String text) async {
 
 Future<void> handleOnMoveGroupItemToGroup(
     GlobalState state, fromColumnName, id, toColumnName) async {
-    var newTodos = state.todos;
-    for (var element in newTodos) {
-      if (element.id == id) {
-        element.tags = element.tags.where((tag) => tag != fromColumnName).toList();
-        element.tags = [...{toColumnName, ...element.tags}];
-      }
+  var newTodos = state.todos;
+  for (var element in newTodos) {
+    if (element.id == id) {
+      element.tags =
+          element.tags.where((tag) => tag != fromColumnName).toList();
+      element.tags = [
+        ...{toColumnName, ...element.tags}
+      ];
+    }
     state.setTodos(newTodos);
   }
 }
-
 
 Future<void> handleOnClickNavbar(GlobalState state, String page,
     int navbarIndex, BuildContext context) async {
@@ -47,27 +49,13 @@ Future<void> handleOnClickNavbar(GlobalState state, String page,
       break;
     case 'open':
       try {
-        //TODO move to function
-        //TODO Clear state when importing new file
-        var file = await pickFile();
-        state.setTodoFilePath(file.path);
-        
-        file.openRead().transform(utf8.decoder).listen((value) {
-          var lines = value.split('\n');
-          List<Todo> todoList = [];
-          lines.forEach((element) {
-             todoList.add(importTodoTextLine(element));
-          });
-          state.setTodos(todoList);
-        });
         //Refactor with macos permission?
-        // Maybe open folder is better?
-          var settingsFile = await pickFile();
-          loadToml(settingsFile.path).then((value) {
-            List<String> columns = List<String>.from((value['settings']['columns']));
-            state.setColumns(columns.map((e) => KanbanGroup(id: e)).toList());
-          state.setSettingsFilePath(settingsFile.path);
-          });
+        // Create a dialog for errors to open
+        var rootFolder = await pickDir();
+        var files = await getFilesFromFolder(rootFolder!);
+        loadSettingFile(state, files.where((element) => element.path.contains(localDBFile)).first);
+        loadTodoFile(state, files.where((element) => element.path.contains('.txt')).first);
+
       } catch (err) {
         // print(err);
       }
@@ -79,18 +67,64 @@ Future<void> handleOnClickNavbar(GlobalState state, String page,
   state.saveNavbarIndex(navbarIndex);
 }
 
+loadSettingFile(GlobalState state, File settingsFile) async {
+  loadToml(settingsFile.path).then((value) {
+    List<String> columns = List<String>.from((value['settings']['columns']));
+    state.setColumns(columns.map((e) => KanbanGroup(id: e)).toList());
+    state.setSettingsFilePath(settingsFile.path);
+  });
+}
 
+loadTodoFile(GlobalState state, File file) async {
+  state.setTodoFilePath(file.path);
+
+  file.openRead().transform(utf8.decoder).listen((value) {
+    var lines = value.split('\n');
+    List<Todo> todoList = [];
+    for (var element in lines) {
+      todoList.add(importTodoTextLine(element));
+    }
+    state.setTodos(todoList);
+  });
+}
+
+Future<List<dynamic>> getFilesFromFolder(String root) async {
+  try {
+    var list = [];
+    List<FileSystemEntity> contents = Directory(root).listSync();
+    for (var fileOrDir in contents) {
+      print(fileOrDir);
+      if (fileOrDir is File) {
+        list.add(fileOrDir);
+      }
+    }
+    return list;
+  } catch (err) {
+    print("Get Files from folder failed or canceled");
+    rethrow;
+  }
+}
+
+Future<String?> pickDir() async {
+  String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
+
+  if (selectedDirectory == null) {
+    return '';
+  }
+  return selectedDirectory;
+}
 
 saveTodoText(GlobalState state) async {
   var file = File(state.todoFilePath);
   // get todos and convert to string and write to file
   var todos = state.todos;
-  var todoText = todos.map((e) => createTodoTextLine(e.isComplete, e.text, e.priority, e.completedAt, e.createdAt, e.project, e.tags)).join('\n');
+  var todoText = todos
+      .map((e) => createTodoTextLine(e.isComplete, e.text, e.priority,
+          e.completedAt, e.createdAt, e.project, e.tags))
+      .join('\n');
   file.writeAsString('', flush: true);
   file.writeAsString(todoText, flush: true);
 }
-
-
 
 //TODO refactor to Todo
 String createTodoTextLine(
@@ -103,39 +137,52 @@ String createTodoTextLine(
     List<String>? tags) {
   var isComplete = complete ? 'x ' : '';
   var hasPriority =
-      priority != null && priority.isNotEmpty ?  priority + ' ' : '';
+      priority != null && priority.isNotEmpty ? priority + ' ' : '';
   var hasCompletedAt = completedAt != null ? completedAt + ' ' : '';
   var hasCreatedAt = createdAt.isNotEmpty ? createdAt + ' ' : '';
   var hasText = text.isNotEmpty ? text + ' ' : '';
-  var hasProject =
-      project != null && project.isNotEmpty ? project + ' ' : '';
+  var hasProject = project != null && project.isNotEmpty ? project + ' ' : '';
   var hasTags = tags != null ? tags.join(' ') : '';
   return (isComplete +
-      hasPriority +
-      hasCompletedAt +
-      hasCreatedAt +
-      hasText +
-      hasProject +
-      hasTags).replaceAll('  ', ' ');
+          hasPriority +
+          hasCompletedAt +
+          hasCreatedAt +
+          hasText +
+          hasProject +
+          hasTags)
+      .replaceAll('  ', ' ');
 }
 
 Todo importTodoTextLine(String line) {
-
   var isPriority = RegExp(r'\([A-Z]\) ');
   var isComplete = RegExp(r'x ');
   var isDateLike = RegExp(r'\d{4}-\d{2}-\d{2}');
   var isProject = RegExp(r' \+[a-zA-Z0-9]+');
   var isTag = RegExp(r'@[a-zA-Z0-9]+');
-  
- 
+
   var complete = isComplete.hasMatch(line);
-  var priority = isPriority.allMatches(line).map((e) => e.group(0).toString().trim());
-  var project =  isProject.allMatches(line).map((e) => e.group(0).toString().trim());
-  var dates =  isDateLike.allMatches(line).map((e) => e.group(0).toString().trim()).toList();
-  var tags = isTag.allMatches(line).map((e) => e.group(0).toString().trim()).toList();
-  var text =  line.replaceAll(isComplete, '').replaceAll(isPriority, '').replaceAll(isDateLike, '').replaceAll(isProject, '').replaceAll(isTag, '').trim();
-  
-  var nextTodoItem = Todo(text: text, tags: tags, priority: priority.isNotEmpty ? priority.first : '');
+  var priority =
+      isPriority.allMatches(line).map((e) => e.group(0).toString().trim());
+  var project =
+      isProject.allMatches(line).map((e) => e.group(0).toString().trim());
+  var dates = isDateLike
+      .allMatches(line)
+      .map((e) => e.group(0).toString().trim())
+      .toList();
+  var tags =
+      isTag.allMatches(line).map((e) => e.group(0).toString().trim()).toList();
+  var text = line
+      .replaceAll(isComplete, '')
+      .replaceAll(isPriority, '')
+      .replaceAll(isDateLike, '')
+      .replaceAll(isProject, '')
+      .replaceAll(isTag, '')
+      .trim();
+
+  var nextTodoItem = Todo(
+      text: text,
+      tags: tags,
+      priority: priority.isNotEmpty ? priority.first : '');
   nextTodoItem.completedAt = dates.length > 1 ? dates[1] : '';
   nextTodoItem.createdAt = dates.isNotEmpty ? dates[0] : '';
   nextTodoItem.project = project.isNotEmpty ? project.first : '';
@@ -146,7 +193,7 @@ Todo importTodoTextLine(String line) {
 // Utility functions
 
 String formatTimestamp(DateTime timestamp) {
-  return "${timestamp.year.toString()}-${timestamp.month.toString().padLeft(2,'0')}-${timestamp.day.toString().padLeft(2,'0')}";
+  return "${timestamp.year.toString()}-${timestamp.month.toString().padLeft(2, '0')}-${timestamp.day.toString().padLeft(2, '0')}";
 }
 
 Color randomStringToHexColor(String string) {
