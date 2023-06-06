@@ -1,1 +1,3 @@
-x (B) load test file @js @python @unsorted +otxto
+completed tasks should be its own column and not use a tag
+completed tasks column can be turned off in settings
+unsorted tasks should be all tasks that tags don't match a column

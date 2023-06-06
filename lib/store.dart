@@ -4,7 +4,7 @@ import 'package:short_uuids/short_uuids.dart';
 
 import 'actions.dart';
 
-const localDBFile = 'database.toml';
+const localDBFile = 'otxto-settings.toml';
 const shortId = ShortUuid();
 
 class Todo {
@@ -24,8 +24,8 @@ class Todo {
   });
   @override
   String toString() {
-    //TODO set up todo.txt serialization
-    return text;
+    return createTodoTextLine(
+        isComplete, text, priority, completedAt, createdAt, project, tags);
   }
 }
 
@@ -45,9 +45,14 @@ class GlobalState extends ChangeNotifier {
   ];
   late Todo selectedItem;
   late String todoFilePath;
+  late String settingsFilePath;
 
   void setTodoFilePath(String path) {
     todoFilePath = path;
+    notifyListeners();
+  }
+  void setSettingsFilePath(String path) {
+    settingsFilePath = path;
     notifyListeners();
   }
 
@@ -65,6 +70,10 @@ class GlobalState extends ChangeNotifier {
     todos = value;
     notifyListeners();
     saveTodoText(this);
+  }
+  void setColumns(List<KanbanGroup> value) {
+    columns = value;
+    notifyListeners();
   }
 
   void updateTags(int index, List<String> tags) {

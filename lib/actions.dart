@@ -51,6 +51,7 @@ Future<void> handleOnClickNavbar(GlobalState state, String page,
         //TODO Clear state when importing new file
         var file = await pickFile();
         state.setTodoFilePath(file.path);
+        
         file.openRead().transform(utf8.decoder).listen((value) {
           var lines = value.split('\n');
           List<Todo> todoList = [];
@@ -59,6 +60,14 @@ Future<void> handleOnClickNavbar(GlobalState state, String page,
           });
           state.setTodos(todoList);
         });
+        //Refactor with macos permission?
+        // Maybe open folder is better?
+          var settingsFile = await pickFile();
+          loadToml(settingsFile.path).then((value) {
+            List<String> columns = List<String>.from((value['settings']['columns']));
+            state.setColumns(columns.map((e) => KanbanGroup(id: e)).toList());
+          state.setSettingsFilePath(settingsFile.path);
+          });
       } catch (err) {
         // print(err);
       }
@@ -70,12 +79,7 @@ Future<void> handleOnClickNavbar(GlobalState state, String page,
   state.saveNavbarIndex(navbarIndex);
 }
 
-saveToml(String name, GlobalState state) async {
-  Map<String, dynamic> tomlTemplate = {'todos': state.todos};
-  var tomlDB = TomlDocument.fromMap(tomlTemplate).toString();
-  var file = File(localDBFile);
-  file.writeAsString(tomlDB);
-}
+
 
 saveTodoText(GlobalState state) async {
   var file = File(state.todoFilePath);
@@ -86,12 +90,7 @@ saveTodoText(GlobalState state) async {
   file.writeAsString(todoText, flush: true);
 }
 
-loadToml(String name) async {
-  //load toml
-  var document = await TomlDocument.load(name);
-  var documents = TomlDocument.parse(document.toString()).toMap();
-  return documents;
-}
+
 
 //TODO refactor to Todo
 String createTodoTextLine(

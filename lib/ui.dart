@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:mix/mix.dart';
-import 'package:oxtxto/dragbox.dart';
 import 'package:provider/provider.dart';
 
 //Local
@@ -239,11 +238,13 @@ class SingleColumn extends StatelessWidget {
 class TodoCard extends StatelessWidget {
   final Todo todoItem;
   TodoCard({Key? key, required this.todoItem}) : super(key: key);
-  double width = 284;
+  final double width = 284;
   @override
   Widget build(BuildContext context) {
     return Consumer<GlobalState>(builder: (context, state, widget) {
-      return Container(
+      return Opacity(
+        opacity: todoItem.isComplete ? 0.5 : 1,
+        child: Container(
           width: width,
           clipBehavior: Clip.antiAlias,
           margin: const EdgeInsetsDirectional.only(bottom: 8),
@@ -281,7 +282,7 @@ class TodoCard extends StatelessWidget {
                           ])): Container(),
                       TimeStamp(text: todoItem.createdAt),
                     ]))
-          ]));
+          ])));
     });
   }
 }
