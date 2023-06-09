@@ -31,15 +31,39 @@ Future<void> handleOnMoveGroupItemToGroup(
   var newTodos = state.todos;
   for (var element in newTodos) {
     if (element.id == id) {
-      element.tags =
-          element.tags.where((tag) => tag != fromColumnName).toList();
-      element.tags = [
-        ...{toColumnName, ...element.tags}
-      ];
+      //TODO refactor this
+      if(toColumnName == 'completed') {
+        element.isComplete = true;
+      } else {
+        element.tags =
+            element.tags.where((tag) => tag != fromColumnName).toList();
+      }
+      if (!restrictedColumns.contains(toColumnName)) {
+        element.tags = [
+          ...{toColumnName, ...element.tags}
+        ];
+      }
+      
+      if(fromColumnName == 'completed') {
+        element.isComplete = false;
+       }
     }
     state.setTodos(newTodos);
   }
 }
+
+void handleDeleteTodo(
+    GlobalState state,  id) async {
+  var newTodos = state.todos;
+    state.setTodos(newTodos.where((element) => element.id != id).toList());
+}
+void handleDeleteColumn(
+    GlobalState state,  id) async {
+  var columns = state.columns;
+    state.setColumns(columns.where((element) => element.id != id).toList());
+}
+
+
 
 Future<void> handleOnClickNavbar(GlobalState state, String page,
     int navbarIndex, BuildContext context) async {
@@ -53,9 +77,10 @@ Future<void> handleOnClickNavbar(GlobalState state, String page,
         // Create a dialog for errors to open
         var rootFolder = await pickDir();
         var files = await getFilesFromFolder(rootFolder!);
-        loadSettingFile(state, files.where((element) => element.path.contains(localDBFile)).first);
-        loadTodoFile(state, files.where((element) => element.path.contains('.txt')).first);
-
+        loadSettingFile(state,
+            files.where((element) => element.path.contains(localDBFile)).first);
+        loadTodoFile(state,
+            files.where((element) => element.path.contains('.txt')).first);
       } catch (err) {
         // print(err);
       }
@@ -143,6 +168,8 @@ String createTodoTextLine(
   var hasText = text.isNotEmpty ? text + ' ' : '';
   var hasProject = project != null && project.isNotEmpty ? project + ' ' : '';
   var hasTags = tags != null ? tags.join(' ') : '';
+  // Change columns from tags to select keys 
+  //column:doing
   return (isComplete +
           hasPriority +
           hasCompletedAt +

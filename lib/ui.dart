@@ -19,6 +19,22 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.black,
+        floatingActionButton: DragTarget<String>(
+            builder: (context, candidateItems, rejectedItems) {
+              return FloatingActionButton(
+                backgroundColor: randomStringToHexColor('ff'),
+                onPressed: () {
+                  
+                },
+                child: const Icon(Icons.delete),
+              );
+            },
+             onAccept: (String dragInfo) {
+                //TODO add animation
+                var info = dragInfo.split('_');
+                var id = info[0];
+                handleDeleteTodo(state, id);
+              }),
         body: Consumer<GlobalState>(builder: (context, state, widget) {
           return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,10 +90,7 @@ class ListPage extends StatelessWidget {
                   Navbar(state: state),
                 ]),
                 //TODO remove unused params
-                SingleColumn(
-                    columnId: '_@singlepage',
-                    columnName: '_@singlepage',
-                    state: state)
+                SingleColumn(columnId: '', columnName: '', state: state)
               ]);
         }));
   }
@@ -107,10 +120,31 @@ class KanbanView extends StatelessWidget {
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
         children: [
+          TodoColumn(
+              list: state.todos.where((t) {
+                var allColumns = state.columns.map((c) => c.id).toList();
+                return !t.tags.any((tag) => allColumns.contains(tag)) &&
+                    t.isComplete == false;
+              }).toList(),
+              columnId: 'all',
+              columnName: 'all',
+              state: state),
           ...state.columns.map((column) {
             return TodoColumn(
-                columnId: column.id, columnName: column.id, state: state);
+                list: state.todos.where((t) {
+                  return t.tags.contains(column.id) && t.isComplete == false;
+                }).toList(),
+                columnId: column.id,
+                columnName: column.id,
+                state: state);
           }),
+          TodoColumn(
+              list: state.todos.where((t) {
+                return t.isComplete;
+              }).toList(),
+              columnId: 'completed',
+              columnName: 'completed',
+              state: state),
           AddNewColumn(state: state)
         ],
       )));
@@ -122,10 +156,12 @@ class TodoColumn extends StatelessWidget {
   final String columnName;
   final String columnId;
   final GlobalState state;
+  final List<Todo> list;
   const TodoColumn(
       {Key? key,
       required this.columnName,
       required this.columnId,
+      required this.list,
       required this.state})
       : super(key: key);
 
@@ -136,18 +172,10 @@ class TodoColumn extends StatelessWidget {
           width: 300,
           height: 700,
           child: ListView(scrollDirection: Axis.vertical, children: [
-            Container(
-                padding: const EdgeInsets.all(8),
-                alignment: Alignment.topLeft,
-                child: Text(
-                  columnName,
-                  style: const TextStyle(color: Colors.white),
-                )),
+            ColumnTitle(text: columnName),
             DragTarget<String>(
               builder: (context, candidateItems, rejectedItems) {
-                var list = state.todos.where((t) {
-                  return t.tags.contains(columnId);
-                }).map((to) {
+                var listOfCards = list.map((to) {
                   var card = TodoCard(todoItem: to);
                   return Draggable<String>(
                     data: to.id + '_' + columnId,
@@ -164,13 +192,17 @@ class TodoColumn extends StatelessWidget {
                       border: Border.all(color: Colors.white, width: 1),
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    child: ListView(children: list));
+                    child: ListView(children: listOfCards));
               },
               onAccept: (String dragInfo) {
                 var info = dragInfo.split('_');
                 var id = info[0];
                 var fromColumn = info[1];
-                handleOnMoveGroupItemToGroup(state, fromColumn, id, columnId);
+                if (columnId[0] == '@') {
+                  handleOnMoveGroupItemToGroup(state, fromColumn, id, columnId);
+                } else {
+                  handleOnMoveGroupItemToGroup(state, fromColumn, id, columnId);
+                }
               },
             )
           ]));
@@ -195,13 +227,7 @@ class SingleColumn extends StatelessWidget {
       return SizedBox(
           height: 700,
           child: ListView(scrollDirection: Axis.vertical, children: [
-            Container(
-                padding: const EdgeInsets.all(8),
-                alignment: Alignment.topLeft,
-                child: Text(
-                  columnName,
-                  style: const TextStyle(color: Colors.white),
-                )),
+            ColumnTitle(text: columnName),
             DragTarget<String>(
               builder: (context, candidateItems, rejectedItems) {
                 var list = state.todos.map((to) {
@@ -224,10 +250,7 @@ class SingleColumn extends StatelessWidget {
                     child: ListView(children: list));
               },
               onAccept: (String dragInfo) {
-                var info = dragInfo.split('_');
-                var id = info[0];
-                var fromColumn = info[1];
-                // handleOnMoveGroupItemToGroup(state, fromColumn, id, columnId);
+                //TODO allow reordering
               },
             )
           ]));
@@ -243,46 +266,53 @@ class TodoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<GlobalState>(builder: (context, state, widget) {
       return Opacity(
-        opacity: todoItem.isComplete ? 0.5 : 1,
-        child: Container(
-          width: width,
-          clipBehavior: Clip.antiAlias,
-          margin: const EdgeInsetsDirectional.only(bottom: 8),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Container(
-                width: width,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                ),
-                padding: const EdgeInsets.all(8),
-                alignment: Alignment.topLeft,
-                child: Text(
-                  todoItem.text,
-                  style: const TextStyle(color: Colors.black, fontSize: 12),
-                )),
-            Container(
-                width: width,
-                color: Colors.transparent,
-                alignment: Alignment.topLeft,
-                margin: const EdgeInsetsDirectional.only(bottom: 8),
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      todoItem.tags.isNotEmpty ? SizedBox(
-                          width: 300,
-                          child: Wrap(spacing: 8, runSpacing: 8, children: [
-                            ...todoItem.tags.map((tag) {
-                              return TagItem(text: tag);
-                            })
-                          ])): Container(),
-                      TimeStamp(text: todoItem.createdAt),
-                    ]))
-          ])));
+          opacity: todoItem.isComplete ? 0.5 : 1,
+          child: Container(
+              width: width,
+              clipBehavior: Clip.antiAlias,
+              margin: const EdgeInsetsDirectional.only(bottom: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                        width: width,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                        ),
+                        padding: const EdgeInsets.all(8),
+                        alignment: Alignment.topLeft,
+                        child: Text(
+                          todoItem.text,
+                          style: const TextStyle(
+                              color: Colors.black, fontSize: 12),
+                        )),
+                    Container(
+                        width: width,
+                        color: Colors.transparent,
+                        alignment: Alignment.topLeft,
+                        margin: const EdgeInsetsDirectional.only(bottom: 8),
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              todoItem.tags.isNotEmpty
+                                  ? SizedBox(
+                                      width: 300,
+                                      child: Wrap(
+                                          spacing: 0,
+                                          runSpacing: 8,
+                                          children: [
+                                            ...todoItem.tags.map((tag) {
+                                              return TagItem(text: tag);
+                                            })
+                                          ]))
+                                  : Container(),
+                              TimeStamp(text: todoItem.createdAt),
+                            ]))
+                  ])));
     });
   }
 }
@@ -301,10 +331,11 @@ class AddNewColumn extends StatelessWidget {
               width: 200,
               child: TextFormField(
                 //TODO get all tags in a the file
-                autofillHints: [],
+                autofillHints: ['@doing'],
                 controller: textController,
                 maxLines: 1,
                 onFieldSubmitted: (text) {
+                  //TODO move to actions
                   var name = text[0] == '@' ? text : '@' + text;
                   state.addNewColumn(name);
                   textController.clear();
@@ -329,7 +360,7 @@ class TagItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<GlobalState>(builder: (context, state, widget) {
       return Container(
-          margin: EdgeInsets.all(4),
+          margin: EdgeInsets.only(left: 4),
           decoration: BoxDecoration(
             color: randomStringToHexColor(text),
             borderRadius: BorderRadius.circular(4),
@@ -355,6 +386,36 @@ class TimeStamp extends StatelessWidget {
                   child: Text(text,
                       style: const TextStyle(color: Colors.grey, fontSize: 12)))
             ])
+          : Container();
+    });
+  }
+}
+
+class ColumnTitle extends StatelessWidget {
+  final String text;
+  const ColumnTitle({Key? key, required this.text}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<GlobalState>(builder: (context, state, widget) {
+      return text.isNotEmpty
+          ? Flex(
+            direction: Axis.horizontal,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                height: 40,
+              padding: const EdgeInsets.all(8),
+              alignment: Alignment.center,
+              child: Text(
+                text,
+                style: const TextStyle(color: Colors.white),
+              )), 
+              !restrictedColumns.contains(text) ? IconButton(
+                iconSize: 20,
+                onPressed: () {
+                handleDeleteColumn(state, text);
+              }, icon: Icon(Icons.close)): Container() ])
           : Container();
     });
   }

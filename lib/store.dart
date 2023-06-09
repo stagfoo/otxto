@@ -6,6 +6,8 @@ import 'actions.dart';
 
 const localDBFile = 'otxto-settings.toml';
 const shortId = ShortUuid();
+const restrictedColumns = ['all', 'completed'];
+
 
 class Todo {
   String id = shortId.generate();
@@ -39,9 +41,6 @@ class GlobalState extends ChangeNotifier {
   List<Todo> todos = [
   ];
   List<KanbanGroup> columns = [
-    KanbanGroup(id: '@unsorted'),
-    KanbanGroup(id: '@doing'),
-    KanbanGroup(id: '@completed'),
   ];
   late Todo selectedItem;
   late String todoFilePath;
