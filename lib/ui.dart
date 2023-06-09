@@ -1,6 +1,7 @@
 //Libs
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mix/mix.dart';
 import 'package:provider/provider.dart';
 
@@ -10,31 +11,28 @@ import 'store.dart';
 import 'style.dart';
 
 //------------------------PAGE----------------------------
+final addNewTodoController = TextEditingController();
 
 class HomePage extends StatelessWidget {
   final GlobalState state;
   HomePage({Key? key, required this.state}) : super(key: key);
-  final addNewTodoController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.black,
         floatingActionButton: DragTarget<String>(
             builder: (context, candidateItems, rejectedItems) {
-              return FloatingActionButton(
-                backgroundColor: randomStringToHexColor('ff'),
-                onPressed: () {
-                  
-                },
-                child: const Icon(Icons.delete),
-              );
-            },
-             onAccept: (String dragInfo) {
-                //TODO add animation
-                var info = dragInfo.split('_');
-                var id = info[0];
-                handleDeleteTodo(state, id);
-              }),
+          return FloatingActionButton(
+            backgroundColor: randomStringToHexColor('ff'),
+            onPressed: () {},
+            child: const Icon(Icons.delete),
+          );
+        }, onAccept: (String dragInfo) {
+          //TODO add animation
+          var info = dragInfo.split('_');
+          var id = info[0];
+          handleDeleteTodo(state, id);
+        }),
         body: Consumer<GlobalState>(builder: (context, state, widget) {
           return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,9 +42,14 @@ class HomePage extends StatelessWidget {
                       child: TextFormField(
                     controller: addNewTodoController,
                     maxLines: 1,
+                    onTapOutside: (event) {
+                      addNewTodoController.clear();
+                      state.setEditingStatus('', false);
+                    },
                     onFieldSubmitted: (text) {
                       handleSubmitNewTodo(state, text);
                       addNewTodoController.clear();
+                      state.setEditingStatus('', false);
                     },
                     decoration: const InputDecoration(
                       hintText: 'Add new todo',
@@ -267,52 +270,58 @@ class TodoCard extends StatelessWidget {
     return Consumer<GlobalState>(builder: (context, state, widget) {
       return Opacity(
           opacity: todoItem.isComplete ? 0.5 : 1,
-          child: Container(
-              width: width,
-              clipBehavior: Clip.antiAlias,
-              margin: const EdgeInsetsDirectional.only(bottom: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                        width: width,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                        ),
-                        padding: const EdgeInsets.all(8),
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          todoItem.text,
-                          style: const TextStyle(
-                              color: Colors.black, fontSize: 12),
-                        )),
-                    Container(
-                        width: width,
-                        color: Colors.transparent,
-                        alignment: Alignment.topLeft,
-                        margin: const EdgeInsetsDirectional.only(bottom: 8),
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              todoItem.tags.isNotEmpty
-                                  ? SizedBox(
-                                      width: 300,
-                                      child: Wrap(
-                                          spacing: 0,
-                                          runSpacing: 8,
-                                          children: [
-                                            ...todoItem.tags.map((tag) {
-                                              return TagItem(text: tag);
-                                            })
-                                          ]))
-                                  : Container(),
-                              TimeStamp(text: todoItem.createdAt),
-                            ]))
-                  ])));
+          child: GestureDetector(
+              onDoubleTap: () {
+                addNewTodoController.value =
+                    TextEditingValue(text: todoItem.toString());
+                state.setEditingStatus(todoItem.id, true);
+              },
+              child: Container(
+                  width: width,
+                  clipBehavior: Clip.antiAlias,
+                  margin: const EdgeInsetsDirectional.only(bottom: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                            width: width,
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                            ),
+                            padding: const EdgeInsets.all(8),
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              todoItem.text,
+                              style: const TextStyle(
+                                  color: Colors.black, fontSize: 12),
+                            )),
+                        Container(
+                            width: width,
+                            color: Colors.transparent,
+                            alignment: Alignment.topLeft,
+                            margin: const EdgeInsetsDirectional.only(bottom: 8),
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  todoItem.tags.isNotEmpty
+                                      ? SizedBox(
+                                          width: 300,
+                                          child: Wrap(
+                                              spacing: 0,
+                                              runSpacing: 8,
+                                              children: [
+                                                ...todoItem.tags.map((tag) {
+                                                  return TagItem(text: tag);
+                                                })
+                                              ]))
+                                      : Container(),
+                                  TimeStamp(text: todoItem.createdAt),
+                                ]))
+                      ]))));
     });
   }
 }
@@ -400,22 +409,26 @@ class ColumnTitle extends StatelessWidget {
     return Consumer<GlobalState>(builder: (context, state, widget) {
       return text.isNotEmpty
           ? Flex(
-            direction: Axis.horizontal,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                height: 40,
-              padding: const EdgeInsets.all(8),
-              alignment: Alignment.center,
-              child: Text(
-                text,
-                style: const TextStyle(color: Colors.white),
-              )), 
-              !restrictedColumns.contains(text) ? IconButton(
-                iconSize: 20,
-                onPressed: () {
-                handleDeleteColumn(state, text);
-              }, icon: Icon(Icons.close)): Container() ])
+              direction: Axis.horizontal,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                  Container(
+                      height: 40,
+                      padding: const EdgeInsets.all(8),
+                      alignment: Alignment.center,
+                      child: Text(
+                        text,
+                        style: const TextStyle(color: Colors.white),
+                      )),
+                  !restrictedColumns.contains(text)
+                      ? IconButton(
+                          iconSize: 20,
+                          onPressed: () {
+                            handleDeleteColumn(state, text);
+                          },
+                          icon: Icon(Icons.close))
+                      : Container()
+                ])
           : Container();
     });
   }
@@ -439,12 +452,13 @@ class Navbar extends StatelessWidget {
                   handleOnClickNavbar(state, 'open', 0, context);
                 },
               ),
-              IconButton(
-                icon: const Icon(Icons.list),
-                onPressed: () {
-                  handleOnClickNavbar(state, 'list', 1, context);
-                },
-              ),
+              // NOTE: Disable
+              // IconButton(
+              //   icon: const Icon(Icons.list),
+              //   onPressed: () {
+              //     handleOnClickNavbar(state, 'list', 1, context);
+              //   },
+              // ),
               IconButton(
                 icon: const Icon(Icons.view_kanban_outlined),
                 onPressed: () {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:oxtxto/ui.dart';
 import 'package:short_uuids/short_uuids.dart';
 
 import 'actions.dart';
@@ -7,7 +6,6 @@ import 'actions.dart';
 const localDBFile = 'otxto-settings.toml';
 const shortId = ShortUuid();
 const restrictedColumns = ['all', 'completed'];
-
 
 class Todo {
   String id = shortId.generate();
@@ -36,20 +34,29 @@ class KanbanGroup {
   KanbanGroup({required this.id});
 }
 
+class EditingState {
+  bool status = false;
+  late String id;
+  EditingState({
+    required this.status,
+    required this.id,
+  });
+}
+
 class GlobalState extends ChangeNotifier {
   int currentNavbarIndex = 0;
-  List<Todo> todos = [
-  ];
-  List<KanbanGroup> columns = [
-  ];
+  List<Todo> todos = [];
+  List<KanbanGroup> columns = [];
   late Todo selectedItem;
   late String todoFilePath;
   late String settingsFilePath;
+  EditingState isEditing = EditingState(status: false, id: '');
 
   void setTodoFilePath(String path) {
     todoFilePath = path;
     notifyListeners();
   }
+
   void setSettingsFilePath(String path) {
     settingsFilePath = path;
     notifyListeners();
@@ -60,6 +67,19 @@ class GlobalState extends ChangeNotifier {
     notifyListeners();
     saveTodoText(this);
   }
+
+  void removeTodo(String id) {
+    setTodos(todos.where((element) => element.id != id).toList());
+    notifyListeners();
+    saveTodoText(this);
+  }
+
+  void setEditingStatus(String id, bool status) {
+    isEditing = EditingState(status: status, id: id);
+    notifyListeners();
+    saveTodoText(this);
+  }
+
   void addNewColumn(String id) {
     columns.add(KanbanGroup(id: id));
     notifyListeners();
@@ -70,6 +90,7 @@ class GlobalState extends ChangeNotifier {
     notifyListeners();
     saveTodoText(this);
   }
+
   void setColumns(List<KanbanGroup> value) {
     columns = value;
     notifyListeners();

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:core';
 import 'package:file_picker/file_picker.dart';
@@ -7,13 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:oxtxto/style.dart';
-import 'package:path/path.dart';
-import 'package:toml/toml.dart';
 
 import 'store.dart';
 import 'storage.dart';
 
 Future<void> handleSubmitNewTodo(GlobalState state, String text) async {
+  if (state.isEditing.status) {
+    state.removeTodo(state.isEditing.id);
+  }
   var newTodo = importTodoTextLine(text);
   if (newTodo.text.isEmpty) {
     return;
@@ -21,7 +21,6 @@ Future<void> handleSubmitNewTodo(GlobalState state, String text) async {
   if (newTodo.createdAt.isEmpty) {
     newTodo.createdAt = formatTimestamp(DateTime.now());
   }
-  //FIXME i shouldn't use @unsorted, it should be tags that wrong exists in columns
   state.addNewTodo(newTodo);
   // saveToml(localDBFile, state);
 }
@@ -32,7 +31,7 @@ Future<void> handleOnMoveGroupItemToGroup(
   for (var element in newTodos) {
     if (element.id == id) {
       //TODO refactor this
-      if(toColumnName == 'completed') {
+      if (toColumnName == 'completed') {
         element.isComplete = true;
       } else {
         element.tags =
@@ -43,27 +42,24 @@ Future<void> handleOnMoveGroupItemToGroup(
           ...{toColumnName, ...element.tags}
         ];
       }
-      
-      if(fromColumnName == 'completed') {
+
+      if (fromColumnName == 'completed') {
         element.isComplete = false;
-       }
+      }
     }
     state.setTodos(newTodos);
   }
 }
 
-void handleDeleteTodo(
-    GlobalState state,  id) async {
+void handleDeleteTodo(GlobalState state, id) async {
   var newTodos = state.todos;
-    state.setTodos(newTodos.where((element) => element.id != id).toList());
+  state.setTodos(newTodos.where((element) => element.id != id).toList());
 }
-void handleDeleteColumn(
-    GlobalState state,  id) async {
+
+void handleDeleteColumn(GlobalState state, id) async {
   var columns = state.columns;
-    state.setColumns(columns.where((element) => element.id != id).toList());
+  state.setColumns(columns.where((element) => element.id != id).toList());
 }
-
-
 
 Future<void> handleOnClickNavbar(GlobalState state, String page,
     int navbarIndex, BuildContext context) async {
@@ -168,7 +164,7 @@ String createTodoTextLine(
   var hasText = text.isNotEmpty ? text + ' ' : '';
   var hasProject = project != null && project.isNotEmpty ? project + ' ' : '';
   var hasTags = tags != null ? tags.join(' ') : '';
-  // Change columns from tags to select keys 
+  // Change columns from tags to select keys
   //column:doing
   return (isComplete +
           hasPriority +

@@ -3,14 +3,12 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
 
-
 //Local
 import 'keyboard.dart';
 import 'ui.dart';
 import 'store.dart';
 
 void main() async {
-
   runApp(ChangeNotifierProvider(
     child: GetMaterialApp(
       debugShowCheckedModeBanner: false,
@@ -21,7 +19,7 @@ void main() async {
       getPages: [
         GetPage(
             name: '/',
-             page: () =>
+            page: () =>
                 Consumer<GlobalState>(builder: (context, state, widget) {
                   return HomePage(state: state);
                 }),
@@ -30,7 +28,9 @@ void main() async {
             name: '/list',
             page: () =>
                 Consumer<GlobalState>(builder: (context, state, widget) {
-                  return ListPage(state: state);
+                  // NOTE: disabled until later
+                  // return ListPage(state: state);
+                  return HomePage(state: state);
                 }),
             transition: Transition.noTransition),
       ],
