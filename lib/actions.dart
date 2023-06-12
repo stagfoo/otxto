@@ -25,6 +25,10 @@ Future<void> handleSubmitNewTodo(GlobalState state, String text) async {
   // saveToml(localDBFile, state);
 }
 
+Future<void> handleCloseFolder(GlobalState state) async {
+  Get.toNamed('/open');
+}
+
 Future<void> handleOnMoveGroupItemToGroup(
     GlobalState state, fromColumnName, id, toColumnName) async {
   var newTodos = state.todos;
@@ -80,6 +84,7 @@ Future<void> handleOnClickNavbar(GlobalState state, String page,
       } catch (err) {
         // print(err);
       }
+      Get.toNamed('/');
       break;
     default:
       print('page: ' + page);

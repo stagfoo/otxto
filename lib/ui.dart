@@ -1,14 +1,11 @@
 //Libs
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:mix/mix.dart';
 import 'package:provider/provider.dart';
 
 //Local
 import 'actions.dart';
 import 'store.dart';
-import 'style.dart';
 
 //------------------------PAGE----------------------------
 final addNewTodoController = TextEditingController();
@@ -21,91 +18,125 @@ class HomePage extends StatelessWidget {
     return Scaffold(
         backgroundColor: Colors.black,
         floatingActionButton: DragTarget<String>(
-            builder: (context, candidateItems, rejectedItems) {
-          return FloatingActionButton(
-            backgroundColor: randomStringToHexColor('ff'),
-            onPressed: () {},
-            child: const Icon(Icons.delete),
-          );
-        }, onAccept: (String dragInfo) {
-          //TODO add animation
-          var info = dragInfo.split('_');
-          var id = info[0];
-          handleDeleteTodo(state, id);
-        }),
+          builder: (context, candidateItems, rejectedItems) {
+            return Container(
+              decoration: BoxDecoration(
+                color: randomStringToHexColor('ff'),
+                // border: Border.all(color: Colors.white, width: 1),
+                borderRadius: const BorderRadius.all(Radius.circular(4)),
+              ),
+              padding: const EdgeInsets.all(16),
+              child: const Icon(
+                Icons.delete,
+                color: Colors.black,
+              ),
+            );
+          },
+          onAccept: (String dragInfo) {
+            //TODO add animation
+            var info = dragInfo.split('_');
+            var id = info[0];
+            handleDeleteTodo(state, id);
+          },
+        ),
         body: Consumer<GlobalState>(builder: (context, state, widget) {
-          return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                  Expanded(
-                      child: TextFormField(
-                    controller: addNewTodoController,
-                    maxLines: 1,
-                    onTapOutside: (event) {
-                      addNewTodoController.clear();
-                      state.setEditingStatus('', false);
-                    },
-                    onFieldSubmitted: (text) {
-                      handleSubmitNewTodo(state, text);
-                      addNewTodoController.clear();
-                      state.setEditingStatus('', false);
-                    },
-                    decoration: const InputDecoration(
-                      hintText: 'Add new todo',
-                      prefixIcon: Icon(Icons.add),
-                    ),
-                  )),
-                  Navbar(state: state),
-                ]),
-                KanbanView(state: state)
-              ]);
+          return Padding(
+              padding: EdgeInsets.only(top: 16),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                      Expanded(
+                          child: TextFormField(
+                        controller: addNewTodoController,
+                        maxLines: 1,
+                        onTapOutside: (event) {
+                          addNewTodoController.clear();
+                          state.setEditingStatus('', false);
+                        },
+                        onFieldSubmitted: (text) {
+                          handleSubmitNewTodo(state, text.toLowerCase());
+                          addNewTodoController.clear();
+                          state.setEditingStatus('', false);
+                        },
+                        decoration: const InputDecoration(
+                          hintText: 'Add new todo in todo.txt format',
+                          prefixIcon: Icon(Icons.add),
+                        ),
+                      )),
+                      IconButton(
+                          iconSize: 20,
+                          onPressed: () {
+                            handleCloseFolder(state);
+                          },
+                          icon: const Icon(Icons.close))
+                    ]),
+                    KanbanView(state: state)
+                  ]));
         }));
   }
 }
 
-class ListPage extends StatelessWidget {
+class OpenPage extends StatelessWidget {
   final GlobalState state;
-  ListPage({Key? key, required this.state}) : super(key: key);
+  OpenPage({Key? key, required this.state}) : super(key: key);
   final addNewTodoController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.black,
         body: Consumer<GlobalState>(builder: (context, state, widget) {
-          return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                  Expanded(
-                      child: TextFormField(
-                    controller: addNewTodoController,
-                    maxLines: 1,
-                    onFieldSubmitted: (text) {
-                      handleSubmitNewTodo(state, text);
-                      addNewTodoController.clear();
-                    },
-                    decoration: const InputDecoration(
-                      hintText: 'Add new todo',
-                      prefixIcon: Icon(Icons.add),
-                    ),
-                  )),
-                  Navbar(state: state),
-                ]),
-                //TODO remove unused params
-                SingleColumn(columnId: '', columnName: '', state: state)
-              ]);
+          return OpenView(
+            state: state,
+          );
         }));
   }
 }
 
-class TodoView extends StatelessWidget {
-  const TodoView({Key? key, required state}) : super(key: key);
+class OpenView extends StatelessWidget {
+  const OpenView({Key? key, required state}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Consumer<GlobalState>(builder: (context, state, widget) {
-      return Container();
+      return Center(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+            ElevatedButton(
+              style:
+                  ButtonStyle(side: MaterialStateProperty.resolveWith((states) {
+                return const BorderSide(width: 1, color: Colors.white);
+              }), backgroundColor: MaterialStateColor.resolveWith((states) {
+                if (states.contains(MaterialState.hovered)) {
+                  return Colors.purpleAccent;
+                }
+                return Colors.black;
+              })),
+              onPressed: () {
+                handleOnClickNavbar(state, 'open', 0, context);
+              },
+              child: SizedBox(
+                  width: 240,
+                  child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          Container(
+                            child: const Icon(
+                              Icons.folder_outlined,
+                              color: Colors.white,
+                            ),
+                            margin: const EdgeInsets.only(right: 4),
+                          ),
+                          const Text("Open Folder",
+                              style: TextStyle(color: Colors.white)),
+                        ],
+                      ))),
+            ),
+            //TODO add recent?
+          ]));
     });
   }
 }
@@ -192,7 +223,8 @@ class TodoColumn extends StatelessWidget {
                     padding: const EdgeInsets.all(8),
                     margin: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.white, width: 1),
+                      color: const Color.fromARGB(30, 255, 255, 255),
+                      // border: Border.all(color: Colors.white, width: 1),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: ListView(children: listOfCards));
@@ -263,7 +295,7 @@ class SingleColumn extends StatelessWidget {
 
 class TodoCard extends StatelessWidget {
   final Todo todoItem;
-  TodoCard({Key? key, required this.todoItem}) : super(key: key);
+  const TodoCard({Key? key, required this.todoItem}) : super(key: key);
   final double width = 284;
   @override
   Widget build(BuildContext context) {
@@ -278,7 +310,7 @@ class TodoCard extends StatelessWidget {
               },
               child: Container(
                   width: width,
-                  clipBehavior: Clip.antiAlias,
+                  clipBehavior: Clip.hardEdge,
                   margin: const EdgeInsetsDirectional.only(bottom: 8),
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -287,18 +319,42 @@ class TodoCard extends StatelessWidget {
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                            width: width,
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                            ),
-                            padding: const EdgeInsets.all(8),
-                            alignment: Alignment.topLeft,
-                            child: Text(
-                              todoItem.text,
-                              style: const TextStyle(
-                                  color: Colors.black, fontSize: 12),
-                            )),
+                        Flex(
+                          direction: Axis.horizontal,
+                          children: [
+                            todoItem.priority.isNotEmpty
+                                ? Container(
+                                    width: 32,
+                                    height: 32,
+                                    alignment: Alignment.topLeft,
+                                    margin: const EdgeInsets.only(
+                                        top: 4, left: 4, bottom: 4),
+                                    decoration: const BoxDecoration(
+                                        color: Color.fromARGB(31, 0, 0, 0),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(4))),
+                                    child: Center(
+                                      child: Text(todoItem.priority,
+                                          style: const TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 12)),
+                                    ))
+                                : Container(),
+                            Container(
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                ),
+                                padding: const EdgeInsets.only(
+                                    top: 8, left: 8, bottom: 8),
+                                alignment: Alignment.topLeft,
+                                child: Text(
+                                  todoItem.text,
+                                  style: const TextStyle(
+                                      color: Colors.black, fontSize: 12),
+                                )),
+                          ],
+                        ),
                         Container(
                             width: width,
                             color: Colors.transparent,
@@ -319,8 +375,16 @@ class TodoCard extends StatelessWidget {
                                                 })
                                               ]))
                                       : Container(),
-                                  TimeStamp(text: todoItem.createdAt),
-                                ]))
+                                ])),
+                        Flex(
+                          direction: Axis.horizontal,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            TimeStamp(text: todoItem.createdAt),
+                            Flexible(child: ProjectItem(text: todoItem.project))
+                          ],
+                        ),
                       ]))));
     });
   }
@@ -335,25 +399,23 @@ class AddNewColumn extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<GlobalState>(builder: (context, state, widget) {
       return Container(
-          padding: EdgeInsets.symmetric(vertical: 36, horizontal: 8),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
           child: SizedBox(
               width: 200,
               child: TextFormField(
-                //TODO get all tags in a the file
-                autofillHints: ['@doing'],
                 controller: textController,
                 maxLines: 1,
                 onFieldSubmitted: (text) {
                   //TODO move to actions
                   var name = text[0] == '@' ? text : '@' + text;
-                  state.addNewColumn(name);
+                  state.addNewColumn(name.toLowerCase());
                   textController.clear();
                 },
                 decoration: const InputDecoration(
-                  hintText: 'Add new column',
+                  hintText: 'Add @tag column',
                   prefixIcon: Icon(Icons.view_kanban_outlined),
                   border: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white, width: 2),
+                    borderSide: BorderSide(color: Colors.transparent, width: 2),
                   ),
                 ),
               )));
@@ -369,7 +431,7 @@ class TagItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<GlobalState>(builder: (context, state, widget) {
       return Container(
-          margin: EdgeInsets.only(left: 4),
+          margin: const EdgeInsets.only(left: 4),
           decoration: BoxDecoration(
             color: randomStringToHexColor(text),
             borderRadius: BorderRadius.circular(4),
@@ -377,6 +439,28 @@ class TagItem extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
           child: Text(text,
               style: const TextStyle(color: Colors.white, fontSize: 10)));
+    });
+  }
+}
+
+class ProjectItem extends StatelessWidget {
+  final String text;
+  const ProjectItem({Key? key, required this.text}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<GlobalState>(builder: (context, state, widget) {
+      return text.isNotEmpty
+          ? Container(
+              margin: const EdgeInsets.only(left: 4),
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(66, 206, 206, 206),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+              child: Text("📁 " + text,
+                  style: const TextStyle(color: Colors.black, fontSize: 10)))
+          : Container();
     });
   }
 }
@@ -408,66 +492,31 @@ class ColumnTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<GlobalState>(builder: (context, state, widget) {
       return text.isNotEmpty
-          ? Flex(
-              direction: Axis.horizontal,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                  Container(
-                      height: 40,
-                      padding: const EdgeInsets.all(8),
-                      alignment: Alignment.center,
-                      child: Text(
-                        text,
-                        style: const TextStyle(color: Colors.white),
-                      )),
-                  !restrictedColumns.contains(text)
-                      ? IconButton(
-                          iconSize: 20,
-                          onPressed: () {
-                            handleDeleteColumn(state, text);
-                          },
-                          icon: Icon(Icons.close))
-                      : Container()
-                ])
+          ? SizedBox(
+              height: 48,
+              child: Flex(
+                  direction: Axis.horizontal,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                        height: 48,
+                        padding: const EdgeInsets.all(8),
+                        alignment: Alignment.center,
+                        child: Text(
+                          text,
+                          style: const TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold),
+                        )),
+                    !restrictedColumns.contains(text)
+                        ? IconButton(
+                            iconSize: 20,
+                            onPressed: () {
+                              handleDeleteColumn(state, text);
+                            },
+                            icon: const Icon(Icons.close))
+                        : Container()
+                  ]))
           : Container();
-    });
-  }
-}
-
-class Navbar extends StatelessWidget {
-  final GlobalState state;
-  const Navbar({Key? key, required this.state}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<GlobalState>(builder: (context, state, widget) {
-      return SizedBox(
-          child: ButtonBar(
-            alignment: MainAxisAlignment.spaceEvenly,
-            buttonPadding: const EdgeInsets.all(8),
-            children: [
-              IconButton(
-                icon: const Icon(Icons.folder_outlined),
-                onPressed: () {
-                  handleOnClickNavbar(state, 'open', 0, context);
-                },
-              ),
-              // NOTE: Disable
-              // IconButton(
-              //   icon: const Icon(Icons.list),
-              //   onPressed: () {
-              //     handleOnClickNavbar(state, 'list', 1, context);
-              //   },
-              // ),
-              IconButton(
-                icon: const Icon(Icons.view_kanban_outlined),
-                onPressed: () {
-                  handleOnClickNavbar(state, 'kanban', 2, context);
-                },
-              ),
-            ],
-          ),
-          width: 180);
     });
   }
 }
