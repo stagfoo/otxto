@@ -342,6 +342,7 @@ class TodoCard extends StatelessWidget {
                                     ))
                                 : Container(),
                             Container(
+                                width: 250,
                                 decoration: const BoxDecoration(
                                   color: Colors.white,
                                 ),
