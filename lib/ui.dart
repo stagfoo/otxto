@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 //Local
 import 'actions.dart';
 import 'store.dart';
+import 'style.dart';
 
 //------------------------PAGE----------------------------
 final addNewTodoController = TextEditingController();
@@ -26,10 +27,12 @@ class HomePage extends StatelessWidget {
                 borderRadius: const BorderRadius.all(Radius.circular(4)),
               ),
               padding: const EdgeInsets.all(16),
-              child: const Icon(
-                Icons.delete,
-                color: Colors.black,
-              ),
+              child: const Tooltip(
+                  message: "Drag a card here to delete",
+                  child: Icon(
+                    Icons.delete,
+                    color: Colors.black,
+                  )),
             );
           },
           onAccept: (String dragInfo) {
@@ -41,7 +44,7 @@ class HomePage extends StatelessWidget {
         ),
         body: Consumer<GlobalState>(builder: (context, state, widget) {
           return Padding(
-              padding: EdgeInsets.only(top: 16),
+              padding: const EdgeInsets.only(top: 16, left: 16),
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -60,16 +63,34 @@ class HomePage extends StatelessWidget {
                           state.setEditingStatus('', false);
                         },
                         decoration: const InputDecoration(
-                          hintText: 'Add new todo in todo.txt format',
-                          prefixIcon: Icon(Icons.add),
-                        ),
+                            hintText: 'Add new todo in todo.txt format',
+                            prefixIcon: Icon(Icons.add),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Colors.white, width: 2)),
+                            border: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Colors.white, width: 2))),
                       )),
-                      IconButton(
-                          iconSize: 20,
-                          onPressed: () {
-                            handleCloseFolder(state);
-                          },
-                          icon: const Icon(Icons.close))
+                      Container(
+                          decoration: BoxDecoration(
+                            color: randomStringToHexColor('ff'),
+                            // border: Border.all(color: Colors.white, width: 1),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(4)),
+                          ),
+                          padding: const EdgeInsets.all(6),
+                          margin: const EdgeInsets.only(left: 8, right: 8),
+                          child: IconButton(
+                              iconSize: 20,
+                              onPressed: () {
+                                handleCloseFolder(state);
+                              },
+                              tooltip: "Close this folder",
+                              icon: const Icon(
+                                Icons.close,
+                                color: Colors.black,
+                              )))
                     ]),
                     KanbanView(state: state)
                   ]));
@@ -204,7 +225,6 @@ class TodoColumn extends StatelessWidget {
     return Consumer<GlobalState>(builder: (context, state, widget) {
       return SizedBox(
           width: 300,
-          height: 700,
           child: ListView(scrollDirection: Axis.vertical, children: [
             ColumnTitle(text: columnName),
             DragTarget<String>(
@@ -213,21 +233,29 @@ class TodoColumn extends StatelessWidget {
                   var card = TodoCard(todoItem: to);
                   return Draggable<String>(
                     data: to.id + '_' + columnId,
-                    child: card,
-                    feedback: Material(child: card),
+                    child: Container(
+                      child: card,
+                      margin: EdgeInsets.only(bottom: 8),
+                    ),
+                    feedback: Material(
+                      child: card,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
                   );
                 }).toList();
                 return Container(
                     width: 300,
-                    height: 500,
-                    padding: const EdgeInsets.all(8),
-                    margin: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.only(bottom: 1000),
+                    margin: const EdgeInsets.only(right: 8),
                     decoration: BoxDecoration(
                       color: const Color.fromARGB(30, 255, 255, 255),
                       // border: Border.all(color: Colors.white, width: 1),
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    child: ListView(children: listOfCards));
+                    child: Flex(
+                      children: listOfCards,
+                      direction: Axis.vertical,
+                    ));
               },
               onAccept: (String dragInfo) {
                 var info = dragInfo.split('_');
@@ -274,7 +302,6 @@ class SingleColumn extends StatelessWidget {
                   );
                 }).toList();
                 return Container(
-                    width: 300,
                     height: 500,
                     padding: const EdgeInsets.all(8),
                     margin: const EdgeInsets.all(8),
@@ -311,7 +338,6 @@ class TodoCard extends StatelessWidget {
               child: Container(
                   width: width,
                   clipBehavior: Clip.hardEdge,
-                  margin: const EdgeInsetsDirectional.only(bottom: 8),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(4),
@@ -319,7 +345,7 @@ class TodoCard extends StatelessWidget {
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Flex(
+                        Wrap(
                           direction: Axis.horizontal,
                           children: [
                             todoItem.priority.isNotEmpty
@@ -342,18 +368,20 @@ class TodoCard extends StatelessWidget {
                                     ))
                                 : Container(),
                             Container(
-                                width: 250,
+                                clipBehavior: Clip.hardEdge,
                                 decoration: const BoxDecoration(
                                   color: Colors.white,
                                 ),
                                 padding: const EdgeInsets.only(
-                                    top: 8, left: 8, bottom: 8),
+                                    top: 8, left: 8, right: 8, bottom: 8),
                                 alignment: Alignment.topLeft,
-                                child: Text(
-                                  todoItem.text,
-                                  style: const TextStyle(
-                                      color: Colors.black, fontSize: 12),
-                                )),
+                                child: Wrap(children: [
+                                  Text(
+                                    todoItem.text,
+                                    style: const TextStyle(
+                                        color: Colors.black, fontSize: 12),
+                                  )
+                                ])),
                           ],
                         ),
                         Container(
@@ -400,26 +428,28 @@ class AddNewColumn extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<GlobalState>(builder: (context, state, widget) {
       return Container(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+          padding: const EdgeInsets.only(top: 8, left: 8),
           child: SizedBox(
               width: 200,
+              height: 48,
               child: TextFormField(
-                controller: textController,
-                maxLines: 1,
-                onFieldSubmitted: (text) {
-                  //TODO move to actions
-                  var name = text[0] == '@' ? text : '@' + text;
-                  state.addNewColumn(name.toLowerCase());
-                  textController.clear();
-                },
-                decoration: const InputDecoration(
-                  hintText: 'Add @tag column',
-                  prefixIcon: Icon(Icons.view_kanban_outlined),
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.transparent, width: 2),
-                  ),
-                ),
-              )));
+                  controller: textController,
+                  maxLines: 1,
+                  onFieldSubmitted: (text) {
+                    //TODO move to actions
+                    var name = text[0] == '@' ? text : '@' + text;
+                    state.addNewColumn(name.toLowerCase());
+                    textController.clear();
+                  },
+                  decoration: const InputDecoration(
+                      hintText: 'Add @tag column',
+                      prefixIcon: Icon(Icons.view_kanban_outlined),
+                      enabledBorder: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Colors.white, width: 2)),
+                      border: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Colors.white, width: 2))))));
     });
   }
 }
@@ -492,23 +522,36 @@ class ColumnTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<GlobalState>(builder: (context, state, widget) {
+      bool isRestrictedColumn = restrictedColumns.contains(text);
       return text.isNotEmpty
-          ? SizedBox(
-              height: 48,
+          ? Container(
+              decoration: BoxDecoration(
+                  color: isRestrictedColumn
+                      ? Colors.black
+                      : randomStringToHexColor(text),
+                  // border: Border.all(color: Colors.white, width: 1),
+                  borderRadius: const BorderRadius.all(Radius.circular(4)),
+                  border: Border.all(color: Colors.white, width: 2)),
+              margin:
+                  const EdgeInsets.only(top: 8, bottom: 8, left: 0, right: 8),
+              height: 52,
+              width: 300,
               child: Flex(
                   direction: Axis.horizontal,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                        height: 48,
+                        //TODO rewrite
+                        width: 300 - (36 + (isRestrictedColumn ? 0 : 24)),
                         padding: const EdgeInsets.all(8),
                         alignment: Alignment.center,
                         child: Text(
                           text,
+                          textAlign: TextAlign.center,
                           style: const TextStyle(
                               color: Colors.white, fontWeight: FontWeight.bold),
                         )),
-                    !restrictedColumns.contains(text)
+                    !isRestrictedColumn
                         ? IconButton(
                             iconSize: 20,
                             onPressed: () {
