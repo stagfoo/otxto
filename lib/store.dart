@@ -48,8 +48,8 @@ class GlobalState extends ChangeNotifier {
   List<Todo> todos = [];
   List<KanbanGroup> columns = [];
   late Todo selectedItem;
-  late String todoFilePath;
-  late String settingsFilePath;
+  late String todoFilePath = '';
+  late String settingsFilePath = '';
   EditingState isEditing = EditingState(status: false, id: '');
 
   void setTodoFilePath(String path) {
