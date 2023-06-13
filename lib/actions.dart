@@ -77,6 +77,7 @@ Future<void> handleOnClickNavbar(GlobalState state, String page,
         // Create a dialog for errors to open
         var rootFolder = await pickDir();
         var files = await getFilesFromFolder(rootFolder!);
+
         loadSettingFile(state,
             files.where((element) => element.path.contains(localDBFile)).first);
         loadTodoFile(state,
@@ -114,33 +115,13 @@ loadTodoFile(GlobalState state, File file) async {
   });
 }
 
-Future<List<dynamic>> getFilesFromFolder(String root) async {
-  try {
-    var list = [];
-    List<FileSystemEntity> contents = Directory(root).listSync();
-    for (var fileOrDir in contents) {
-      print(fileOrDir);
-      if (fileOrDir is File) {
-        list.add(fileOrDir);
-      }
-    }
-    return list;
-  } catch (err) {
-    print("Get Files from folder failed or canceled");
-    rethrow;
-  }
-}
-
-Future<String?> pickDir() async {
-  String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
-
-  if (selectedDirectory == null) {
-    return '';
-  }
-  return selectedDirectory;
-}
-
 saveTodoText(GlobalState state) async {
+  if (state.todoFilePath == '') {
+    var rootFolder = await pickDir();
+    var files = await getFilesFromFolder(rootFolder!);
+    state.setTodoFilePath(
+        files.where((element) => element.path.contains('.txt')).first);
+  }
   var file = File(state.todoFilePath);
   // get todos and convert to string and write to file
   var todos = state.todos;
