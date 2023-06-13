@@ -1,0 +1,28 @@
+name: otxto
+version: 0.1.0
+summary: otxto
+description: a todo.txt compliant kanban board
+
+confinement: strict
+base: core18
+grade: stable
+
+slots:
+  dbus-otxto: # adjust accordingly to your app name
+    interface: dbus
+    bus: session
+    name: org.bar.otxto # adjust accordingly to your app name and
+    
+apps:
+  otxto:
+    command: otxto
+    extensions: [flutter-master] # Where "master" defines which Flutter channel to use for the build
+    plugs:
+    - network
+    slots:
+      - dbus-otxto
+parts:
+  otxto:
+    source: .
+    plugin: flutter
+    flutter-target: lib/main.dart # The main entry-point file of the application

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=otxto
+Comment=a todo.txt compliant kanban board
+Exec=otxto 
+Icon=${SNAP}/meta/gui/otxto.png # replace name to your app name
+Terminal=false
+Type=Application
+Categories=Productivity
