@@ -44,7 +44,7 @@ class HomePage extends StatelessWidget {
         ),
         body: Consumer<GlobalState>(builder: (context, state, widget) {
           return Padding(
-              padding: const EdgeInsets.only(top: 16, left: 16),
+              padding: const EdgeInsets.only(top: 40, left: 16),
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -58,7 +58,7 @@ class HomePage extends StatelessWidget {
                           state.setEditingStatus('', false);
                         },
                         onFieldSubmitted: (text) {
-                          handleSubmitNewTodo(state, text.toLowerCase());
+                          handleSubmitNewTodo(state, text);
                           addNewTodoController.clear();
                           state.setEditingStatus('', false);
                         },
@@ -92,6 +92,9 @@ class HomePage extends StatelessWidget {
                                 color: Colors.black,
                               )))
                     ]),
+                    Container(
+                      height: 16,
+                    ),
                     KanbanView(state: state)
                   ]));
         }));
@@ -532,8 +535,7 @@ class ColumnTitle extends StatelessWidget {
                   // border: Border.all(color: Colors.white, width: 1),
                   borderRadius: const BorderRadius.all(Radius.circular(4)),
                   border: Border.all(color: Colors.white, width: 2)),
-              margin:
-                  const EdgeInsets.only(top: 8, bottom: 8, left: 0, right: 8),
+              margin: const EdgeInsets.only(bottom: 8, left: 0, right: 8),
               height: 52,
               width: 300,
               child: Flex(
