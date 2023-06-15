@@ -3,7 +3,7 @@ on:
     tags:
       - 'v*'
 
-name: Create Mac OS app
+name: Create IOS app
 
 jobs:
   build:
@@ -20,6 +20,6 @@ jobs:
       with:
         name: bundle
         path: |
-          /build/macos/Build/Products/Release
+          /Users/runner/work/otxto/otxto/build/ios/iphoneos/
         retention-days: 1
 
