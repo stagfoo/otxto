@@ -21,6 +21,6 @@ jobs:
       with:
         name: bundle
         path: |
-          /Users/runner/work/otxto/otxto/build/ios/iphoneos/
+          /build/macos/Build/Products/Release
         retention-days: 1
 
