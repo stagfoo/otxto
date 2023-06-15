@@ -26,4 +26,5 @@ jobs:
         name: bundle
         path: |
           build/app/outputs/bundle/release/
+          build/app/outputs/flutter-apk/
         retention-days: 1
