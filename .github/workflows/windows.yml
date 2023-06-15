@@ -19,5 +19,5 @@ jobs:
        with:
         name: bundle
         path: |
-          build/app/outputs/bundle/release/
+          build\windows\runner\Release\
         retention-days: 1
