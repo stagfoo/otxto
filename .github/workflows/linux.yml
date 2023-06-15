@@ -22,5 +22,5 @@ jobs:
        with:
         name: bundle
         path: |
-          /Users/runner/work/otxto/otxto/build/ios/iphoneos/
+          /build/linux/x64/debug/bundle
         retention-days: 1
