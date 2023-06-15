@@ -1,0 +1,26 @@
+on:
+  push:
+    tags:
+      - 'v*'
+
+name: Create Mac app
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+        architecture: x64
+    - run: flutter pub get
+    - run: flutter config --enable-macos-desktop
+    - run: flutter build macos
+    - uses: actions/upload-artifact@v3
+      with:
+        name: bundle
+        path: |
+          /Users/runner/work/otxto/otxto/build/ios/iphoneos/
+        retention-days: 1
+
