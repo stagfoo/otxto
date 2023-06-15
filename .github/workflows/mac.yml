@@ -1,0 +1,25 @@
+on:
+  push:
+    tags:
+      - 'v*'
+
+name: Create Release
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+        architecture: x64
+    - run: flutter pub get
+    - run: flutter build ios --release --no-codesign
+    - uses: actions/upload-artifact@v3
+      with:
+        name: bundle
+        path: |
+          /build/macos/Build/Products/Release
+        retention-days: 1
+
