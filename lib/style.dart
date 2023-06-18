@@ -49,3 +49,7 @@ getRandomColorClass(String word) {
     return otxtoColorsAsHexList[4];
   }
 }
+
+class DesignSystem {
+  int gutter = 8;
+}
