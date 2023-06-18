@@ -1,0 +1,30 @@
+on:
+  push:
+    tags:
+      - 'v*'
+
+name: Create Android APK
+
+jobs:
+  build:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-java@v2
+      with:
+        distribution: 'zulu'
+        java-version: '11'
+    - uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.7.7'
+    - run: flutter pub get
+    - run: flutter build apk
+    - run: flutter build appbundle
+    - uses: actions/upload-artifact@v3
+      with:
+        name: bundle
+        path: |
+          build/app/outputs/bundle/release/
+          build/app/outputs/flutter-apk/
+        retention-days: 1

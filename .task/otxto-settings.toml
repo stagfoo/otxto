@@ -3,6 +3,3 @@ columns=['@todo', '@doing', '@done', '@pkm']
 defaultFields=['createdAt', 'completedAt']
 completeColumn=true
 allColumn=true
-keyboard_shortcut_complete='x'
-keyboard_shortcut_move_right='k'
-keyboard_shortcut_move_left='j'

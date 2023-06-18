@@ -6,7 +6,7 @@ Future<String?> pickDir() async {
   String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
 
   if (selectedDirectory == null) {
-    return '';
+    throw Error();
   }
   return selectedDirectory;
 }
@@ -61,6 +61,7 @@ Future<List<dynamic>> getFilesFromFolder(String root) async {
     var list = [];
     List<FileSystemEntity> contents = Directory(root).listSync();
     for (var fileOrDir in contents) {
+      print(fileOrDir);
       if (fileOrDir is File) {
         list.add(fileOrDir);
       }

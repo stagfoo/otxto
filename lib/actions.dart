@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:core';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:oxtxto/style.dart';
 
 import 'store.dart';
+import 'middleware.dart';
 import 'storage.dart';
 
 Future<void> handleSubmitNewTodo(GlobalState state, String text) async {
@@ -22,11 +22,23 @@ Future<void> handleSubmitNewTodo(GlobalState state, String text) async {
     newTodo.createdAt = formatTimestamp(DateTime.now());
   }
   state.addNewTodo(newTodo);
-  // saveToml(localDBFile, state);
+  //saveToml(state.settingsFilePath, state);
 }
 
+createTodoFile(GlobalState state) {}
+createSettingsFile(GlobalState state) {}
+
 Future<void> handleCloseFolder(GlobalState state) async {
+  if (state.todoFilePath == '') {
+    //Split into 2 functions
+    // check all files persmission android
+    createDefaultFiles(state);
+  }
   Get.toNamed('/open');
+  state.setColumns([]);
+  state.setTodos([]);
+  state.setTodoFilePath('');
+  state.setSettingsFilePath('');
 }
 
 Future<void> handleOnMoveGroupItemToGroup(
@@ -65,6 +77,15 @@ void handleDeleteColumn(GlobalState state, id) async {
   state.setColumns(columns.where((element) => element.id != id).toList());
 }
 
+void createDefaultFiles(GlobalState state) async {
+  var rootFolder = await pickDir();
+  //TODO add permission dialog
+  state.setTodoFilePath(rootFolder!);
+  state.setSettingsFilePath(rootFolder);
+  saveToml(rootFolder + '/' + state.settingsFilePath, state);
+  saveTodoText(state);
+}
+
 Future<void> handleOnClickNavbar(GlobalState state, String page,
     int navbarIndex, BuildContext context) async {
   switch (page) {
@@ -77,24 +98,34 @@ Future<void> handleOnClickNavbar(GlobalState state, String page,
         // Create a dialog for errors to open
         var rootFolder = await pickDir();
         var files = await getFilesFromFolder(rootFolder!);
-
-        loadSettingFile(state,
-            files.where((element) => element.path.contains(localDBFile)).first);
-        loadTodoFile(state,
-            files.where((element) => element.path.contains('.txt')).first);
+        if (files.isNotEmpty) {
+          loadSettingFile(
+              state,
+              files
+                  .where((element) => element.path.contains(localDBFile))
+                  .first);
+          loadTodoFile(state,
+              files.where((element) => element.path.contains('.txt')).first);
+        } else {
+          createDefaultFiles(state);
+        }
+        Get.toNamed('/');
       } catch (err) {
-        // print(err);
+        print(err);
+        debugPrint("Failed to open");
       }
-      Get.toNamed('/');
       break;
     default:
-      print('page: ' + page);
       Get.toNamed('/');
   }
   state.saveNavbarIndex(navbarIndex);
 }
 
 loadSettingFile(GlobalState state, File settingsFile) async {
+  if (settingsFile.path.isEmpty) {
+    print('misisng text file');
+    return;
+  }
   loadToml(settingsFile.path).then((value) {
     List<String> columns = List<String>.from((value['settings']['columns']));
     state.setColumns(columns.map((e) => KanbanGroup(id: e)).toList());
@@ -103,8 +134,11 @@ loadSettingFile(GlobalState state, File settingsFile) async {
 }
 
 loadTodoFile(GlobalState state, File file) async {
+  if (file.path.isEmpty) {
+    debugPrint('misisng text file');
+    return;
+  }
   state.setTodoFilePath(file.path);
-
   file.openRead().transform(utf8.decoder).listen((value) {
     var lines = value.split('\n');
     List<Todo> todoList = [];
@@ -116,14 +150,7 @@ loadTodoFile(GlobalState state, File file) async {
 }
 
 saveTodoText(GlobalState state) async {
-  if (state.todoFilePath == '') {
-    var rootFolder = await pickDir();
-    var files = await getFilesFromFolder(rootFolder!);
-    state.setTodoFilePath(
-        files.where((element) => element.path.contains('.txt')).first);
-  }
   var file = File(state.todoFilePath);
-  // get todos and convert to string and write to file
   var todos = state.todos;
   var todoText = todos
       .map((e) => createTodoTextLine(e.isComplete, e.text, e.priority,
@@ -151,8 +178,6 @@ String createTodoTextLine(
   var hasProject =
       project != null && project.isNotEmpty ? '+' + project + ' ' : '';
   var hasTags = tags != null ? tags.join(' ') : '';
-  // Change columns from tags to select keys
-  //column:doing
   return (isComplete +
           hasPriority +
           hasCompletedAt +
@@ -165,7 +190,7 @@ String createTodoTextLine(
 
 Todo importTodoTextLine(String line) {
   var isPriority = RegExp(r'\([A-Z]\) ');
-  var isComplete = RegExp(r'x ');
+  var isComplete = RegExp(r'^x ');
   var isDateLike = RegExp(r'\d{4}-\d{2}-\d{2}');
   var isProject = RegExp(r' \+[a-z0-9]+');
   var isTag = RegExp(r'@[a-z]+(-?[a-z]+)');
