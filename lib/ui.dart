@@ -36,7 +36,7 @@ class HomePage extends StatelessWidget {
             );
           },
           onAccept: (String dragInfo) {
-            //TODO add animation
+            //TODO replace with mascot
             var info = dragInfo.split('_');
             var id = info[0];
             handleDeleteTodo(state, id);
