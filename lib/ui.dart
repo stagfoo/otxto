@@ -392,9 +392,7 @@ class AddNewColumn extends StatelessWidget {
                   controller: textController,
                   maxLines: 1,
                   onFieldSubmitted: (text) {
-                    //TODO move to actions
-                    var name = text[0] == '@' ? text : '@' + text;
-                    state.addNewColumn(name.toLowerCase());
+                    handleAddNewColumn(state, text);
                     textController.clear();
                   },
                   decoration: const InputDecoration(
