@@ -276,53 +276,6 @@ class TodoColumn extends StatelessWidget {
   }
 }
 
-class SingleColumn extends StatelessWidget {
-  final String columnName;
-  final String columnId;
-  final GlobalState state;
-  const SingleColumn(
-      {Key? key,
-      required this.columnName,
-      required this.columnId,
-      required this.state})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<GlobalState>(builder: (context, state, widget) {
-      return SizedBox(
-          height: 700,
-          child: ListView(scrollDirection: Axis.vertical, children: [
-            ColumnTitle(text: columnName),
-            DragTarget<String>(
-              builder: (context, candidateItems, rejectedItems) {
-                var list = state.todos.map((to) {
-                  var card = TodoCard(todoItem: to);
-                  return Draggable<String>(
-                    data: to.id + '_' + columnId,
-                    child: card,
-                    feedback: Material(child: card),
-                  );
-                }).toList();
-                return Container(
-                    height: 500,
-                    padding: const EdgeInsets.all(8),
-                    margin: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.white, width: 1),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: ListView(children: list));
-              },
-              onAccept: (String dragInfo) {
-                //TODO allow reordering
-              },
-            )
-          ]));
-    });
-  }
-}
-
 class TodoCard extends StatelessWidget {
   final Todo todoItem;
   const TodoCard({Key? key, required this.todoItem}) : super(key: key);
