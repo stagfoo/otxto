@@ -1,5 +1,5 @@
 [settings]
-columns=['@doing', '@next']
-defaultFields=['createdAt', 'completedAt']
-completeColumn=true
-allColumn=true
+columns = ['@ux', '@functions', '@doing']
+defaultFields = ['createdAt', 'completedAt']
+completeColumn = true
+allColumn = true

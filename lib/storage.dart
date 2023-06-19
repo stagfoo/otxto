@@ -22,25 +22,22 @@ loadToml(String name) async {
   return documents;
 }
 
-saveToml(String name, GlobalState state) async {
+saveToml(String path, GlobalState state) async {
   Map<String, dynamic> tomlTemplate = {
-    'settings': [
+    'settings': 
       <String, dynamic>{
         'columns': state.columns.map(
           (e) {
             return e.id;
           },
-        )
-      },
-      <String, dynamic>{
-        'defaultFields': ['createdAt', 'completedAt']
-      },
-      //TODO get from settings state
-      <String, dynamic>{'completeColumn': true},
-      <String, dynamic>{'allColumn': true}
-    ]
+        ),
+        'defaultFields': ['createdAt', 'completedAt'],
+        'completeColumn': true,
+        'allColumn': true,
+      }
+    
   };
   var tomlDB = TomlDocument.fromMap(tomlTemplate).toString();
-  var file = File(localDBFile);
+  var file = File(path);
   file.writeAsString(tomlDB);
 }
