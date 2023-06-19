@@ -176,7 +176,7 @@ String createTodoTextLine(
   var hasCreatedAt = createdAt.isNotEmpty ? createdAt + ' ' : '';
   var hasText = text.isNotEmpty ? text + ' ' : '';
   var hasProject =
-      project != null && project.isNotEmpty ? '+' + project + ' ' : '';
+      project != null && project.isNotEmpty ? project + ' ' : '';
   var hasTags = tags != null ? tags.join(' ') : '';
   return (isComplete +
           hasPriority +
@@ -221,7 +221,7 @@ Todo importTodoTextLine(String line) {
   nextTodoItem.completedAt = dates.length > 1 ? dates[1] : '';
   nextTodoItem.createdAt = dates.isNotEmpty ? dates[0] : '';
   nextTodoItem.project =
-      project.isNotEmpty ? project.first.replaceAll('+', '') : '';
+      project.isNotEmpty ? project.first : '';
   nextTodoItem.isComplete = complete;
   return nextTodoItem;
 }
