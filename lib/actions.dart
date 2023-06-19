@@ -31,7 +31,6 @@ createSettingsFile(GlobalState state) {}
 
 Future<void> handleCloseFolder(GlobalState state) async {
   saveTodoText(state);
-  print(state.settingsFilePath);
   saveToml(state.settingsFilePath, state);
   if (state.todoFilePath == '') {
     //Split into 2 functions
