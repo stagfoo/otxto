@@ -9,6 +9,7 @@ import 'package:oxtxto/style.dart';
 import 'store.dart';
 import 'middleware.dart';
 import 'storage.dart';
+import 'utils.dart';
 
 Future<void> handleSubmitNewTodo(GlobalState state, String text) async {
   if (state.isEditing.status) {
@@ -22,13 +23,15 @@ Future<void> handleSubmitNewTodo(GlobalState state, String text) async {
     newTodo.createdAt = formatTimestamp(DateTime.now());
   }
   state.addNewTodo(newTodo);
-  //saveToml(state.settingsFilePath, state);
+  saveTodoText(state);
 }
 
 createTodoFile(GlobalState state) {}
 createSettingsFile(GlobalState state) {}
 
 Future<void> handleCloseFolder(GlobalState state) async {
+  saveTodoText(state);
+  saveToml(state.settingsFilePath, state);
   if (state.todoFilePath == '') {
     //Split into 2 functions
     // check all files persmission android
@@ -65,16 +68,19 @@ Future<void> handleOnMoveGroupItemToGroup(
     }
     state.setTodos(newTodos);
   }
+  saveTodoText(state);
 }
 
 void handleDeleteTodo(GlobalState state, id) async {
   var newTodos = state.todos;
   state.setTodos(newTodos.where((element) => element.id != id).toList());
+  saveTodoText(state);
 }
 
 void handleDeleteColumn(GlobalState state, id) async {
   var columns = state.columns;
   state.setColumns(columns.where((element) => element.id != id).toList());
+  saveToml(state.settingsFilePath, state);
 }
 
 void createDefaultFiles(GlobalState state) async {
@@ -153,85 +159,8 @@ saveTodoText(GlobalState state) async {
   var file = File(state.todoFilePath);
   var todos = state.todos;
   var todoText = todos
-      .map((e) => createTodoTextLine(e.isComplete, e.text, e.priority,
-          e.completedAt, e.createdAt, e.project, e.tags))
+      .map((e) => createTodoTextLine(e))
       .join('\n');
   file.writeAsString('', flush: true);
   file.writeAsString(todoText, flush: true);
-}
-
-//TODO refactor to Todo
-String createTodoTextLine(
-    bool complete,
-    String text,
-    String? priority,
-    String? completedAt,
-    String createdAt,
-    String? project,
-    List<String>? tags) {
-  var isComplete = complete ? 'x ' : '';
-  var hasPriority =
-      priority != null && priority.isNotEmpty ? priority + ' ' : '';
-  var hasCompletedAt = completedAt != null ? completedAt + ' ' : '';
-  var hasCreatedAt = createdAt.isNotEmpty ? createdAt + ' ' : '';
-  var hasText = text.isNotEmpty ? text + ' ' : '';
-  var hasProject =
-      project != null && project.isNotEmpty ? project + ' ' : '';
-  var hasTags = tags != null ? tags.join(' ') : '';
-  return (isComplete +
-          hasPriority +
-          hasCompletedAt +
-          hasCreatedAt +
-          hasText +
-          hasProject +
-          hasTags)
-      .replaceAll('  ', ' ');
-}
-
-Todo importTodoTextLine(String line) {
-  var isPriority = RegExp(r'\([A-Z]\) ');
-  var isComplete = RegExp(r'^x ');
-  var isDateLike = RegExp(r'\d{4}-\d{2}-\d{2}');
-  var isProject = RegExp(r' \+[a-z0-9]+');
-  var isTag = RegExp(r'@[a-z]+(-?[a-z]+)');
-
-  var complete = isComplete.hasMatch(line);
-  var priority =
-      isPriority.allMatches(line).map((e) => e.group(0).toString().trim());
-  var project =
-      isProject.allMatches(line).map((e) => e.group(0).toString().trim());
-  var dates = isDateLike
-      .allMatches(line)
-      .map((e) => e.group(0).toString().trim())
-      .toList();
-  var tags =
-      isTag.allMatches(line).map((e) => e.group(0).toString().trim()).toList();
-  var text = line
-      .replaceAll(isComplete, '')
-      .replaceAll(isPriority, '')
-      .replaceAll(isDateLike, '')
-      .replaceAll(isProject, '')
-      .replaceAll(isTag, '')
-      .trim();
-
-  var nextTodoItem = Todo(
-      text: text,
-      tags: tags,
-      priority: priority.isNotEmpty ? priority.first : '');
-  nextTodoItem.completedAt = dates.length > 1 ? dates[1] : '';
-  nextTodoItem.createdAt = dates.isNotEmpty ? dates[0] : '';
-  nextTodoItem.project =
-      project.isNotEmpty ? project.first : '';
-  nextTodoItem.isComplete = complete;
-  return nextTodoItem;
-}
-
-// Utility functions
-
-String formatTimestamp(DateTime timestamp) {
-  return "${timestamp.year.toString()}-${timestamp.month.toString().padLeft(2, '0')}-${timestamp.day.toString().padLeft(2, '0')}";
-}
-
-Color randomStringToHexColor(String string) {
-  return HexColor.fromHex(getRandomColorClass(string));
 }

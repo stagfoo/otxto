@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:short_uuids/short_uuids.dart';
 
-import 'actions.dart';
+import 'utils.dart';
 
 const localDBFile = 'otxto-settings.toml';
 const shortId = ShortUuid();
@@ -24,8 +24,7 @@ class Todo {
   });
   @override
   String toString() {
-    return createTodoTextLine(
-        isComplete, text, priority, completedAt, createdAt, project, tags);
+    return createTodoTextLine(this);
   }
 }
 
@@ -65,19 +64,16 @@ class GlobalState extends ChangeNotifier {
   void addNewTodo(Todo todo) {
     todos.add(todo);
     notifyListeners();
-    saveTodoText(this);
   }
 
   void removeTodo(String id) {
     setTodos(todos.where((element) => element.id != id).toList());
     notifyListeners();
-    saveTodoText(this);
   }
 
   void setEditingStatus(String id, bool status) {
     isEditing = EditingState(status: status, id: id);
     notifyListeners();
-    saveTodoText(this);
   }
 
   void addNewColumn(String id) {
@@ -88,7 +84,6 @@ class GlobalState extends ChangeNotifier {
   void setTodos(List<Todo> value) {
     todos = value;
     notifyListeners();
-    saveTodoText(this);
   }
 
   void setColumns(List<KanbanGroup> value) {
@@ -99,7 +94,6 @@ class GlobalState extends ChangeNotifier {
   void updateTags(int index, List<String> tags) {
     todos[index].tags = tags;
     notifyListeners();
-    saveTodoText(this);
   }
 
   void saveNavbarIndex(int value) {
