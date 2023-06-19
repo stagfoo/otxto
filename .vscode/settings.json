@@ -21,6 +21,11 @@
             "code": ":soup:",
             "description": "Anything documentation related.",
         },
+        {
+            "emoji": "👨‍🔬 tests ░",
+            "code": ":test:",
+            "description": "Anything test related.",
+        },
                 {
             "emoji": "💽 assets ░",
             "code": ":style:",

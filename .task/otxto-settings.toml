@@ -1,5 +1,5 @@
 [settings]
-columns=['@todo', '@doing', '@done', '@pkm']
+columns=['@doing', '@next']
 defaultFields=['createdAt', 'completedAt']
 completeColumn=true
 allColumn=true

@@ -1,8 +1,0 @@
-x completed tasks should be its own column and not use a tag 
- completed tasks column can be turned off in settings 
-x unsorted tasks should be all tasks that tags don't match a column 
- build pipeline using marketplace/actions/flutter-action 
- create files if they don't exist @todo
- refactor the todo export 
- 2023-06-15 move the todo header out of the listview 
-x 2023-06-15 fix x being used as complete 
