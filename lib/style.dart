@@ -53,3 +53,7 @@ getRandomColorClass(String word) {
 class DesignSystem {
   int gutter = 8;
 }
+
+Color randomStringToHexColor(String string) {
+  return HexColor.fromHex(getRandomColorClass(string));
+}
