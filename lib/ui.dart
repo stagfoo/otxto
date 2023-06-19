@@ -414,16 +414,18 @@ class TagItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Color bgColor = randomStringToHexColor(text);
+    Color textColor = bgColor.computeLuminance() > 0.5 ? Colors.black : Colors.white;
     return Consumer<GlobalState>(builder: (context, state, widget) {
       return Container(
           margin: const EdgeInsets.only(left: 4),
           decoration: BoxDecoration(
-            color: randomStringToHexColor(text),
+            color: bgColor,
             borderRadius: BorderRadius.circular(4),
           ),
           padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
           child: Text(text,
-              style: const TextStyle(color: Colors.white, fontSize: 10)));
+              style: TextStyle(color: textColor, fontSize: 10)));
     });
   }
 }
@@ -477,18 +479,18 @@ class ColumnTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<GlobalState>(builder: (context, state, widget) {
       bool isRestrictedColumn = restrictedColumns.contains(text);
+      Color bgColor = isRestrictedColumn
+                      ? Colors.black
+                      : randomStringToHexColor(text);
+      Color textColor = bgColor.computeLuminance() > 0.5 ? Colors.black : Colors.white;
       return text.isNotEmpty
           ? Container(
               decoration: BoxDecoration(
-                  color: isRestrictedColumn
-                      ? Colors.black
-                      : randomStringToHexColor(text),
-                  // border: Border.all(color: Colors.white, width: 1),
+                  color: bgColor,
                   borderRadius: const BorderRadius.all(Radius.circular(4)),
                   border: Border.all(color: Colors.white, width: 2)),
               margin: const EdgeInsets.only(bottom: 8, left: 0, right: 8),
               height: 52,
-              width: 300,
               child: Flex(
                   direction: Axis.horizontal,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -501,12 +503,13 @@ class ColumnTitle extends StatelessWidget {
                         child: Text(
                           text,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              color: textColor, fontWeight: FontWeight.bold),
                         )),
                     !isRestrictedColumn
                         ? IconButton(
                             iconSize: 20,
+                            color: textColor,
                             onPressed: () {
                               handleDeleteColumn(state, text);
                             },

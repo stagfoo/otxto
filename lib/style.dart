@@ -23,7 +23,7 @@ extension HexColor on Color {
 getRandomColorClass(String word) {
   List<String> otxtoColorsAsHexList = [
     '#7E4FED',
-    '#C8FF04',
+    '#FFD60A',
     '#FF6EBD',
     '#04E1FF',
     '#15DA2A',
@@ -49,6 +49,8 @@ getRandomColorClass(String word) {
     return otxtoColorsAsHexList[4];
   }
 }
+
+// #330C2F
 
 class DesignSystem {
   int gutter = 8;
