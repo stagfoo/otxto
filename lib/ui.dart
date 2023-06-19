@@ -415,7 +415,8 @@ class TagItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color bgColor = randomStringToHexColor(text);
-    Color textColor = bgColor.computeLuminance() > 0.5 ? Colors.black : Colors.white;
+    Color textColor =
+        bgColor.computeLuminance() > 0.5 ? Colors.black : Colors.white;
     return Consumer<GlobalState>(builder: (context, state, widget) {
       return Container(
           margin: const EdgeInsets.only(left: 4),
@@ -424,8 +425,7 @@ class TagItem extends StatelessWidget {
             borderRadius: BorderRadius.circular(4),
           ),
           padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-          child: Text(text,
-              style: TextStyle(color: textColor, fontSize: 10)));
+          child: Text(text, style: TextStyle(color: textColor, fontSize: 10)));
     });
   }
 }
@@ -479,10 +479,10 @@ class ColumnTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<GlobalState>(builder: (context, state, widget) {
       bool isRestrictedColumn = restrictedColumns.contains(text);
-      Color bgColor = isRestrictedColumn
-                      ? Colors.black
-                      : randomStringToHexColor(text);
-      Color textColor = bgColor.computeLuminance() > 0.5 ? Colors.black : Colors.white;
+      Color bgColor =
+          isRestrictedColumn ? Colors.black : randomStringToHexColor(text);
+      Color textColor =
+          bgColor.computeLuminance() > 0.5 ? Colors.black : Colors.white;
       return text.isNotEmpty
           ? Container(
               decoration: BoxDecoration(
