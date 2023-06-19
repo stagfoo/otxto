@@ -31,6 +31,7 @@ createSettingsFile(GlobalState state) {}
 
 Future<void> handleCloseFolder(GlobalState state) async {
   saveTodoText(state);
+  print(state.settingsFilePath);
   saveToml(state.settingsFilePath, state);
   if (state.todoFilePath == '') {
     //Split into 2 functions
@@ -80,6 +81,11 @@ void handleDeleteTodo(GlobalState state, id) async {
 void handleDeleteColumn(GlobalState state, id) async {
   var columns = state.columns;
   state.setColumns(columns.where((element) => element.id != id).toList());
+  saveToml(state.settingsFilePath, state);
+}
+void handleAddNewColumn(GlobalState state, String text) async {
+  var name = text[0] == '@' ? text : '@' + text;
+  state.addNewColumn(name.toLowerCase());
   saveToml(state.settingsFilePath, state);
 }
 
