@@ -1,0 +1,21 @@
+ 2023-06-13 add random frames like kinpo to tags @ux
+ 2023-06-13 make the trash can a little fish monster which opens his mouth on hover +otxto @ux
+ 2023-06-09 add subtle save indicator +otxto @ux @otxto
+ 2023-06-14 create mascot @ux
+x 2023-06-14 upload new gif to repo at lunch time @marketing
+x 2023-06-15 fix x being used as complete 
+x completed tasks should be its own column and not use 
+x unsorted tasks should be all tasks that tags 
+ completed tasks column can be turned off in settings @functions
+x complete build pipeline using marketplace/actions/flutter-action 
+ create files if they don't exist @functions
+x refactor the todo export @refactor
+x 2023-06-15 move the todo header out of the listview @ux
+x 2023-06-19 add test for export @tests
+x 2023-06-19 fix save bug @bug
+x 2023-06-19 fix priority @bug
+ 2023-06-20 proper grid between mobile and desktop @functions
+x 2023-06-20 save toml when columns change @functions
+x 2023-06-20 Color contrasting @doing
+ 2023-06-20 add logo to open folder screen @ux
+ 2023-06-20 add grid background @ux
