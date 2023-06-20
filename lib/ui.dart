@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 //Local
 import 'actions.dart';
+import 'organisms/todoList.dart';
 import 'store.dart';
 import 'style.dart';
 
@@ -22,7 +23,7 @@ class HomePage extends StatelessWidget {
           builder: (context, candidateItems, rejectedItems) {
             return Container(
               decoration: BoxDecoration(
-                color: randomStringToHexColor('ff'),
+                color: randomStringToHexColor('uu'),
                 // border: Border.all(color: Colors.white, width: 1),
                 borderRadius: const BorderRadius.all(Radius.circular(4)),
               ),
@@ -74,7 +75,7 @@ class HomePage extends StatelessWidget {
                       )),
                       Container(
                           decoration: BoxDecoration(
-                            color: randomStringToHexColor('ff'),
+                            color: randomStringToHexColor('uu'),
                             // border: Border.all(color: Colors.white, width: 1),
                             borderRadius:
                                 const BorderRadius.all(Radius.circular(4)),
@@ -226,154 +227,23 @@ class TodoColumn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<GlobalState>(builder: (context, state, widget) {
-      return SizedBox(
-          width: 300,
-          child: ListView(scrollDirection: Axis.vertical, children: [
+      return Stack(children: [
             ColumnTitle(text: columnName),
-            DragTarget<String>(
-              builder: (context, candidateItems, rejectedItems) {
-                var listOfCards = list.map((to) {
-                  var card = TodoCard(todoItem: to);
-                  return Draggable<String>(
-                    data: to.id + '_' + columnId,
-                    child: Container(
-                      child: card,
-                      margin: EdgeInsets.only(bottom: 8),
-                    ),
-                    feedback: Material(
-                      child: card,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  );
-                }).toList();
-                return Container(
-                    width: 300,
-                    padding: const EdgeInsets.only(bottom: 1000),
-                    margin: const EdgeInsets.only(right: 8),
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(30, 255, 255, 255),
-                      // border: Border.all(color: Colors.white, width: 1),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Flex(
-                      children: listOfCards,
-                      direction: Axis.vertical,
-                    ));
-              },
-              onAccept: (String dragInfo) {
-                var info = dragInfo.split('_');
-                var id = info[0];
-                var fromColumn = info[1];
-                if (columnId[0] == '@') {
-                  handleOnMoveGroupItemToGroup(state, fromColumn, id, columnId);
-                } else {
-                  handleOnMoveGroupItemToGroup(state, fromColumn, id, columnId);
-                }
-              },
-            )
-          ]));
+            Container(
+                width: 300,
+                margin: const EdgeInsets.only(top: 64),
+                child: TodoList(
+                    state: state,
+                    list: list,
+                    columnId: columnId,
+                    columnName: columnName,
+                    handleOnMoveGroupItemToGroup: handleOnMoveGroupItemToGroup,
+                    addNewTodoController: addNewTodoController))
+          ]);
     });
   }
 }
 
-class TodoCard extends StatelessWidget {
-  final Todo todoItem;
-  const TodoCard({Key? key, required this.todoItem}) : super(key: key);
-  final double width = 284;
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<GlobalState>(builder: (context, state, widget) {
-      return Opacity(
-          opacity: todoItem.isComplete ? 0.5 : 1,
-          child: GestureDetector(
-              onDoubleTap: () {
-                addNewTodoController.value =
-                    TextEditingValue(text: todoItem.toString());
-                state.setEditingStatus(todoItem.id, true);
-              },
-              child: Container(
-                  width: width,
-                  clipBehavior: Clip.hardEdge,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Wrap(
-                          direction: Axis.horizontal,
-                          children: [
-                            todoItem.priority.isNotEmpty
-                                ? Container(
-                                    width: 32,
-                                    height: 32,
-                                    alignment: Alignment.topLeft,
-                                    margin: const EdgeInsets.only(
-                                        top: 4, left: 4, bottom: 4),
-                                    decoration: const BoxDecoration(
-                                        color: Color.fromARGB(31, 0, 0, 0),
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(4))),
-                                    child: Center(
-                                      child: Text(todoItem.priority,
-                                          style: const TextStyle(
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 12)),
-                                    ))
-                                : Container(),
-                            Container(
-                                clipBehavior: Clip.hardEdge,
-                                decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                ),
-                                padding: const EdgeInsets.only(
-                                    top: 8, left: 8, right: 8, bottom: 8),
-                                alignment: Alignment.topLeft,
-                                child: Wrap(children: [
-                                  Text(
-                                    todoItem.text,
-                                    style: const TextStyle(
-                                        color: Colors.black, fontSize: 12),
-                                  )
-                                ])),
-                          ],
-                        ),
-                        Container(
-                            width: width,
-                            color: Colors.transparent,
-                            alignment: Alignment.topLeft,
-                            margin: const EdgeInsetsDirectional.only(bottom: 8),
-                            child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  todoItem.tags.isNotEmpty
-                                      ? SizedBox(
-                                          width: 300,
-                                          child: Wrap(
-                                              spacing: 0,
-                                              runSpacing: 8,
-                                              children: [
-                                                ...todoItem.tags.map((tag) {
-                                                  return TagItem(text: tag);
-                                                })
-                                              ]))
-                                      : Container(),
-                                ])),
-                        Flex(
-                          direction: Axis.horizontal,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            TimeStamp(text: todoItem.createdAt),
-                            Flexible(child: ProjectItem(text: todoItem.project))
-                          ],
-                        ),
-                      ]))));
-    });
-  }
-}
 
 class AddNewColumn extends StatelessWidget {
   final GlobalState state;
@@ -386,7 +256,7 @@ class AddNewColumn extends StatelessWidget {
       return Container(
           padding: const EdgeInsets.only(top: 8, left: 8),
           child: SizedBox(
-              width: 200,
+              width: 300,
               height: 48,
               child: TextFormField(
                   controller: textController,
@@ -408,68 +278,6 @@ class AddNewColumn extends StatelessWidget {
   }
 }
 
-class TagItem extends StatelessWidget {
-  final String text;
-  const TagItem({Key? key, required this.text}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    Color bgColor = randomStringToHexColor(text);
-    Color textColor =
-        bgColor.computeLuminance() > 0.5 ? Colors.black : Colors.white;
-    return Consumer<GlobalState>(builder: (context, state, widget) {
-      return Container(
-          margin: const EdgeInsets.only(left: 4),
-          decoration: BoxDecoration(
-            color: bgColor,
-            borderRadius: BorderRadius.circular(4),
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-          child: Text(text, style: TextStyle(color: textColor, fontSize: 10)));
-    });
-  }
-}
-
-class ProjectItem extends StatelessWidget {
-  final String text;
-  const ProjectItem({Key? key, required this.text}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<GlobalState>(builder: (context, state, widget) {
-      return text.isNotEmpty
-          ? Container(
-              margin: const EdgeInsets.only(left: 4),
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(66, 206, 206, 206),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-              child: Text("📁 " + text,
-                  style: const TextStyle(color: Colors.black, fontSize: 10)))
-          : Container();
-    });
-  }
-}
-
-class TimeStamp extends StatelessWidget {
-  final String text;
-  const TimeStamp({Key? key, required this.text}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<GlobalState>(builder: (context, state, widget) {
-      return text.isNotEmpty
-          ? Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-              Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Text(text,
-                      style: const TextStyle(color: Colors.grey, fontSize: 12)))
-            ])
-          : Container();
-    });
-  }
-}
 
 class ColumnTitle extends StatelessWidget {
   final String text;
@@ -491,6 +299,7 @@ class ColumnTitle extends StatelessWidget {
                   border: Border.all(color: Colors.white, width: 2)),
               margin: const EdgeInsets.only(bottom: 8, left: 0, right: 8),
               height: 52,
+              width: 300,
               child: Flex(
                   direction: Axis.horizontal,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

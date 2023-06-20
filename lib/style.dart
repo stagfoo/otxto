@@ -50,10 +50,12 @@ getRandomColorClass(String word) {
   }
 }
 
-// #330C2F
+
 
 class DesignSystem {
   int gutter = 8;
+  // Nice black
+  // #330C2F
 }
 
 Color randomStringToHexColor(String string) {
