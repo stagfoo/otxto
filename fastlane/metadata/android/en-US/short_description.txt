@@ -1,0 +1,6 @@
+    ├── en-US                       (en-US seems to be required by F-Droid)
+            │   ├── short_description.txt   (short description, max 80 chars, plain text) ¹
+            │   ├── full_description.txt    (full app description, max 4000 chars, basic HTML allowed) ¹
+            │   ├── title.txt               (app name)
+            │   ├── video.txt               (URL to a video introducing the app)
+    

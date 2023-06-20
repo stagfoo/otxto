@@ -1,0 +1,4 @@
+└── changelogs              ³
+            │       ├── 100000.txt          (must correspond to versionCode, literally, no padding)
+            │       ├── 100100.txt          (so this means: versionCode=100100)
+            │       └── 100101.txt          (max size: 500 bytes, plain ASCII (no HTML))
