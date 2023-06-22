@@ -82,19 +82,27 @@ void handleDeleteColumn(GlobalState state, id) async {
   state.setColumns(columns.where((element) => element.id != id).toList());
   saveToml(state.settingsFilePath, state);
 }
+
 void handleAddNewColumn(GlobalState state, String text) async {
   var name = text[0] == '@' ? text : '@' + text;
   state.addNewColumn(name.toLowerCase());
   saveToml(state.settingsFilePath, state);
 }
 
-void createDefaultFiles(GlobalState state) async {
+Future<void> createDefaultFiles(GlobalState state) async {
   var rootFolder = await pickDir();
-  //TODO add permission dialog
-  state.setTodoFilePath(rootFolder!);
-  state.setSettingsFilePath(rootFolder);
-  saveToml(rootFolder + '/' + state.settingsFilePath, state);
-  saveTodoText(state);
+  if (rootFolder != '') {
+    String todoFilePath = rootFolder! + '/todo.txt';
+    String settingsFilePath = rootFolder + '/' + localDBFile;
+    await File(todoFilePath).create(recursive: true);
+    await File(settingsFilePath).create(recursive: true);
+    state.setTodoFilePath(todoFilePath);
+    //TODO rename localDBFile to settings file
+    state.setSettingsFilePath(settingsFilePath);
+    //TODO make this function follow the same arg style
+    saveToml(state.settingsFilePath, state);
+    saveTodoText(state);
+  }
 }
 
 Future<void> handleOnClickNavbar(GlobalState state, String page,
@@ -102,6 +110,15 @@ Future<void> handleOnClickNavbar(GlobalState state, String page,
   switch (page) {
     case 'list':
       Get.toNamed('/list');
+      break;
+    case 'create':
+      try {
+        await createDefaultFiles(state);
+        Get.toNamed('/');
+      } catch (err) {
+        print(err);
+        debugPrint("Failed to open");
+      }
       break;
     case 'open':
       try {
@@ -163,9 +180,7 @@ loadTodoFile(GlobalState state, File file) async {
 saveTodoText(GlobalState state) async {
   var file = File(state.todoFilePath);
   var todos = state.todos;
-  var todoText = todos
-      .map((e) => createTodoTextLine(e))
-      .join('\n');
+  var todoText = todos.map((e) => createTodoTextLine(e)).join('\n');
   file.writeAsString('', flush: true);
   file.writeAsString(todoText, flush: true);
 }
