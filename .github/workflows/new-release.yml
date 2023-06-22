@@ -1,0 +1,106 @@
+on:
+  push:
+    tags:
+      - 'v*'
+
+name: Build apps
+
+jobs:
+ build-linux:
+   name: 🐧 Create Linux App
+   runs-on: ubuntu-latest
+   steps:
+     - uses: actions/checkout@v3
+     - uses: subosito/flutter-action@v2
+       with:
+         channel: 'stable'
+     - run: |
+        sudo apt-get update -y
+        sudo apt-get install -y ninja-build libgtk-3-dev
+     - run: flutter config --enable-linux-desktop
+     - run: flutter build linux
+     - name: 📼 Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ github.ref_name }}
+        name: 
+        files: |
+           build
+ build-window:
+   name: 🖼️ Create Windows App
+   runs-on: windows-latest
+   steps:
+     - uses: actions/checkout@v3
+     - uses: subosito/flutter-action@v2
+       with:
+         channel: 'beta'
+     - run: flutter config --enable-windows-desktop
+     - run: flutter build windows
+     - name: 📼 Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ github.ref_name }}
+        name: 
+        files: |
+          build/windows/runner/Release/
+  build-mac:
+    name: 🍏 Create Mac App
+    runs-on: macos-11
+    steps:
+    - uses: actions/checkout@v3
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+        architecture: x64
+    - run: flutter pub get
+    - run: flutter config --enable-macos-desktop
+    - run: flutter build macos
+    - name: 📼 Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ github.ref_name }}
+        name: 
+        files: |
+          build/windows/runner/Release/
+  build-android:
+    name: 🧑‍🎤 Create Android APK
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-java@v2
+      with:
+        distribution: 'zulu'
+        java-version: '11'
+    - uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.7.7'
+    - run: flutter pub get
+    - run: flutter build apk
+    - run: flutter build appbundle
+    - name: 📼 Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ github.ref_name }}
+        name: 
+        files: |
+            build/app/outputs/bundle/release/
+            build/app/outputs/flutter-apk/
+  build-ios:
+    name: 🍎 Create IOS APK
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+        architecture: x64
+    - run: flutter pub get
+    - run: flutter build ios --release --no-codesign
+    - name: 📼 Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ github.ref_name }}
+        name: 
+        files: |
+            build/app/outputs/bundle/release/
+            build/app/outputs/flutter-apk/
