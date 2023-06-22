@@ -25,7 +25,7 @@ jobs:
         tag_name: ${{ github.ref_name }}
         name: ${{ github.ref_name }}
         files: |
-           build
+           build/*
  build-window:
    name: 🖼️ Create Windows App
    runs-on: windows-latest
@@ -42,7 +42,7 @@ jobs:
         tag_name: ${{ github.ref_name }}
         name: ${{ github.ref_name }}
         files: |
-          build/windows/runner/Release/
+          build/windows/runner/Release/*
  build-mac:
     name: 🍏 Create Mac App
     runs-on: macos-11
@@ -61,7 +61,7 @@ jobs:
         tag_name: ${{ github.ref_name }}
         name: ${{ github.ref_name }}
         files: |
-          build/windows/runner/Release/
+           /build/macos/Build/Products/Release/*
  build-android:
     name: 🧑‍🎤 Create Android APK
     runs-on: ubuntu-latest
@@ -83,10 +83,10 @@ jobs:
         tag_name: ${{ github.ref_name }}
         name: ${{ github.ref_name }}
         files: |
-            build/app/outputs/bundle/release/
-            build/app/outputs/flutter-apk/
+            build/app/outputs/bundle/release/*
+            build/app/outputs/flutter-apk/*
  build-ios:
-    name: 🍎 Create IOS APK
+    name: 🍎 Create IOS
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v3
@@ -102,5 +102,5 @@ jobs:
         tag_name: ${{ github.ref_name }}
         name: ${{ github.ref_name }}
         files: |
-            build/app/outputs/bundle/release/
-            build/app/outputs/flutter-apk/
+          /Users/runner/work/otxto/otxto/build/ios/iphoneos/*
+
