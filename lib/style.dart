@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 class OtxtoColors {
   String black = '#000000';
@@ -62,6 +61,3 @@ class DesignSystem {
 Color randomStringToHexColor(String string) {
   return HexColor.fromHex(getRandomColorClass(string));
 }
-
-final String assetName = 'assets/logo.svg';
-final Widget LogoSvg = SvgPicture.asset(assetName, semanticsLabel: 'otxto');

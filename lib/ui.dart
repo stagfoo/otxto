@@ -1,5 +1,7 @@
 //Libs
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -131,7 +133,8 @@ class OpenView extends StatelessWidget {
               children: [
             Container(
               width: 240,
-              child: LogoSvg,
+              margin: const EdgeInsets.only(bottom: 32),
+              child: const Image(image: AssetImage('assets/logo.png')),
             ),
             ElevatedButton(
               style:
