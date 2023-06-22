@@ -20,10 +20,10 @@ jobs:
      - run: flutter config --enable-linux-desktop
      - run: flutter build linux
      - name: 📼 Release
-      uses: softprops/action-gh-release@v1
-      with:
+       uses: softprops/action-gh-release@v1
+       with:
         tag_name: ${{ github.ref_name }}
-        name: 
+        name: ${{ github.ref_name }}
         files: |
            build
  build-window:
@@ -37,13 +37,13 @@ jobs:
      - run: flutter config --enable-windows-desktop
      - run: flutter build windows
      - name: 📼 Release
-      uses: softprops/action-gh-release@v1
-      with:
+       uses: softprops/action-gh-release@v1
+       with:
         tag_name: ${{ github.ref_name }}
-        name: 
+        name: ${{ github.ref_name }}
         files: |
           build/windows/runner/Release/
-  build-mac:
+ build-mac:
     name: 🍏 Create Mac App
     runs-on: macos-11
     steps:
@@ -59,10 +59,10 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ github.ref_name }}
-        name: 
+        name: ${{ github.ref_name }}
         files: |
           build/windows/runner/Release/
-  build-android:
+ build-android:
     name: 🧑‍🎤 Create Android APK
     runs-on: ubuntu-latest
     steps:
@@ -81,11 +81,11 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ github.ref_name }}
-        name: 
+        name: ${{ github.ref_name }}
         files: |
             build/app/outputs/bundle/release/
             build/app/outputs/flutter-apk/
-  build-ios:
+ build-ios:
     name: 🍎 Create IOS APK
     runs-on: macos-latest
     steps:
@@ -100,7 +100,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ github.ref_name }}
-        name: 
+        name: ${{ github.ref_name }}
         files: |
             build/app/outputs/bundle/release/
             build/app/outputs/flutter-apk/
