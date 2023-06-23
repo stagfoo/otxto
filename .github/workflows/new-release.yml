@@ -4,6 +4,8 @@ on:
       - 'v*'
 
 name: Build apps
+env:
+  APP_NAME: otxto
 
 jobs:
  build-linux:
@@ -19,6 +21,13 @@ jobs:
         sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
      - run: flutter config --enable-linux-desktop
      - run: flutter build linux
+     - run: ls
+     - name: Zip Release
+       uses: thedoctor0/zip-release@0.7.1
+       with:
+        type: 'zip'
+        directory: 'build'
+        filename: 'linux-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
      - name: 📼 Release
        uses: softprops/action-gh-release@v1
        with:
@@ -36,6 +45,13 @@ jobs:
          channel: 'beta'
      - run: flutter config --enable-windows-desktop
      - run: flutter build windows
+     - run: ls
+     - name: Zip Release
+       uses: thedoctor0/zip-release@0.7.1
+       with:
+        type: 'zip'
+        directory: 'build'
+        filename: 'windows-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
      - name: 📼 Release
        uses: softprops/action-gh-release@v1
        with:
@@ -55,13 +71,19 @@ jobs:
     - run: flutter pub get
     - run: flutter config --enable-macos-desktop
     - run: flutter build macos
+     - name: Zip Release
+       uses: thedoctor0/zip-release@0.7.1
+       with:
+        type: 'zip'
+        directory: 'build'
+        filename: 'mac-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
     - name: 📼 Release
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ github.ref_name }}
         name: ${{ github.ref_name }}
         files: |
-           /build/macos/Build/Products/Release/*
+           'mac-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
  build-android:
     name: 🧑‍🎤 Create Android APK
     runs-on: ubuntu-latest
@@ -77,14 +99,19 @@ jobs:
     - run: flutter pub get
     - run: flutter build apk
     - run: flutter build appbundle
+     - name: Zip Release
+       uses: thedoctor0/zip-release@0.7.1
+       with:
+        type: 'zip'
+        directory: 'build'
+        filename: 'android-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
     - name: 📼 Release
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ github.ref_name }}
         name: ${{ github.ref_name }}
         files: |
-            build/app/outputs/bundle/release/*
-            build/app/outputs/flutter-apk/*
+         'android-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
  build-ios:
     name: 🍎 Create IOS
     runs-on: macos-latest
@@ -96,11 +123,17 @@ jobs:
         architecture: x64
     - run: flutter pub get
     - run: flutter build ios --release --no-codesign
+     - name: Zip Release
+       uses: thedoctor0/zip-release@0.7.1
+       with:
+        type: 'zip'
+        directory: 'build'
+        filename: 'ios-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
     - name: 📼 Release
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ github.ref_name }}
         name: ${{ github.ref_name }}
         files: |
-          /Users/runner/work/otxto/otxto/build/ios/iphoneos/*
+         'ios-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
 
