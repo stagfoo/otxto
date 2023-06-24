@@ -82,7 +82,6 @@ jobs:
     - run: flutter pub get
     - run: flutter config --enable-macos-desktop
     - run: flutter build macos
-    - run: cd build
     - run: ls
     - name: Zip Release
       uses: thedoctor0/zip-release@0.7.1
@@ -90,6 +89,7 @@ jobs:
            type: 'zip'
            path: ${{ env.MAC_FILES }}
            filename: ${{ env.MAC_ZIP }}
+    - run: ls
     - name: 📼 Release
       uses: softprops/action-gh-release@v1
       with:
