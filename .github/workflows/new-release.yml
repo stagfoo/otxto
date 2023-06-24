@@ -82,6 +82,7 @@ jobs:
     - run: flutter pub get
     - run: flutter config --enable-macos-desktop
     - run: flutter build macos
+    - run: ls
     - name: Zip Release
       uses: thedoctor0/zip-release@0.7.1
       with:
@@ -110,6 +111,7 @@ jobs:
     - run: flutter pub get
     - run: flutter build apk
     - run: flutter build appbundle
+    - run: ls
     - name: Zip Release
       uses: thedoctor0/zip-release@0.7.1
       with:
@@ -134,6 +136,7 @@ jobs:
         architecture: x64
     - run: flutter pub get
     - run: flutter build ios --release --no-codesign
+    - run: ls
     - name: Zip Release
       uses: thedoctor0/zip-release@0.7.1
       with:
