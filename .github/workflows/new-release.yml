@@ -11,7 +11,7 @@ env:
   WINDOWS_ZIP: 'windows-otxto-${{ github.ref_name }}.zip'
   IOS_ZIP: 'ios-otxto-${{ github.ref_name }}.zip'
   ANDROID_ZIP: 'android-otxto-${{ github.ref_name }}.zip'
-  MAC_FILES: '/build/macos/Build/Products/Release/*'
+  MAC_FILES: 'build/macos/Build/Products/Release/*'
   LINUX_FILES: 'build/linux/x64/release'
   WINDOWS_FILES: 'build/windows/runner/Release/*'
   IOS_FILES: '/Users/runner/work/otxto/otxto/build/ios/iphoneos/'
@@ -82,6 +82,7 @@ jobs:
     - run: flutter pub get
     - run: flutter config --enable-macos-desktop
     - run: flutter build macos
+    - run: cd build
     - run: ls
     - name: Zip Release
       uses: thedoctor0/zip-release@0.7.1
@@ -97,7 +98,7 @@ jobs:
         files: |
             build/${{ env.MAC_ZIP }}
  build-android:
-    name: 🧑‍🎤 Create Android APK
+    name: 🤖 Create Android APK
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
