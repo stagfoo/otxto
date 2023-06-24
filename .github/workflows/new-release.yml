@@ -6,6 +6,11 @@ on:
 name: Build apps
 env:
   APP_NAME: otxto
+  LINUX_ZIP: 'linux-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
+  MAC_ZIP: 'mac-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
+  WINDOWS_ZIP: 'windows-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
+  IOS_ZIP: 'ios-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
+  ANDROID_ZIP: 'android-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
 
 jobs:
  build-linux:
@@ -26,15 +31,15 @@ jobs:
        uses: thedoctor0/zip-release@0.7.1
        with:
         type: 'zip'
-        directory: 'build'
-        filename: 'linux-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
+        directory: 'build/linux/x64/release'
+        filename: ${{ env.LINUX_ZIP }}
      - name: 📼 Release
        uses: softprops/action-gh-release@v1
        with:
         tag_name: ${{ github.ref_name }}
         name: ${{ github.ref_name }}
         files: |
-           build/*
+           ${{ env.LINUX_ZIP }}
  build-window:
    name: 🖼️ Create Windows App
    runs-on: windows-latest
@@ -51,14 +56,14 @@ jobs:
        with:
         type: 'zip'
         directory: 'build'
-        filename: 'windows-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
+        filename: ${{ env.WINDOWS_ZIP }}
      - name: 📼 Release
        uses: softprops/action-gh-release@v1
        with:
         tag_name: ${{ github.ref_name }}
         name: ${{ github.ref_name }}
         files: |
-            build/windows/runner/Release/*
+            ${{ env.WINDOWS_ZIP }}
  build-mac:
     name: 🍏 Create Mac App
     runs-on: macos-11
@@ -76,14 +81,14 @@ jobs:
       with:
            type: 'zip'
            directory: 'build'
-           filename: 'mac-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
+           filename: ${{ env.MAC_ZIP }}
     - name: 📼 Release
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ github.ref_name }}
         name: ${{ github.ref_name }}
         files: |
-            'mac-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
+            ${{ env.MAC_ZIP }}
  build-android:
     name: 🧑‍🎤 Create Android APK
     runs-on: ubuntu-latest
@@ -104,14 +109,14 @@ jobs:
       with:
         type: 'zip'
         directory: 'build'
-        filename: 'android-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
+        filename: ${{ env.ANDROID_ZIP }}
     - name: 📼 Release
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ github.ref_name }}
         name: ${{ github.ref_name }}
         files: |
-            'android-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
+            ${{ env.ANDROID_ZIP }}
  build-ios:
     name: 🍎 Create IOS
     runs-on: macos-latest
@@ -128,12 +133,12 @@ jobs:
       with:
            type: 'zip'
            directory: 'build'
-           filename: 'ios-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
+           filename: ${{ env.IOS_ZIP }}
     - name: 📼 Release
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ github.ref_name }}
         name: ${{ github.ref_name }}
         files: |
-            'ios-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
+            ${{ env.IOS_ZIP }}
 
