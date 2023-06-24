@@ -11,6 +11,12 @@ env:
   WINDOWS_ZIP: 'windows-otxto-${{ github.ref_name }}.zip'
   IOS_ZIP: 'ios-otxto-${{ github.ref_name }}.zip'
   ANDROID_ZIP: 'android-otxto-${{ github.ref_name }}.zip'
+  MAC_FILES: '/build/macos/Build/Products/Release/*'
+  LINUX_FILES: 'build/linux/x64/release'
+  WINDOWS_FILES: 'build/windows/runner/Release/*'
+  IOS_FILES: '/Users/runner/work/otxto/otxto/build/ios/iphoneos/'
+  ANDROID_FILES: 'build/app/outputs/*'
+
 
 jobs:
  build-linux:
@@ -31,7 +37,7 @@ jobs:
        uses: thedoctor0/zip-release@0.7.1
        with:
         type: 'zip'
-        directory: 'build/linux/x64/release'
+        path: ${{ env.LINUX_FILES }}
         filename: ${{ env.LINUX_ZIP }}
      - name: 📼 Release
        uses: softprops/action-gh-release@v1
@@ -55,7 +61,7 @@ jobs:
        uses: thedoctor0/zip-release@0.7.1
        with:
         type: 'zip'
-        directory: 'build'
+        path: ${{ env.WINDOWS_FILES }}
         filename: ${{ env.WINDOWS_ZIP }}
      - name: 📼 Release
        uses: softprops/action-gh-release@v1
@@ -80,7 +86,7 @@ jobs:
       uses: thedoctor0/zip-release@0.7.1
       with:
            type: 'zip'
-           directory: 'build'
+           path: ${{ env.MAC_FILES }}
            filename: ${{ env.MAC_ZIP }}
     - name: 📼 Release
       uses: softprops/action-gh-release@v1
@@ -88,7 +94,7 @@ jobs:
         tag_name: ${{ github.ref_name }}
         name: ${{ github.ref_name }}
         files: |
-            ${{ env.MAC_ZIP }}
+            build/${{ env.MAC_ZIP }}
  build-android:
     name: 🧑‍🎤 Create Android APK
     runs-on: ubuntu-latest
@@ -108,7 +114,7 @@ jobs:
       uses: thedoctor0/zip-release@0.7.1
       with:
         type: 'zip'
-        directory: 'build'
+        path: ${{ env.ANDROID_FILES }}
         filename: ${{ env.ANDROID_ZIP }}
     - name: 📼 Release
       uses: softprops/action-gh-release@v1
@@ -132,7 +138,7 @@ jobs:
       uses: thedoctor0/zip-release@0.7.1
       with:
            type: 'zip'
-           directory: 'build'
+           path: ${{ env.IOS_FILES }}
            filename: ${{ env.IOS_ZIP }}
     - name: 📼 Release
       uses: softprops/action-gh-release@v1
