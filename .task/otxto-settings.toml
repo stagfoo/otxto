@@ -1,5 +1,5 @@
 [settings]
-columns = ['@thisweek', '@nextweek', '@anytime']
+columns = ['@thisweek', '@nextweek']
 defaultFields = ['createdAt', 'completedAt']
 completeColumn = true
 allColumn = true
