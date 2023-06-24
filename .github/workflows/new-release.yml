@@ -82,21 +82,19 @@ jobs:
     - run: flutter pub get
     - run: flutter config --enable-macos-desktop
     - run: flutter build macos
-    - run: ls
     - name: Zip Release
       uses: thedoctor0/zip-release@0.7.1
       with:
            type: 'zip'
            path: ${{ env.MAC_FILES }}
            filename: ${{ env.MAC_ZIP }}
-    - run: ls
     - name: 📼 Release
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ github.ref_name }}
         name: ${{ github.ref_name }}
         files: |
-            build/${{ env.MAC_ZIP }}
+            ${{ env.MAC_ZIP }}
  build-android:
     name: 🤖 Create Android APK
     runs-on: ubuntu-latest
