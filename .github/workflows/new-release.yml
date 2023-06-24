@@ -58,7 +58,7 @@ jobs:
         tag_name: ${{ github.ref_name }}
         name: ${{ github.ref_name }}
         files: |
-          build/windows/runner/Release/*
+            build/windows/runner/Release/*
  build-mac:
     name: 🍏 Create Mac App
     runs-on: macos-11
@@ -71,19 +71,19 @@ jobs:
     - run: flutter pub get
     - run: flutter config --enable-macos-desktop
     - run: flutter build macos
-     - name: Zip Release
-       uses: thedoctor0/zip-release@0.7.1
-       with:
-        type: 'zip'
-        directory: 'build'
-        filename: 'mac-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
+    - name: Zip Release
+      uses: thedoctor0/zip-release@0.7.1
+      with:
+           type: 'zip'
+           directory: 'build'
+           filename: 'mac-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
     - name: 📼 Release
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ github.ref_name }}
         name: ${{ github.ref_name }}
         files: |
-           'mac-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
+            'mac-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
  build-android:
     name: 🧑‍🎤 Create Android APK
     runs-on: ubuntu-latest
@@ -111,7 +111,7 @@ jobs:
         tag_name: ${{ github.ref_name }}
         name: ${{ github.ref_name }}
         files: |
-         'android-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
+            'android-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
  build-ios:
     name: 🍎 Create IOS
     runs-on: macos-latest
@@ -123,17 +123,17 @@ jobs:
         architecture: x64
     - run: flutter pub get
     - run: flutter build ios --release --no-codesign
-     - name: Zip Release
-       uses: thedoctor0/zip-release@0.7.1
-       with:
-        type: 'zip'
-        directory: 'build'
-        filename: 'ios-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
+    - name: Zip Release
+      uses: thedoctor0/zip-release@0.7.1
+      with:
+           type: 'zip'
+           directory: 'build'
+           filename: 'ios-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
     - name: 📼 Release
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ github.ref_name }}
         name: ${{ github.ref_name }}
         files: |
-         'ios-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
+            'ios-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
 
