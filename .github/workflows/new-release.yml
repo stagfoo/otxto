@@ -6,11 +6,11 @@ on:
 name: Build apps
 env:
   APP_NAME: otxto
-  LINUX_ZIP: 'linux-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
-  MAC_ZIP: 'mac-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
-  WINDOWS_ZIP: 'windows-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
-  IOS_ZIP: 'ios-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
-  ANDROID_ZIP: 'android-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
+  LINUX_ZIP: 'linux-otxto-${{ github.ref_name }}.zip'
+  MAC_ZIP: 'mac-otxto-${{ github.ref_name }}.zip'
+  WINDOWS_ZIP: 'windows-otxto-${{ github.ref_name }}.zip'
+  IOS_ZIP: 'ios-otxto-${{ github.ref_name }}.zip'
+  ANDROID_ZIP: 'android-otxto-${{ github.ref_name }}.zip'
 
 jobs:
  build-linux:
