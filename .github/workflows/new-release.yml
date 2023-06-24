@@ -99,9 +99,9 @@ jobs:
     - run: flutter pub get
     - run: flutter build apk
     - run: flutter build appbundle
-     - name: Zip Release
-       uses: thedoctor0/zip-release@0.7.1
-       with:
+    - name: Zip Release
+      uses: thedoctor0/zip-release@0.7.1
+      with:
         type: 'zip'
         directory: 'build'
         filename: 'android-${{ env.APP_NAME }}-${{ github.ref_name }}.zip'
