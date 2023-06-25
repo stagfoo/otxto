@@ -49,7 +49,6 @@ Future<void> handleOnMoveGroupItemToGroup(
   var newTodos = state.todos;
   for (var element in newTodos) {
     if (element.id == id) {
-      //TODO refactor this
       if (toColumnName == 'completed') {
         element.isComplete = true;
       } else {
