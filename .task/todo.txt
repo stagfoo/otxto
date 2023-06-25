@@ -1,5 +1,4 @@
  2023-06-13 add random frames like kinpo to tags @anytime
- 2023-06-13 make the trash can a little fish monster which opens his mouth on hover +otxto @anytime
 x 2023-06-14 create mascot 
 x 2023-06-14 upload new gif to repo at lunch time @marketing
 x 2023-06-15 fix x being used as complete 
@@ -17,9 +16,10 @@ x 2023-06-20 add logo to open folder screen @nextweek
 x 2023-06-21 make leads page 
 x (A) 2023-06-21 create files if they don't exist @thisweek
 x (B) 2023-06-20 proper grid between mobile and desktop @thisweek
-(C) 2023-06-21 completed tasks column can be turned off in settings @nextweek
+(C) 2023-06-21 completed tasks column can be turned off in settings @confirm_with_community
 x 2023-06-21 remove padding below prority @nextweek
- 2023-06-09 add subtle save indicator +otxto @anytime
  2023-06-21 add android file permission popup @nextweek
 x 2023-06-25 remove setting to diable all because I don't know what ux to make 
-(A) 2023-06-25 add new UX interaction for completing a task @thisweek
+(A) 2023-06-25 add new UX interaction for completing a task @confirm_with_community
+ 2023-06-09 add subtle save indicator @anytime
+ 2023-06-13 make the trash can a little fish monster macsot which opens his mouth on hover @anytime

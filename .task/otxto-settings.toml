@@ -1,5 +1,5 @@
 [settings]
-columns = ['@thisweek', '@nextweek']
+columns = ['@nextweek', '@confirm_with_community']
 defaultFields = ['createdAt', 'completedAt']
 completeColumn = true
 allColumn = true
