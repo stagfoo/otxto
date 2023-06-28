@@ -5,6 +5,7 @@ import '../store.dart';
 import '../atoms/timestamp.dart';
 import '../atoms/project.dart';
 import '../atoms/tag.dart';
+import '../atoms/priority.dart';
 
 class TodoCard extends StatelessWidget {
   final Todo todoItem;
@@ -37,25 +38,7 @@ class TodoCard extends StatelessWidget {
                         Wrap(
                           direction: Axis.horizontal,
                           children: [
-                            todoItem.priority.isNotEmpty
-                                ? Container(
-                                    width: 32,
-                                    height: 32,
-                                    alignment: Alignment.topLeft,
-                                    margin: const EdgeInsets.only(
-                                        top: 4, left: 4, bottom: 4),
-                                    decoration: const BoxDecoration(
-                                        color: Color.fromARGB(31, 0, 0, 0),
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(4))),
-                                    child: Center(
-                                      child: Text(todoItem.priority,
-                                          style: const TextStyle(
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 12)),
-                                    ))
-                                : Container(),
+                            Priority(text: todoItem.priority),
                             Container(
                                 clipBehavior: Clip.hardEdge,
                                 decoration: const BoxDecoration(

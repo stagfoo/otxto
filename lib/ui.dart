@@ -160,6 +160,37 @@ class OpenView extends StatelessWidget {
                         ],
                       ))),
             ),
+            ElevatedButton(
+              style:
+                  ButtonStyle(side: MaterialStateProperty.resolveWith((states) {
+                return const BorderSide(width: 1, color: Colors.white);
+              }), backgroundColor: MaterialStateColor.resolveWith((states) {
+                if (states.contains(MaterialState.hovered)) {
+                  return Colors.purpleAccent;
+                }
+                return Colors.black;
+              })),
+              onPressed: () {
+                handleOnClickNavbar(state, 'create', 0, context);
+              },
+              child: SizedBox(
+                  width: 240,
+                  child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          Container(
+                            child: const Icon(
+                              Icons.folder_outlined,
+                              color: Colors.white,
+                            ),
+                            margin: const EdgeInsets.only(right: 4),
+                          ),
+                          const Text("New todos",
+                              style: TextStyle(color: Colors.white)),
+                        ],
+                      ))),
+            ),
             //TODO add recent?
           ]));
     });
@@ -228,22 +259,21 @@ class TodoColumn extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<GlobalState>(builder: (context, state, widget) {
       return Stack(children: [
-            ColumnTitle(text: columnName),
-            Container(
-                width: 300,
-                margin: const EdgeInsets.only(top: 64),
-                child: TodoList(
-                    state: state,
-                    list: list,
-                    columnId: columnId,
-                    columnName: columnName,
-                    handleOnMoveGroupItemToGroup: handleOnMoveGroupItemToGroup,
-                    addNewTodoController: addNewTodoController))
-          ]);
+        ColumnTitle(text: columnName),
+        Container(
+            width: 300,
+            margin: const EdgeInsets.only(top: 64),
+            child: TodoList(
+                state: state,
+                list: list,
+                columnId: columnId,
+                columnName: columnName,
+                handleOnMoveGroupItemToGroup: handleOnMoveGroupItemToGroup,
+                addNewTodoController: addNewTodoController))
+      ]);
     });
   }
 }
-
 
 class AddNewColumn extends StatelessWidget {
   final GlobalState state;
@@ -277,7 +307,6 @@ class AddNewColumn extends StatelessWidget {
     });
   }
 }
-
 
 class ColumnTitle extends StatelessWidget {
   final String text;
