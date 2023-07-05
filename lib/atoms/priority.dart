@@ -15,7 +15,7 @@ class Priority extends StatelessWidget {
               width: 32,
               height: 32,
               alignment: Alignment.topLeft,
-              margin: const EdgeInsets.only(top: 4, left: 4, bottom: 2),
+              margin: const EdgeInsets.only(top: 0, left: 4, bottom: 0),
               decoration: const BoxDecoration(
                   color: Color.fromARGB(31, 0, 0, 0),
                   borderRadius: BorderRadius.all(Radius.circular(4))),

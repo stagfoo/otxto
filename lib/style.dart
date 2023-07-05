@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:flutter/material.dart';
+
 class OtxtoColors {
   String black = '#000000';
   String white = '#ffffff';
@@ -49,8 +51,6 @@ getRandomColorClass(String word) {
     return otxtoColorsAsHexList[4];
   }
 }
-
-
 
 class DesignSystem {
   int gutter = 8;

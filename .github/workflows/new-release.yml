@@ -1,0 +1,152 @@
+on:
+  push:
+    tags:
+      - 'v*'
+
+name: Build apps
+env:
+  APP_NAME: otxto
+  LINUX_ZIP: 'linux-otxto-${{ github.ref_name }}.zip'
+  MAC_ZIP: 'mac-otxto-${{ github.ref_name }}.zip'
+  WINDOWS_ZIP: 'windows-otxto-${{ github.ref_name }}.zip'
+  IOS_ZIP: 'ios-otxto-${{ github.ref_name }}.zip'
+  ANDROID_ZIP: 'android-otxto-${{ github.ref_name }}.zip'
+  MAC_FILES: 'build/macos/Build/Products/Release/*'
+  LINUX_FILES: 'build/linux/x64/release'
+  WINDOWS_FILES: 'build/windows/runner/Release/*'
+  IOS_FILES: '/Users/runner/work/otxto/otxto/build/ios/iphoneos/'
+  ANDROID_FILES: 'build/app/outputs/*'
+
+
+jobs:
+ build-linux:
+   name: 🐧 Create Linux App
+   runs-on: ubuntu-latest
+   steps:
+     - uses: actions/checkout@v3
+     - uses: subosito/flutter-action@v2
+       with:
+         channel: 'stable'
+     - run: |
+        sudo apt-get update -y
+        sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
+     - run: flutter config --enable-linux-desktop
+     - run: flutter build linux
+     - run: ls
+     - name: Zip Release
+       uses: thedoctor0/zip-release@0.7.1
+       with:
+        type: 'zip'
+        path: ${{ env.LINUX_FILES }}
+        filename: ${{ env.LINUX_ZIP }}
+     - name: 📼 Release
+       uses: softprops/action-gh-release@v1
+       with:
+        tag_name: ${{ github.ref_name }}
+        name: ${{ github.ref_name }}
+        files: |
+           ${{ env.LINUX_ZIP }}
+ build-window:
+   name: 🖼️ Create Windows App
+   runs-on: windows-latest
+   steps:
+     - uses: actions/checkout@v3
+     - uses: subosito/flutter-action@v2
+       with:
+         channel: 'beta'
+     - run: flutter config --enable-windows-desktop
+     - run: flutter build windows
+     - run: ls
+     - name: Zip Release
+       uses: thedoctor0/zip-release@0.7.1
+       with:
+        type: 'zip'
+        path: ${{ env.WINDOWS_FILES }}
+        filename: ${{ env.WINDOWS_ZIP }}
+     - name: 📼 Release
+       uses: softprops/action-gh-release@v1
+       with:
+        tag_name: ${{ github.ref_name }}
+        name: ${{ github.ref_name }}
+        files: |
+            ${{ env.WINDOWS_ZIP }}
+ build-mac:
+    name: 🍏 Create Mac App
+    runs-on: macos-11
+    steps:
+    - uses: actions/checkout@v3
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+        architecture: x64
+    - run: flutter pub get
+    - run: flutter config --enable-macos-desktop
+    - run: flutter build macos
+    - name: Zip Release
+      uses: thedoctor0/zip-release@0.7.1
+      with:
+           type: 'zip'
+           path: ${{ env.MAC_FILES }}
+           filename: ${{ env.MAC_ZIP }}
+    - name: 📼 Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ github.ref_name }}
+        name: ${{ github.ref_name }}
+        files: |
+            ${{ env.MAC_ZIP }}
+ build-android:
+    name: 🤖 Create Android APK
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-java@v2
+      with:
+        distribution: 'zulu'
+        java-version: '11'
+    - uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.7.7'
+    - run: flutter pub get
+    - run: flutter build apk
+    - run: flutter build appbundle
+    - run: ls
+    - name: Zip Release
+      uses: thedoctor0/zip-release@0.7.1
+      with:
+        type: 'zip'
+        path: ${{ env.ANDROID_FILES }}
+        filename: ${{ env.ANDROID_ZIP }}
+    - name: 📼 Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ github.ref_name }}
+        name: ${{ github.ref_name }}
+        files: |
+            ${{ env.ANDROID_ZIP }}
+ build-ios:
+    name: 🍎 Create IOS
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+        architecture: x64
+    - run: flutter pub get
+    - run: flutter build ios --release --no-codesign
+    - run: ls
+    - name: Zip Release
+      uses: thedoctor0/zip-release@0.7.1
+      with:
+           type: 'zip'
+           path: ${{ env.IOS_FILES }}
+           filename: ${{ env.IOS_ZIP }}
+    - name: 📼 Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ github.ref_name }}
+        name: ${{ github.ref_name }}
+        files: |
+            ${{ env.IOS_ZIP }}
+

@@ -1,5 +1,7 @@
 //Libs
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -14,7 +16,7 @@ final addNewTodoController = TextEditingController();
 
 class HomePage extends StatelessWidget {
   final GlobalState state;
-  HomePage({Key? key, required this.state}) : super(key: key);
+  const HomePage({Key? key, required this.state}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,7 +39,6 @@ class HomePage extends StatelessWidget {
             );
           },
           onAccept: (String dragInfo) {
-            //TODO replace with mascot
             var info = dragInfo.split('_');
             var id = info[0];
             handleDeleteTodo(state, id);
@@ -129,6 +130,11 @@ class OpenView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+            Container(
+              width: 240,
+              margin: const EdgeInsets.only(bottom: 32),
+              child: const Image(image: AssetImage('assets/logo.png')),
+            ),
             ElevatedButton(
               style:
                   ButtonStyle(side: MaterialStateProperty.resolveWith((states) {
@@ -160,6 +166,9 @@ class OpenView extends StatelessWidget {
                         ],
                       ))),
             ),
+            Container(
+              height: 16,
+            ),
             ElevatedButton(
               style:
                   ButtonStyle(side: MaterialStateProperty.resolveWith((states) {
@@ -181,17 +190,18 @@ class OpenView extends StatelessWidget {
                         children: [
                           Container(
                             child: const Icon(
-                              Icons.folder_outlined,
+                              Icons.new_releases,
                               color: Colors.white,
                             ),
                             margin: const EdgeInsets.only(right: 4),
                           ),
-                          const Text("New todos",
+                          const Text("new todo file",
                               style: TextStyle(color: Colors.white)),
                         ],
                       ))),
             ),
-            //TODO add recent?
+            //TODO add recently opened
+            // but this is handled by most OSs so probably not that useful
           ]));
     });
   }
@@ -284,7 +294,7 @@ class AddNewColumn extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<GlobalState>(builder: (context, state, widget) {
       return Container(
-          padding: const EdgeInsets.only(top: 8, left: 8),
+          padding: const EdgeInsets.only(left: 8),
           child: SizedBox(
               width: 300,
               height: 48,
@@ -308,6 +318,7 @@ class AddNewColumn extends StatelessWidget {
   }
 }
 
+//Move to Molecules
 class ColumnTitle extends StatelessWidget {
   final String text;
   const ColumnTitle({Key? key, required this.text}) : super(key: key);

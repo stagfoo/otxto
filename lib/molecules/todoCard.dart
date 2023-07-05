@@ -28,6 +28,7 @@ class TodoCard extends StatelessWidget {
               child: Container(
                   width: width,
                   clipBehavior: Clip.hardEdge,
+                  padding: const EdgeInsets.only(top: 4),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(4),
@@ -45,7 +46,7 @@ class TodoCard extends StatelessWidget {
                                   color: Colors.white,
                                 ),
                                 padding: const EdgeInsets.only(
-                                    top: 8, left: 8, right: 8, bottom: 8),
+                                    top: 4, left: 8, right: 8, bottom: 8),
                                 alignment: Alignment.topLeft,
                                 child: Wrap(children: [
                                   Text(

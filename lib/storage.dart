@@ -3,6 +3,10 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:toml/toml.dart';
 
+// NOTE:
+// Platform.isAndroid lets you check its android so you can show dialogs
+// related to permissions
+
 import 'store.dart';
 
 Future<File> pickFile() async {
@@ -24,18 +28,16 @@ loadToml(String name) async {
 
 saveToml(String path, GlobalState state) async {
   Map<String, dynamic> tomlTemplate = {
-    'settings': 
-      <String, dynamic>{
-        'columns': state.columns.map(
-          (e) {
-            return e.id;
-          },
-        ),
-        'defaultFields': ['createdAt', 'completedAt'],
-        'completeColumn': true,
-        'allColumn': true,
-      }
-    
+    'settings': <String, dynamic>{
+      'columns': state.columns.map(
+        (e) {
+          return e.id;
+        },
+      ),
+      'defaultFields': ['createdAt', 'completedAt'],
+      'completeColumn': true,
+      'allColumn': true,
+    }
   };
   var tomlDB = TomlDocument.fromMap(tomlTemplate).toString();
   var file = File(path);

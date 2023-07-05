@@ -1,4 +1,4 @@
-package com.example.otxto
+package com.stagfoo.otxto
 
 import io.flutter.embedding.android.FlutterActivity
 
