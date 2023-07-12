@@ -16,7 +16,7 @@ final addNewTodoController = TextEditingController();
 
 class HomePage extends StatelessWidget {
   final GlobalState state;
-  HomePage({Key? key, required this.state}) : super(key: key);
+  const HomePage({Key? key, required this.state}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +39,6 @@ class HomePage extends StatelessWidget {
             );
           },
           onAccept: (String dragInfo) {
-            //TODO replace with mascot
             var info = dragInfo.split('_');
             var id = info[0];
             handleDeleteTodo(state, id);
@@ -201,7 +200,8 @@ class OpenView extends StatelessWidget {
                         ],
                       ))),
             ),
-            //TODO add recent?
+            //TODO add recently opened
+            // but this is handled by most OSs so probably not that useful
           ]));
     });
   }
@@ -318,6 +318,7 @@ class AddNewColumn extends StatelessWidget {
   }
 }
 
+//Move to Molecules
 class ColumnTitle extends StatelessWidget {
   final String text;
   const ColumnTitle({Key? key, required this.text}) : super(key: key);

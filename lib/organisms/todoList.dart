@@ -10,6 +10,7 @@ class TodoList extends StatelessWidget {
   final String columnId;
   final handleOnMoveGroupItemToGroup;
   //TODO kinda weird this is here
+  // consider refactoring
   final TextEditingController addNewTodoController;
   final GlobalState state;
   final List<Todo> list;
@@ -49,10 +50,8 @@ class TodoList extends StatelessWidget {
             return Container(
                 width: 300,
                 padding: const EdgeInsets.only(bottom: 1000),
-                // margin: const EdgeInsets.only(right: 8),
                 decoration: BoxDecoration(
                   color: const Color.fromARGB(30, 255, 255, 255),
-                  // border: Border.all(color: Colors.white, width: 1),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Flex(
