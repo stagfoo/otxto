@@ -10,8 +10,8 @@ Todo importTodoTextLine(String line) {
   var isPriority = RegExp(r'\([A-Z]\) ');
   var isComplete = RegExp(r'^x ');
   var isDateLike = RegExp(r'\d{4}-\d{2}-\d{2}');
-  var isProject = RegExp(r' \+[a-z0-9]+');
-  var isTag = RegExp(r'@[a-z]+(-?[a-z0-9]+)');
+  var isProject = RegExp(r'\+[a-z0-9_]+');
+  var isTag = RegExp(r'@[a-z]+(-?[a-z0-9_]+)');
 
   var complete = isComplete.hasMatch(line);
   var priority =
