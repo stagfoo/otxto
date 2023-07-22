@@ -34,8 +34,8 @@ void main() {
     );
     todo.isComplete = false;
     todo.project = '+otxto';
-    String result = createTodoTextLine(todo);
-    String text = 'x ${todo.createdAt} example +otxto @todo';
+    String result = createTodoTextLine(todo).trim();
+    String text = '${todo.createdAt} example +otxto @todo';
     expect(result, text);
   });
    test('[ACTION] Exporting a complete todo with a project, 2 tags and prority', () {
