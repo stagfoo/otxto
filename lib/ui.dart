@@ -23,19 +23,21 @@ class HomePage extends StatelessWidget {
         backgroundColor: Colors.black,
         floatingActionButton: DragTarget<String>(
           builder: (context, candidateItems, rejectedItems) {
-            return Container(
-              decoration: BoxDecoration(
-                color: randomStringToHexColor('uu'),
-                // border: Border.all(color: Colors.white, width: 1),
-                borderRadius: const BorderRadius.all(Radius.circular(4)),
+            return MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: randomStringToHexColor('uu'),
+                  borderRadius: const BorderRadius.all(Radius.circular(4)),
+                ),
+                padding: const EdgeInsets.all(16),
+                child: const Tooltip(
+                    message: "Drag a card here to delete",
+                    child: Icon(
+                      Icons.delete,
+                      color: Colors.black,
+                    )),
               ),
-              padding: const EdgeInsets.all(16),
-              child: const Tooltip(
-                  message: "Drag a card here to delete",
-                  child: Icon(
-                    Icons.delete,
-                    color: Colors.black,
-                  )),
             );
           },
           onAccept: (String dragInfo) {
@@ -74,25 +76,27 @@ class HomePage extends StatelessWidget {
                                 borderSide:
                                     BorderSide(color: Colors.white, width: 2))),
                       )),
-                      Container(
-                          decoration: BoxDecoration(
-                            color: randomStringToHexColor('uu'),
-                            // border: Border.all(color: Colors.white, width: 1),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(4)),
-                          ),
-                          padding: const EdgeInsets.all(6),
-                          margin: const EdgeInsets.only(left: 8, right: 8),
-                          child: IconButton(
-                              iconSize: 20,
-                              onPressed: () {
-                                handleCloseFolder(state);
-                              },
-                              tooltip: "Close this folder",
-                              icon: const Icon(
-                                Icons.close,
-                                color: Colors.black,
-                              )))
+                      MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: Container(
+                            decoration: BoxDecoration(
+                              color: randomStringToHexColor('uu'),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(4)),
+                            ),
+                            padding: const EdgeInsets.all(6),
+                            margin: const EdgeInsets.only(left: 8, right: 8),
+                            child: IconButton(
+                                iconSize: 20,
+                                onPressed: () {
+                                  handleCloseFolder(state);
+                                },
+                                tooltip: "Close this folder",
+                                icon: const Icon(
+                                  Icons.close,
+                                  color: Colors.black,
+                                )))
+                      )
                     ]),
                     Container(
                       height: 16,
