@@ -5,7 +5,9 @@ import 'utils.dart';
 
 const localDBFile = 'otxto-settings.toml';
 const shortId = ShortUuid();
-const restrictedColumns = ['all', 'completed'];
+const allColumnId = 'all';
+const completedColumnId = 'completed';
+const restrictedColumns = [allColumnId, completedColumnId];
 
 class Todo {
   String id = shortId.generate();
@@ -46,10 +48,27 @@ class GlobalState extends ChangeNotifier {
   int currentNavbarIndex = 0;
   List<Todo> todos = [];
   List<KanbanGroup> columns = [];
-  late Todo selectedItem;
-  late String todoFilePath = '';
-  late String settingsFilePath = '';
+  String todoFilePath = '';
+  String settingsFilePath = '';
   EditingState isEditing = EditingState(status: false, id: '');
+
+  /// Whether [todo] is shown in the column with [columnId].
+  bool isInColumn(Todo todo, String columnId) {
+    switch (columnId) {
+      case completedColumnId:
+        return todo.isComplete;
+      case allColumnId:
+        return !todo.isComplete &&
+            !todo.tags.any((tag) => columns.any((c) => c.id == tag));
+      default:
+        return !todo.isComplete && todo.tags.contains(columnId);
+    }
+  }
+
+  /// The todos in [columnId], in the same order as the todo.txt file.
+  List<Todo> todosInColumn(String columnId) {
+    return todos.where((todo) => isInColumn(todo, columnId)).toList();
+  }
 
   void setTodoFilePath(String path) {
     todoFilePath = path;
@@ -68,7 +87,6 @@ class GlobalState extends ChangeNotifier {
 
   void removeTodo(String id) {
     setTodos(todos.where((element) => element.id != id).toList());
-    notifyListeners();
   }
 
   void setEditingStatus(String id, bool status) {
@@ -88,11 +106,6 @@ class GlobalState extends ChangeNotifier {
 
   void setColumns(List<KanbanGroup> value) {
     columns = value;
-    notifyListeners();
-  }
-
-  void updateTags(int index, List<String> tags) {
-    todos[index].tags = tags;
     notifyListeners();
   }
 

@@ -1,10 +1,4 @@
-import 'dart:convert';
-import 'dart:io';
-import 'dart:core';
-
 import 'store.dart';
-import 'middleware.dart';
-import 'storage.dart';
 
 Todo importTodoTextLine(String line) {
   var isPriority = RegExp(r'\([A-Z]\) ');
@@ -38,23 +32,20 @@ Todo importTodoTextLine(String line) {
       priority: priority.isNotEmpty ? priority.first : '');
   nextTodoItem.completedAt = dates.length > 1 ? dates[1] : '';
   nextTodoItem.createdAt = dates.isNotEmpty ? dates[0] : '';
-  nextTodoItem.project =
-      project.isNotEmpty ? project.first : '';
+  nextTodoItem.project = project.isNotEmpty ? project.first : '';
   nextTodoItem.isComplete = complete;
   return nextTodoItem;
 }
 
 String createTodoTextLine(Todo todo) {
-
   var isComplete = todo.isComplete ? 'x ' : '';
-  var hasPriority =
-      todo.priority != null && todo.priority.isNotEmpty ? todo.priority + ' ' : '';
-  var hasCompletedAt = todo.completedAt != null ?  todo.completedAt + ' ' : '';
+  var hasPriority = todo.priority.isNotEmpty ? todo.priority + ' ' : '';
+  var hasCompletedAt =
+      todo.completedAt.isNotEmpty ? todo.completedAt + ' ' : '';
   var hasCreatedAt = todo.createdAt.isNotEmpty ? todo.createdAt + ' ' : '';
   var hasText = todo.text.isNotEmpty ? todo.text + ' ' : '';
-  var hasProject =
-      todo.project != null && todo.project.isNotEmpty ? todo.project + ' ' : '';
-  var hasTags = todo.tags != null ? todo.tags.join(' ') : '';
+  var hasProject = todo.project.isNotEmpty ? todo.project + ' ' : '';
+  var hasTags = todo.tags.join(' ');
   return (isComplete +
           hasPriority +
           hasCompletedAt +
@@ -64,8 +55,6 @@ String createTodoTextLine(Todo todo) {
           hasTags)
       .replaceAll('  ', ' ');
 }
-
-
 
 String formatTimestamp(DateTime timestamp) {
   return "${timestamp.year.toString()}-${timestamp.month.toString().padLeft(2, '0')}-${timestamp.day.toString().padLeft(2, '0')}";

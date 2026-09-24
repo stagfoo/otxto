@@ -1,17 +1,13 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
-class OtxtoColors {
-  String black = '#000000';
-  String white = '#ffffff';
-  String gray = '#424242';
-  String purple = '#7E4FED';
-  String lime = '#C8FF04';
-  String pink = '#FF6EBD';
-  String blue = '#04E1FF';
-  String green = '#15DA2A';
-}
+const _tagColors = [
+  '#7E4FED',
+  '#FFD60A',
+  '#FF6EBD',
+  '#04E1FF',
+  '#15DA2A',
+];
+const _tagColorGroups = ['abcde', 'fghij', 'klmno', 'pqrs', 'tuvwxyz'];
 
 extension HexColor on Color {
   static Color fromHex(String hexString) {
@@ -22,42 +18,18 @@ extension HexColor on Color {
   }
 }
 
-getRandomColorClass(String word) {
-  List<String> otxtoColorsAsHexList = [
-    '#7E4FED',
-    '#FFD60A',
-    '#FF6EBD',
-    '#04E1FF',
-    '#15DA2A',
-  ];
-  const abcde = ['a', 'b', 'c', 'd', 'e'];
-  const fghij = ['f', 'g', 'h', 'i', 'j'];
-  const klmno = ['k', 'l', 'm', 'n', 'o'];
-  const pqrs = ['p', 'g', 'r', 's'];
-  const tvwxyz = ['u', 'v', 'w', 'y', 'x', 'z', 't'];
-  if (abcde.contains(word[1])) {
-    return otxtoColorsAsHexList[0];
-  }
-  if (fghij.contains(word[1])) {
-    return otxtoColorsAsHexList[1];
-  }
-  if (klmno.contains(word[1])) {
-    return otxtoColorsAsHexList[2];
-  }
-  if (pqrs.contains(word[1])) {
-    return otxtoColorsAsHexList[3];
-  }
-  if (tvwxyz.contains(word[1])) {
-    return otxtoColorsAsHexList[4];
-  }
-}
-
-class DesignSystem {
-  int gutter = 8;
-  // Nice black
-  // #330C2F
+/// Picks a color for a tag based on the first letter after the `@`.
+String getRandomColorClass(String word) {
+  var letter = word.length > 1 ? word[1].toLowerCase() : '';
+  var group = _tagColorGroups
+      .indexWhere((g) => letter.isNotEmpty && g.contains(letter));
+  return _tagColors[group == -1 ? 0 : group];
 }
 
 Color randomStringToHexColor(String string) {
   return HexColor.fromHex(getRandomColorClass(string));
+}
+
+Color contrastingTextColor(Color background) {
+  return background.computeLuminance() > 0.5 ? Colors.black : Colors.white;
 }
